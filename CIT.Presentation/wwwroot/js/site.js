@@ -8,15 +8,12 @@ $("#signInBtn").on('click', function (e) {
         password: $("#password").val()
     };
 
-    $.ajax('/Account/Index', {
-        method: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify(authModel),
-        success: function (data) {
+    doRequest('/Account/Index', 'POST', authModel, null,
+        function (data) {
             console.log(data);
         },
-        error: function (err) {
+        function (err) {
             console.log(err);
         }
-    });
+    );
 });
