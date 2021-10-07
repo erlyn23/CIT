@@ -23,10 +23,16 @@ namespace CIT.BusinessLogic.Services
         public async Task<AccountResponse> SignInAsync(string email, string password)
         {
             var encryptedPassword = Encryption.Encrypt(password);
-            var user = await _userRepository.FirstOrDefaultAsync(u => u.Email.Equals(email) && u.Password.Equals(encryptedPassword));
+            var user = await _userRepository.FirstOrDefaultWithRelationsAsync(u => u.Email.Equals(email) && u.Password.Equals(encryptedPassword));
 
             if (user != null)
+            {
+                if (user.EntityInfo.Status == 0)
+                    throw new Exception("Este usuario ha sido deshabilitado o eliminado");
+
                 return new AccountResponse() { Email = email, Token = _tokenCreator.BuildToken(user) };
+            }
+            
 
             throw new Exception("Usuario o contraseña incorrecta");
         }

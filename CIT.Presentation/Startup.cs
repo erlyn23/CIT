@@ -1,24 +1,23 @@
+using CIT.BusinessLogic.Contracts;
+using CIT.BusinessLogic.Services;
+using CIT.DataAccess.Contracts;
+using CIT.DataAccess.DbContexts;
+using CIT.DataAccess.Repositories;
+using CIT.Tools;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Pomelo.EntityFrameworkCore.MySql;
-using CIT.DataAccess.DbContexts;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using CIT.DataAccess.Contracts;
-using CIT.DataAccess.Repositories;
-using CIT.BusinessLogic.Contracts;
-using CIT.BusinessLogic.Services;
-using CIT.Tools;
+using System.Threading.Tasks;
 
 namespace CIT.Presentation
 {
@@ -34,34 +33,35 @@ namespace CIT.Presentation
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddRazorPages();
+            services.AddControllersWithViews();
 
-            services.AddDbContext<CentroInversiontesTecnocorpDbContext>(builder => builder.UseMySql(Configuration.GetConnectionString("CentroInversionesTecnocorpConnection"), ServerVersion.Parse("10.4.20-mariadb")));
+            services.AddDbContext<CentroInversiontesTecnocorpDbContext>(builder=>
+            {
+                builder.UseMySql(Configuration.GetConnectionString("CITConnection"), ServerVersion.Parse("10.4.20-mariadb"));
+            });
 
 
             var secretKey = Encoding.ASCII.GetBytes(Configuration["SecretKey"]);
-
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(builder=>
+            }).AddJwtBearer(bearer=>
             {
-                builder.RequireHttpsMetadata = false;
-                builder.SaveToken = true;
-                builder.TokenValidationParameters = new TokenValidationParameters()
+                bearer.RequireHttpsMetadata = false;
+                bearer.SaveToken = true;
+                bearer.TokenValidationParameters = new TokenValidationParameters()
                 {
-                    ValidateIssuer = false,
                     ValidateAudience = false,
+                    ValidateIssuer = true,
                     IssuerSigningKey = new SymmetricSecurityKey(secretKey)
                 };
             });
 
-
             //Dependency Injections
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IAccountService, AccountService>();
-            services.AddScoped<TokenCreator>();
+            services.AddTransient<TokenCreator>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -73,11 +73,10 @@ namespace CIT.Presentation
             }
             else
             {
-                app.UseExceptionHandler("/Error");
+                app.UseExceptionHandler("/Home/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
@@ -85,9 +84,13 @@ namespace CIT.Presentation
 
             app.UseAuthorization();
 
+            app.UseAuthentication();
+
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapRazorPages();
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Account}/{action=Index}/{id?}");
             });
         }
     }

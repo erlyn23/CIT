@@ -11,10 +11,13 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="5.0.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\CIT.DataAccess\CIT.DataAccess.csproj" />
+    <ProjectReference Include="..\CIT.Dtos\CIT.Dtos.csproj" />
+    <ProjectReference Include="..\CIT.Tools\CIT.Tools.csproj" />
   </ItemGroup>
 
 </Project>

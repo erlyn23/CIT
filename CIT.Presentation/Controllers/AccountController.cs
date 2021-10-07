@@ -1,12 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using CIT.BusinessLogic.Contracts;
+using CIT.Dtos.Requests;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CIT.BusinessLogic.Services;
-using CIT.Dtos;
-using CIT.BusinessLogic.Contracts;
-using CIT.Dtos.Requests;
 
 namespace CIT.Presentation.Controllers
 {
@@ -24,18 +22,15 @@ namespace CIT.Presentation.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Index(Auth authModel)
+        public async Task<IActionResult> Index([FromBody] Auth authModel)
         {
             try
             {
-                var accountResponse = await _accountService.SignInAsync(authModel.Email, authModel.Password);
-
-                return Json(accountResponse);
+                return Json(await _accountService.SignInAsync(authModel.Email, authModel.Password));
             }
             catch(Exception ex)
             {
-                ViewBag.Error = ex.Message;
-                return View();
+                return Json(ex.Message);
             }
         }
     }
