@@ -14,6 +14,11 @@ using CIT.DataAccess.DbContexts;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using CIT.DataAccess.Contracts;
+using CIT.DataAccess.Repositories;
+using CIT.BusinessLogic.Contracts;
+using CIT.BusinessLogic.Services;
+using CIT.Tools;
 
 namespace CIT.Presentation
 {
@@ -51,6 +56,12 @@ namespace CIT.Presentation
                     IssuerSigningKey = new SymmetricSecurityKey(secretKey)
                 };
             });
+
+
+            //Dependency Injections
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<TokenCreator>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
