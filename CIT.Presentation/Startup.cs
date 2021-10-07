@@ -11,6 +11,9 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Pomelo.EntityFrameworkCore.MySql;
 using CIT.DataAccess.DbContexts;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace CIT.Presentation
 {
@@ -29,6 +32,25 @@ namespace CIT.Presentation
             services.AddRazorPages();
 
             services.AddDbContext<CentroInversiontesTecnocorpDbContext>(builder => builder.UseMySql(Configuration.GetConnectionString("CentroInversionesTecnocorpConnection"), ServerVersion.Parse("10.4.20-mariadb")));
+
+
+            var secretKey = Encoding.ASCII.GetBytes(Configuration["SecretKey"]);
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(builder=>
+            {
+                builder.RequireHttpsMetadata = false;
+                builder.SaveToken = true;
+                builder.TokenValidationParameters = new TokenValidationParameters()
+                {
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    IssuerSigningKey = new SymmetricSecurityKey(secretKey)
+                };
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
