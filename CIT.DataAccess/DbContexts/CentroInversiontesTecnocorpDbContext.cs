@@ -11,11 +11,13 @@ namespace CIT.DataAccess.DbContexts
     {
         public CentroInversiontesTecnocorpDbContext()
         {
+
         }
 
         public CentroInversiontesTecnocorpDbContext(DbContextOptions<CentroInversiontesTecnocorpDbContext> options)
             : base(options)
         {
+            
         }
 
         public virtual DbSet<Address> Addresses { get; set; }

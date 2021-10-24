@@ -49,5 +49,7 @@ namespace CIT.DataAccess.Repositories
             _dbContext.Entry(entity).State = EntityState.Modified;
             return entity;
         }
+
+        public async Task<bool> SaveChangesAsync() => await _dbContext.SaveChangesAsync() > 1;
     }
 }

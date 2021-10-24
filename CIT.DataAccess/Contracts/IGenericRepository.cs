@@ -16,5 +16,6 @@ namespace CIT.DataAccess.Contracts
         Task<List<T>> AddRangeAsync(T[] entities);
         T Update(T entity);
         void Delete(T entity);
+        Task<bool> SaveChangesAsync();
     }
 }
