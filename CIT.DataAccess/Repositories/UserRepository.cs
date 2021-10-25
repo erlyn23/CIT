@@ -13,8 +13,8 @@ namespace CIT.DataAccess.Repositories
 {
     public class UserRepository : GenericRepository<User>, IUserRepository
     {
-        private readonly CentroInversiontesTecnocorpDbContext _dbContext;
-        public UserRepository(CentroInversiontesTecnocorpDbContext dbContext) : base(dbContext)
+        private readonly CentroInversionesTecnocorpDbContext _dbContext;
+        public UserRepository(CentroInversionesTecnocorpDbContext dbContext) : base(dbContext)
         {
             _dbContext = dbContext;
         }

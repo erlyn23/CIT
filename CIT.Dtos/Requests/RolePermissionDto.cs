@@ -8,8 +8,9 @@ namespace CIT.Dtos.Requests
 {
     public class RolePermissionDto
     {
-        public int Id { get; set; }
-        public int RoleId { get; set; }
+        public string Id { get; set; }
+        public string RoleId { get; set; }
         public string PermissionName { get; set; }
+        public string Page { get; set; }
     }
 }

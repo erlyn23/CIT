@@ -7,9 +7,14 @@ namespace CIT.DataAccess.Models
 {
     public partial class Rolepermission
     {
-        public int Id { get; set; }
-        public int RoleId { get; set; }
+        public Rolepermission()
+        {
+            Id = Guid.NewGuid().ToString();
+        }
+        public string Id { get; set; }
+        public string RoleId { get; set; }
         public string PermissionName { get; set; }
+        public string Page { get; set; }
 
         public virtual Role Role { get; set; }
     }

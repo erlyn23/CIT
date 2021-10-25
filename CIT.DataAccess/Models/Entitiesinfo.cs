@@ -16,9 +16,11 @@ namespace CIT.DataAccess.Models
             Userroles = new HashSet<Userrole>();
             Users = new HashSet<User>();
             Vehicles = new HashSet<Vehicle>();
+
+            Id = Guid.NewGuid().ToString();
         }
 
-        public int Id { get; set; }
+        public string Id { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public short Status { get; set; }

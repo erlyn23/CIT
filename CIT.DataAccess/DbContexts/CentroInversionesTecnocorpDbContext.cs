@@ -1,23 +1,21 @@
 ﻿using System;
-using CIT.DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using CIT.DataAccess.Models;
 
 #nullable disable
 
 namespace CIT.DataAccess.DbContexts
 {
-    public partial class CentroInversiontesTecnocorpDbContext : DbContext
+    public partial class CentroInversionesTecnocorpDbContext : DbContext
     {
-        public CentroInversiontesTecnocorpDbContext()
+        public CentroInversionesTecnocorpDbContext()
         {
-
         }
 
-        public CentroInversiontesTecnocorpDbContext(DbContextOptions<CentroInversiontesTecnocorpDbContext> options)
+        public CentroInversionesTecnocorpDbContext(DbContextOptions<CentroInversionesTecnocorpDbContext> options)
             : base(options)
         {
-            
         }
 
         public virtual DbSet<Address> Addresses { get; set; }
@@ -32,18 +30,16 @@ namespace CIT.DataAccess.DbContexts
         public virtual DbSet<Userrole> Userroles { get; set; }
         public virtual DbSet<Vehicle> Vehicles { get; set; }
 
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.HasCharSet("utf8mb4")
-                .UseCollation("utf8mb4_general_ci");
-
             modelBuilder.Entity<Address>(entity =>
             {
                 entity.ToTable("addresses");
 
                 entity.HasIndex(e => e.EntityInfoId, "Fk_Addresses_EntitiesInfo");
 
-                entity.Property(e => e.Id).HasColumnType("int(11)");
+                entity.Property(e => e.Id).HasMaxLength(50);
 
                 entity.Property(e => e.City)
                     .IsRequired()
@@ -53,13 +49,15 @@ namespace CIT.DataAccess.DbContexts
                     .IsRequired()
                     .HasMaxLength(100);
 
-                entity.Property(e => e.EntityInfoId).HasColumnType("int(11)");
+                entity.Property(e => e.EntityInfoId)
+                    .IsRequired()
+                    .HasMaxLength(50);
 
                 entity.Property(e => e.HouseNumber).HasColumnType("int(11)");
 
-                entity.Property(e => e.Latitude).HasPrecision(10, 2);
+                entity.Property(e => e.Latitude).HasColumnType("decimal(10,2)");
 
-                entity.Property(e => e.Longitude).HasPrecision(10, 2);
+                entity.Property(e => e.Longitude).HasColumnType("decimal(10,2)");
 
                 entity.Property(e => e.Province)
                     .IsRequired()
@@ -69,7 +67,9 @@ namespace CIT.DataAccess.DbContexts
                     .IsRequired()
                     .HasMaxLength(150);
 
-                entity.Property(e => e.Street2).HasMaxLength(150);
+                entity.Property(e => e.Street2)
+                    .HasMaxLength(150)
+                    .HasDefaultValueSql("'NULL'");
 
                 entity.HasOne(d => d.EntityInfo)
                     .WithMany(p => p.Addresses)
@@ -82,13 +82,9 @@ namespace CIT.DataAccess.DbContexts
             {
                 entity.ToTable("entitiesinfo");
 
-                entity.Property(e => e.Id).HasColumnType("int(11)");
-
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+                entity.Property(e => e.Id).HasMaxLength(50);
 
                 entity.Property(e => e.Status).HasColumnType("smallint(6)");
-
-                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
             });
 
             modelBuilder.Entity<Loan>(entity =>
@@ -97,23 +93,21 @@ namespace CIT.DataAccess.DbContexts
 
                 entity.HasIndex(e => e.EntityInfoId, "Fk_Loans_EntitiesInfo");
 
-                entity.Property(e => e.Id).HasColumnType("int(11)");
+                entity.Property(e => e.Id).HasMaxLength(50);
 
                 entity.Property(e => e.DuesQuantity).HasColumnType("int(11)");
 
-                entity.Property(e => e.EndDate).HasColumnType("datetime");
+                entity.Property(e => e.EntityInfoId)
+                    .IsRequired()
+                    .HasMaxLength(50);
 
-                entity.Property(e => e.EntityInfoId).HasColumnType("int(11)");
+                entity.Property(e => e.InterestRate).HasColumnType("decimal(3,2)");
 
-                entity.Property(e => e.InterestRate).HasPrecision(3, 2);
-
-                entity.Property(e => e.MensualPay).HasPrecision(13, 2);
+                entity.Property(e => e.MensualPay).HasColumnType("decimal(13,2)");
 
                 entity.Property(e => e.PayDay).HasColumnType("int(11)");
 
-                entity.Property(e => e.StartDate).HasColumnType("datetime");
-
-                entity.Property(e => e.TotalLoan).HasPrecision(13, 2);
+                entity.Property(e => e.TotalLoan).HasColumnType("decimal(13,2)");
 
                 entity.HasOne(d => d.EntityInfo)
                     .WithMany(p => p.Loans)
@@ -128,17 +122,19 @@ namespace CIT.DataAccess.DbContexts
 
                 entity.HasIndex(e => e.UserId, "Fk_Logs_Users");
 
-                entity.Property(e => e.Id).HasColumnType("int(11)");
-
-                entity.Property(e => e.LogDate).HasColumnType("datetime");
+                entity.Property(e => e.Id).HasMaxLength(50);
 
                 entity.Property(e => e.Operation)
                     .IsRequired()
                     .HasMaxLength(10);
 
-                entity.Property(e => e.ResultMessageOrObject).HasMaxLength(255);
+                entity.Property(e => e.ResultMessageOrObject)
+                    .HasMaxLength(255)
+                    .HasDefaultValueSql("'NULL'");
 
-                entity.Property(e => e.UserId).HasColumnType("int(11)");
+                entity.Property(e => e.UserId)
+                    .IsRequired()
+                    .HasMaxLength(50);
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.Logs)
@@ -150,8 +146,7 @@ namespace CIT.DataAccess.DbContexts
             modelBuilder.Entity<Payment>(entity =>
             {
                 entity.HasKey(e => new { e.Id, e.UserId, e.LoanId })
-                    .HasName("PRIMARY")
-                    .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0, 0 });
+                    .HasName("PRIMARY");
 
                 entity.ToTable("payments");
 
@@ -161,19 +156,17 @@ namespace CIT.DataAccess.DbContexts
 
                 entity.HasIndex(e => e.UserId, "Fk_Payments_Users");
 
-                entity.Property(e => e.Id)
-                    .HasColumnType("int(11)")
-                    .ValueGeneratedOnAdd();
+                entity.Property(e => e.Id).HasMaxLength(50);
 
-                entity.Property(e => e.UserId).HasColumnType("int(11)");
+                entity.Property(e => e.UserId).HasMaxLength(50);
 
-                entity.Property(e => e.LoanId).HasColumnType("int(11)");
+                entity.Property(e => e.LoanId).HasMaxLength(50);
 
-                entity.Property(e => e.Date).HasColumnType("datetime");
+                entity.Property(e => e.EntityInfoId)
+                    .IsRequired()
+                    .HasMaxLength(50);
 
-                entity.Property(e => e.EntityInfoId).HasColumnType("int(11)");
-
-                entity.Property(e => e.Pay).HasPrecision(13, 2);
+                entity.Property(e => e.Pay).HasColumnType("decimal(13,2)");
 
                 entity.HasOne(d => d.EntityInfo)
                     .WithMany(p => p.Payments)
@@ -203,9 +196,11 @@ namespace CIT.DataAccess.DbContexts
                 entity.HasIndex(e => e.RoleName, "RoleName")
                     .IsUnique();
 
-                entity.Property(e => e.Id).HasColumnType("int(11)");
+                entity.Property(e => e.Id).HasMaxLength(50);
 
-                entity.Property(e => e.EntityInfoId).HasColumnType("int(11)");
+                entity.Property(e => e.EntityInfoId)
+                    .IsRequired()
+                    .HasMaxLength(50);
 
                 entity.Property(e => e.RoleName)
                     .IsRequired()
@@ -227,13 +222,19 @@ namespace CIT.DataAccess.DbContexts
                 entity.HasIndex(e => e.PermissionName, "PermissionName")
                     .IsUnique();
 
-                entity.Property(e => e.Id).HasColumnType("int(11)");
+                entity.Property(e => e.Id).HasMaxLength(50);
+
+                entity.Property(e => e.Page)
+                    .IsRequired()
+                    .HasMaxLength(50);
 
                 entity.Property(e => e.PermissionName)
                     .IsRequired()
                     .HasMaxLength(30);
 
-                entity.Property(e => e.RoleId).HasColumnType("int(11)");
+                entity.Property(e => e.RoleId)
+                    .IsRequired()
+                    .HasMaxLength(50);
 
                 entity.HasOne(d => d.Role)
                     .WithMany(p => p.Rolepermissions)
@@ -257,13 +258,15 @@ namespace CIT.DataAccess.DbContexts
                 entity.HasIndex(e => e.Phone, "Phone")
                     .IsUnique();
 
-                entity.Property(e => e.Id).HasColumnType("int(11)");
+                entity.Property(e => e.Id).HasMaxLength(50);
 
                 entity.Property(e => e.Email)
                     .IsRequired()
                     .HasMaxLength(50);
 
-                entity.Property(e => e.EntityInfoId).HasColumnType("int(11)");
+                entity.Property(e => e.EntityInfoId)
+                    .IsRequired()
+                    .HasMaxLength(50);
 
                 entity.Property(e => e.IdentificationDocument)
                     .IsRequired()
@@ -285,7 +288,9 @@ namespace CIT.DataAccess.DbContexts
                     .IsRequired()
                     .HasMaxLength(20);
 
-                entity.Property(e => e.Photo).HasMaxLength(255);
+                entity.Property(e => e.Photo)
+                    .HasMaxLength(255)
+                    .HasDefaultValueSql("'NULL'");
 
                 entity.HasOne(d => d.EntityInfo)
                     .WithMany(p => p.Users)
@@ -297,8 +302,7 @@ namespace CIT.DataAccess.DbContexts
             modelBuilder.Entity<Useraddress>(entity =>
             {
                 entity.HasKey(e => new { e.Id, e.UserId, e.AddressId })
-                    .HasName("PRIMARY")
-                    .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0, 0 });
+                    .HasName("PRIMARY");
 
                 entity.ToTable("useraddresses");
 
@@ -306,13 +310,11 @@ namespace CIT.DataAccess.DbContexts
 
                 entity.HasIndex(e => e.UserId, "Fk_UserAddresses_Users");
 
-                entity.Property(e => e.Id)
-                    .HasColumnType("int(11)")
-                    .ValueGeneratedOnAdd();
+                entity.Property(e => e.Id).HasMaxLength(50);
 
-                entity.Property(e => e.UserId).HasColumnType("int(11)");
+                entity.Property(e => e.UserId).HasMaxLength(50);
 
-                entity.Property(e => e.AddressId).HasColumnType("int(11)");
+                entity.Property(e => e.AddressId).HasMaxLength(50);
 
                 entity.HasOne(d => d.Address)
                     .WithMany(p => p.Useraddresses)
@@ -330,8 +332,7 @@ namespace CIT.DataAccess.DbContexts
             modelBuilder.Entity<Userrole>(entity =>
             {
                 entity.HasKey(e => new { e.Id, e.RoleId, e.UserId })
-                    .HasName("PRIMARY")
-                    .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0, 0 });
+                    .HasName("PRIMARY");
 
                 entity.ToTable("userroles");
 
@@ -343,15 +344,15 @@ namespace CIT.DataAccess.DbContexts
                 entity.HasIndex(e => e.UserId, "UserId")
                     .IsUnique();
 
-                entity.Property(e => e.Id)
-                    .HasColumnType("int(11)")
-                    .ValueGeneratedOnAdd();
+                entity.Property(e => e.Id).HasMaxLength(50);
 
-                entity.Property(e => e.RoleId).HasColumnType("int(11)");
+                entity.Property(e => e.RoleId).HasMaxLength(50);
 
-                entity.Property(e => e.UserId).HasColumnType("int(11)");
+                entity.Property(e => e.UserId).HasMaxLength(50);
 
-                entity.Property(e => e.EntityInfoId).HasColumnType("int(11)");
+                entity.Property(e => e.EntityInfoId)
+                    .IsRequired()
+                    .HasMaxLength(50);
 
                 entity.HasOne(d => d.EntityInfo)
                     .WithMany(p => p.Userroles)
@@ -384,7 +385,7 @@ namespace CIT.DataAccess.DbContexts
                 entity.HasIndex(e => e.LicensePlate, "LicensePlate")
                     .IsUnique();
 
-                entity.Property(e => e.Id).HasColumnType("int(11)");
+                entity.Property(e => e.Id).HasMaxLength(50);
 
                 entity.Property(e => e.Brand)
                     .IsRequired()
@@ -398,7 +399,9 @@ namespace CIT.DataAccess.DbContexts
                     .IsRequired()
                     .HasMaxLength(10);
 
-                entity.Property(e => e.EntityInfoId).HasColumnType("int(11)");
+                entity.Property(e => e.EntityInfoId)
+                    .IsRequired()
+                    .HasMaxLength(50);
 
                 entity.Property(e => e.LicensePlate)
                     .IsRequired()

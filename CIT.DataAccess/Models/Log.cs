@@ -7,9 +7,13 @@ namespace CIT.DataAccess.Models
 {
     public partial class Log
     {
-        public int Id { get; set; }
+        public Log()
+        {
+            Id = Guid.NewGuid().ToString();
+        }
+        public string Id { get; set; }
         public string Operation { get; set; }
-        public int UserId { get; set; }
+        public string UserId { get; set; }
         public string ResultMessageOrObject { get; set; }
         public DateTime LogDate { get; set; }
 

@@ -1,7 +1,6 @@
 ﻿'use strict'
 
 function doRequest({ url, method, data, headers, successCallback, errorCallback }) {
-
     const options = {
         method: method,
         contentType: 'application/json',

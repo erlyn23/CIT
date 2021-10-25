@@ -30,7 +30,28 @@ namespace CIT.Presentation.Controllers
             }
             catch(Exception ex)
             {
-                return Json(ex.Message);
+                return BadRequest(ex.Message);
+            }
+        }
+
+        public IActionResult Register()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Register([FromBody] UserDto userDto)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                    return Json(await _accountService.RegisterUserAsync(userDto));
+                else
+                    return Json(ModelState.Values.ToList());
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
     }

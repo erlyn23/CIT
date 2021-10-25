@@ -25,10 +25,10 @@ namespace CIT.BusinessLogic.Services
                 RoleName = role.Role
             };
 
-            await _roleRepository.AddAsync(roleEntity);
+            var savedRole = await _roleRepository.AddAsync(roleEntity);
             await _roleRepository.SaveChangesAsync();
 
-            role.RoleId = roleEntity.Id;
+            role.RoleId = savedRole.Id;
             return role;
         }
 

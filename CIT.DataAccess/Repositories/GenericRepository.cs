@@ -12,9 +12,9 @@ namespace CIT.DataAccess.Repositories
 {
     public abstract class GenericRepository<T> : IGenericRepository<T> where T : class
     {
-        private readonly CentroInversiontesTecnocorpDbContext _dbContext;
+        private readonly CentroInversionesTecnocorpDbContext _dbContext;
 
-        public GenericRepository(CentroInversiontesTecnocorpDbContext dbContext) 
+        public GenericRepository(CentroInversionesTecnocorpDbContext dbContext) 
         {
             _dbContext = dbContext;
         }

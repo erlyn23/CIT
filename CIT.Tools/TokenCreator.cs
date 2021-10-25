@@ -27,7 +27,7 @@ namespace CIT.Tools
             var claims = new List<Claim>()
             {
                 new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.NameIdentifier, user.Id),
                 new Claim("Role", user.Userrole.RoleId.ToString())
             };
 

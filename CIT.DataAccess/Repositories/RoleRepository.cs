@@ -12,9 +12,9 @@ namespace CIT.DataAccess.Repositories
 {
     public class RoleRepository : GenericRepository<Role>, IRoleRepository
     {
-        private readonly CentroInversiontesTecnocorpDbContext _dbContext;
+        private readonly CentroInversionesTecnocorpDbContext _dbContext;
 
-        public RoleRepository(CentroInversiontesTecnocorpDbContext dbContext) : base(dbContext)
+        public RoleRepository(CentroInversionesTecnocorpDbContext dbContext) : base(dbContext)
         {
             _dbContext = dbContext;
         }

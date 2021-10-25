@@ -3,6 +3,7 @@ using CIT.BusinessLogic.Services;
 using CIT.DataAccess.Contracts;
 using CIT.DataAccess.DbContexts;
 using CIT.DataAccess.Repositories;
+using CIT.Presentation.Filters;
 using CIT.Tools;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -18,6 +19,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MySql.EntityFrameworkCore;
 
 namespace CIT.Presentation
 {
@@ -35,9 +37,9 @@ namespace CIT.Presentation
         {
             services.AddControllersWithViews();
 
-            services.AddDbContext<CentroInversiontesTecnocorpDbContext>(builder=>
+            services.AddDbContext<CentroInversionesTecnocorpDbContext>(builder=>
             {
-                builder.UseMySql(Configuration.GetConnectionString("CITConnection"), ServerVersion.Parse("10.4.20-mariadb"));
+                builder.UseMySQL(Configuration.GetConnectionString("CITConnection"));
             });
 
 
@@ -59,9 +61,15 @@ namespace CIT.Presentation
             });
 
             //Dependency Injections
+            services.AddScoped<AuthFilter>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IAccountService, AccountService>();
             services.AddTransient<TokenCreator>();
+            services.AddScoped<IRoleRepository, RoleRepository>();
+            services.AddScoped<IRoleService, RoleService>();
+            services.AddScoped<IUserRoleRepository, UserRoleRepository>();
+            services.AddScoped<IEntitesInfoRepository, EntitiesInfoRepository>();
+            services.AddScoped<IEntitiesInfoService, EntitiesInfoService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
