@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -24,9 +25,9 @@ namespace CIT.DataAccess.Repositories
             return await _dbContext.Roles.Include(r => r.Rolepermissions).ToListAsync();
         }
 
-        public async Task<Role> GetRoleWithRelationAsync(int roleId)
+        public async Task<Role> GetRoleWithRelationAsync(Expression<Func<Role, bool>> expression)
         {
-            return await _dbContext.Roles.Include(r => r.Rolepermissions).FirstOrDefaultAsync(r => r.Id == roleId);
+            return await _dbContext.Roles.Include(r => r.Rolepermissions).FirstOrDefaultAsync(expression);
         }
     }
 }

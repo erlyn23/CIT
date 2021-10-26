@@ -19,13 +19,15 @@ namespace CIT.BusinessLogic.Services
         private readonly IUserRoleRepository _userRoleRepository;
         private readonly IEntitiesInfoService _entitiesInfoService;
         private readonly TokenCreator _tokenCreator;
+        private readonly IRoleRepository _roleRepository;
 
-        public AccountService(IUserRepository userRepository, IUserRoleRepository userRoleRepository, IEntitiesInfoService entitiesInfoService, TokenCreator tokenCreator)
+        public AccountService(IUserRepository userRepository, IRoleRepository roleRepository, IUserRoleRepository userRoleRepository, IEntitiesInfoService entitiesInfoService, TokenCreator tokenCreator)
         {
             _userRepository = userRepository;
             _tokenCreator = tokenCreator;
             _userRoleRepository = userRoleRepository;
             _entitiesInfoService = entitiesInfoService;
+            _roleRepository = roleRepository;
         }
 
         public async Task<AccountResponse> RegisterUserAsync(UserDto userDto)
@@ -57,12 +59,26 @@ namespace CIT.BusinessLogic.Services
 
             await _userRepository.AddAsync(userEntity);
 
-            if (!string.IsNullOrEmpty(userDto.Photo) && userEntity.Id != 0)
+            if (!string.IsNullOrEmpty(userDto.Photo))
                 userEntity.Photo = await UploadProfilePhotoAsync(userDto.Photo, userEntity.Id);
+
+
+            var administratorRole = await _roleRepository.FirstOrDefaultAsync(r => r.RoleName.Equals("Administrador"));
+
+            if (administratorRole == null)
+            {
+                administratorRole = new Role()
+                {
+                    RoleName = "Administrador",
+                    EntityInfoId = entitiesInfo.Id
+                };
+                await _roleRepository.AddAsync(administratorRole);
+            }
+
 
             var userRole = new Userrole()
             {
-                RoleId = 1,
+                RoleId = administratorRole.Id,
                 UserId = userEntity.Id,
                 EntityInfoId = entitiesInfo.Id
             };
@@ -77,13 +93,13 @@ namespace CIT.BusinessLogic.Services
             };
         }
 
-        private async Task<string> UploadProfilePhotoAsync(string photo, int userId)
+        private async Task<string> UploadProfilePhotoAsync(string photo, string userId)
         {
             string imagePath = $"{Environment.CurrentDirectory}/ProfilePhotos";
             string[] imageSplitted = photo.Split(',');
             byte[] imageInBytes = Convert.FromBase64String(imageSplitted[1]);
 
-            string fileName = $"profile_photo_{userId}.jpg";
+            string fileName = $"profile_photo_{userId.Trim('-')}.jpg";
             string path = Path.Combine(imagePath, fileName);
 
 

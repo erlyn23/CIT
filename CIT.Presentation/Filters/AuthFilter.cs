@@ -26,7 +26,7 @@ namespace CIT.Presentation.Filters
 
 
             var roleId = decodedToken.Claims.FirstOrDefault(c => c.Type.Equals("Role")).Value;
-            var userRole = await _roleService.GetRoleAsync(int.Parse(roleId));
+            var userRole = await _roleService.GetRoleByIdAsync(roleId);
 
             var permission = userRole.RolePermissions.FirstOrDefault(r => r.PermissionName.Equals(operation) && r.Page.Equals(page));
 

@@ -12,7 +12,7 @@ namespace CIT.DataAccess.Models
             Logs = new HashSet<Log>();
             Payments = new HashSet<Payment>();
             Useraddresses = new HashSet<Useraddress>();
-            Id = Guid.NewGuid().ToString();
+            Id = new Random().Next(0, 5043232).ToString();
         }
 
         public string Id { get; set; }

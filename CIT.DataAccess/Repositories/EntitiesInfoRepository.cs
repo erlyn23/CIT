@@ -11,7 +11,7 @@ namespace CIT.DataAccess.Repositories
 {
     public class EntitiesInfoRepository : GenericRepository<Entitiesinfo>, IEntitesInfoRepository
     {
-        public EntitiesInfoRepository(CentroInversiontesTecnocorpDbContext dbContext) : base(dbContext)
+        public EntitiesInfoRepository(CentroInversionesTecnocorpDbContext dbContext) : base(dbContext)
         {
 
         }

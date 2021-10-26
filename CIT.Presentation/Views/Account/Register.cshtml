@@ -6,47 +6,58 @@
 
 
 <div class="row">
-    <div class="col-md-4 offset-md-4">
-        <div class="card shadow p-4">
+    <div class="col-md-6 offset-md-3">
+        <div class="card box-shadow p-4">
             <div class="text-center">
                 <h3>Registrar usuario</h3>
             </div>
+            <hr>
             <form>
-                <div class="form-group mb-2">
-                    <input type="text" name="name" id="name" class="form-control" placeholder="Nombre">
+                <div class="row">
+                    <div class="col-md-6 mb-2">
+                        <input type="text" name="name" id="name" class="form-control" placeholder="Nombre">
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <input type="text" name="lastName" id="lastName" placeholder="Apellido" class="form-control">
+                    </div>
                 </div>
-                <div class="form-group mb-2">
-                    <input type="text" name="lastName" id="lastName" placeholder="Apellido" class="form-control">
+                <div class="row">
+                    <div class="col-md-4 mb-2">
+                        <input type="number" name="identificationDocument" id="identificationDocument" class="form-control" placeholder="Cédula">
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <input type="number" name="phone" id="phone" class="form-control" placeholder="Teléfono">
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <input type="email" name="email" id="email" class="form-control" placeholder="Correo electrónico">
+                    </div>
                 </div>
-                <div class="form-group mb-2">
-                    <input type="number" name="identificationDocument" id="identificationDocument" class="form-control" placeholder="Cédula">
-                </div>
-                <div class="form-group mb-2">
-                    <input type="number" name="phone" id="phone" class="form-control" placeholder="Teléfono">
-                </div>
-                <div class="form-group mb-2">
-                    <input type="email" name="email" id="email" class="form-control" placeholder="Correo electrónico">
-                </div>
-                <div class="form-group mb-2">
-                    <input type="password" name="password" id="password" class="form-control" placeholder="Contraseña">
-                </div>
-                <div class="form-group mb-2">
-                    <input type="password" name="confirmPassword" id="confirmPassword" class="form-control" placeholder="Confirmar contraseña">
+                <div class="row">
+                    <div class="col-md-6 mb-2">
+                        <input type="password" name="password" id="password" class="form-control" placeholder="Contraseña">
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <input type="password" name="confirmPassword" id="confirmPassword" class="form-control" placeholder="Confirmar contraseña">
+                    </div>
                 </div>
                 <div class="form-group mb-2">
                     <label for="formFile" class="form-label mt-4">Foto para el perfil</label>
                     <input class="form-control" type="file" id="photo" accept="image/*">
                     <input type="hidden" name="photoBase64" id="photoBase64">
                 </div>
-                <div id="errorValidations">
-
-                </div>
                 <div class="d-grid gap-2">
-                    <button type="button" id="registerBtn" class="btn btn-block btn-outline-success">
+                    <button type="button" id="registerBtn" data-toggle="modal" data-target="#LoadingModal" class="btn btn-block btn-outline-success">
                         Registrarme
                     </button>
+                </div>
+                <hr>
+                <div class="text-center">
+                    <p>¿Ya posees una cuenta? <a asp-controller="Account" asp-action="Index">Inicia sesión</a></p>
                 </div>
             </form>
         </div>
     </div>
 </div>
+
+@await Html.PartialAsync("~/Views/Partials/_LoadingModalPartial.cshtml")
+@await Html.PartialAsync("~/Views/Partials/_ErrorMessagesModal.cshtml")

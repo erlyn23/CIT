@@ -1,6 +1,7 @@
 ﻿// Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
 // for details on configuring this project to bundle and minify static web assets.
 
+
 // Write your JavaScript code.
 $("#signInBtn").on('click', function (e) {
     const authModel = {
@@ -33,19 +34,41 @@ $("#registerBtn").on('click', function () {
 
     doRequest({
             url: '/Account/Register', method: 'POST', data: newUser, headers: null,
-            successCallback: function (data) {
-                if (!data.Email) {
+                successCallback: function (data) {
+                    if (Array.isArray(data)) {
+                    $("#errorMessages").html("");
                     for (let validationObject of data) {
                         for (let errorValidation of validationObject.errors) {
-                            console.log(errorValidation);
-                            let errorMsg = `<p class="text-danger">${errorValidation.errorMessage}</p>`;
-                            $("#errorValidations").append(errorMsg);
+                            let errorMsg = `<p class="text-danger"><i class="fas fa-exclamation-circle"></i>&nbsp; ${errorValidation.errorMessage}</p>`;
+                            $("#errorMessages").append(errorMsg);
+                            $("#LoadingModal").modal('hide');
+
+                            setTimeout(function () {
+                                $("#ErrorMessagesModal").modal('show');
+                            }, 1000);
                         }
                     }
+                } else {
+                    $("#errorMessages").html("");
+                    let successMsg = `<p class="text-success"><i class="fas fa-check-circle"></i>&nbsp; Usuario registrado correctamente, ya puedes iniciar sesión</p>`;
+                    $("#errorMessages").append(successMsg);
+                    $("#LoadingModal").modal('hide');
+
+                    setTimeout(function () {
+                        $("#ErrorMessagesModal").modal('show');
+                    }, 1000);
                 }
             },
             errorCallback: function (err) {
-                console.log(err);
+                $("#errorMessages").html("");
+                let errorMsg = `<p class="text-danger"><i class="fas fa-exclamation-circle"></i>${err.responseText}</p>`;
+                $("#errorMessages").append(errorMsg);
+                $("#LoadingModal").modal('hide');
+                
+                setTimeout(function () {
+                    $("#ErrorMessagesModal").modal('show');
+                }, 1000);
+
             }
         }
     );

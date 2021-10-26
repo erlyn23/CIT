@@ -11,7 +11,7 @@ namespace CIT.DataAccess.Models
         {
             Payments = new HashSet<Payment>();
 
-            Id = Guid.NewGuid().ToString();
+            Id = new Random().Next(0, 5043232).ToString();
         }
 
         public string Id { get; set; }

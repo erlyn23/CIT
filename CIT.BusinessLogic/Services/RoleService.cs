@@ -32,18 +32,29 @@ namespace CIT.BusinessLogic.Services
             return role;
         }
 
-        public async Task DeleteRoleAsync(int roleId)
+        public async Task DeleteRoleAsync(string roleId)
         {
-            var role = await _roleRepository.FirstOrDefaultAsync(r => r.Id == roleId);
+            var role = await _roleRepository.FirstOrDefaultAsync(r => r.Id.Equals(roleId));
             if(role != null)
                 _roleRepository.Delete(role);
 
             await _roleRepository.SaveChangesAsync();
         }
 
-        public async Task<RoleDto> GetRoleAsync(int roleId)
+        public async Task<RoleDto> GetRoleByIdAsync(string roleId)
         {
-            var role = await _roleRepository.GetRoleWithRelationAsync(roleId);
+            var role = await _roleRepository.GetRoleWithRelationAsync(r => r.Id.Equals(roleId));
+            var roleDto = new RoleDto()
+            {
+                RoleId = role.Id,
+                Role = role.RoleName
+            };
+            return roleDto;
+        }
+
+        public async Task<RoleDto> GetRoleByNameAsync(string roleName)
+        {
+            var role = await _roleRepository.GetRoleWithRelationAsync(r => r.RoleName.Equals(roleName));
             var roleDto = new RoleDto()
             {
                 RoleId = role.Id,

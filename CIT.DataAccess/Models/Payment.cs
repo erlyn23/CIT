@@ -9,7 +9,7 @@ namespace CIT.DataAccess.Models
     {
         public Payment()
         {
-            Id = Guid.NewGuid().ToString();
+            Id = new Random().Next(0, 5043232).ToString();
         }
         public string Id { get; set; }
         public string UserId { get; set; }
