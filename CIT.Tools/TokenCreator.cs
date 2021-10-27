@@ -1,4 +1,5 @@
 ﻿using CIT.DataAccess.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -40,6 +41,16 @@ namespace CIT.Tools
 
             var token = jwtSecurityTokenHandler.CreateToken(jwtSecurityTokenDescriptor);
             return jwtSecurityTokenHandler.WriteToken(token);
+        }
+
+        public JwtSecurityToken DecodeToken(HttpRequest request)
+        {
+            var bearerHeader = request.Headers["Authorization"];
+            var stringToken = bearerHeader.ToString().Replace("Bearer ", "");
+
+            var handler = new JwtSecurityTokenHandler();
+            var jsonToken = handler.ReadJwtToken(stringToken);
+            return jsonToken;
         }
     }
 }

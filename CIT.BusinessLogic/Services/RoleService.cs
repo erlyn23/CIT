@@ -44,10 +44,18 @@ namespace CIT.BusinessLogic.Services
         public async Task<RoleDto> GetRoleByIdAsync(string roleId)
         {
             var role = await _roleRepository.GetRoleWithRelationAsync(r => r.Id.Equals(roleId));
+            var rolePermissions = role.Rolepermissions.Select(r => new RolePermissionDto()
+            {
+                Id = r.Id,
+                RoleId = r.RoleId,
+                Page = r.Page,
+                PermissionName = r.PermissionName
+            }).ToList();
             var roleDto = new RoleDto()
             {
                 RoleId = role.Id,
-                Role = role.RoleName
+                Role = role.RoleName,
+                RolePermissions = rolePermissions
             };
             return roleDto;
         }

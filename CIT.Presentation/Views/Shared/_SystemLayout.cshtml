@@ -1,0 +1,85 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Sistema Integral de Préstamos</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/css/sidenav.css" />
+    <script src="https://kit.fontawesome.com/3d05e5b342.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
+</head>
+<body id="body-pd">
+
+    <header class="header" id="header">
+        <div class="header_toggle"> <i class='bx bx-menu' id="header-toggle"></i> </div>
+        <div class="header_img"> <img src="https://i.imgur.com/hczKIze.jpg" alt=""> </div>
+    </header>
+    <div class="l-navbar" id="nav-bar">
+        <nav class="nav">
+            <div>
+                <a href="#" class="nav_logo">
+                    <i class='bx bx-layer nav_logo-icon'></i>
+                    <span class="nav_logo-name">SIP</span>
+                </a>
+                <div class="nav_list">
+                    <a href="#" class="nav_link active">
+                        <i class='bx bx-grid-alt nav_icon'></i>
+                        <span class="nav_name">Dashboard</span>
+                    </a>
+                    <a asp-controller="Users" asp-action="Index" class="nav_link">
+                        <i class='bx bx-user nav_icon'></i>
+                        <span class="nav_name">Usuarios</span>
+                    </a>
+                    <a href="#" class="nav_link">
+                        <i class='bx bx-car nav_icon'></i>
+                        <span class="nav_name">Vehículos</span>
+                    </a>
+                    <a href="#" class="nav_link">
+                        <i class='bx bx-bar-chart-alt-2 nav_icon'></i>
+                        <span class="nav_name">Informes</span>
+                    </a>
+                    <a href="#" class="nav_link">
+                        <i class='bx bx-money nav_icon'></i>
+                        <span class="nav_name">Amortizaciones</span>
+                    </a>
+                    <a href="#" class="nav_link">
+                        <i class='bx bx-coin nav_icon'></i>
+                        <span class="nav_name">Préstamos</span>
+                    </a>
+                </div>
+            </div>
+            <a href="#" class="nav_link">
+                <i class='bx bx-log-out nav_icon'></i>
+                <span class="nav_name">Cerrar sesión</span>
+            </a>
+        </nav>
+    </div>
+
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/popper.js/umd/popper.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="~/js/Common/request.js"></script>
+    <script src="~/js/sidenav.js"></script>
+    @if (!string.IsNullOrEmpty(ViewData["Page"].ToString()))
+    {
+
+
+        @switch (ViewData["Page"].ToString())
+        {
+            case "Users":
+                <script src="~/js/Users/index.js"></script>
+                break;
+        }
+    }
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

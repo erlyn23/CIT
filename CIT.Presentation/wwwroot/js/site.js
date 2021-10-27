@@ -3,20 +3,54 @@
 
 
 // Write your JavaScript code.
+
+
+function getStartedSession() {
+    const user = JSON.parse(localStorage.getItem('user'));
+
+    if (user)
+        window.location.href = '/Dashboard/Index';
+}
+
+getStartedSession();
+
+
 $("#signInBtn").on('click', function (e) {
     const authModel = {
         email: $("#email").val(),
         password: $("#password").val()
     };
 
-    doRequest('/Account/Index', 'POST', authModel, null,
-        function (data) {
-            console.log(data);
+    doRequest({
+        url: '/Account/Index', method: 'POST', data: authModel, headers: null,
+        successCallback: function(data) {
+
+            $("#errorMessages").html("");
+            let successMsg = `<p class="text-success"><i class="fas fa-check-circle"></i>&nbsp; Sesión iniciada</p>`;
+            $("#errorMessages").append(successMsg);
+            $("#LoadingModal").modal('hide');
+
+            setTimeout(function () {
+                $("#ErrorMessagesModal").modal('show');
+                localStorage.setItem('user', JSON.stringify(data));
+                window.location.href = '/Dashboard/Index';
+            }, 1000);
+
         },
-        function (err) {
-            console.log(err);
+        errorCallback: function(err) {
+
+
+            $("#errorMessages").html("");
+            let errorMsg = `<p class="text-danger"><i class="fas fa-exclamation-circle"></i>&nbsp; ${err.responseText}</p>`;
+            $("#errorMessages").append(errorMsg);
+            $("#LoadingModal").modal('hide');
+            setTimeout(function () {
+                $("#ErrorMessagesModal").modal('show');
+            }, 1000);
+
+
         }
-    );
+    });
 });
 
 $("#registerBtn").on('click', function () {

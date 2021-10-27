@@ -34,6 +34,13 @@ input[type=number] {
     -moz-appearance: textfield;
 }
 
+.color-title {
+    font-weight: bolder;
+    background: -webkit-linear-gradient(#FAC827, #F8A523);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
 /* Sticky footer styles
 -------------------------------------------------- */
 html {
