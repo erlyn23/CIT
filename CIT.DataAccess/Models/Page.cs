@@ -5,22 +5,18 @@ using System.Collections.Generic;
 
 namespace CIT.DataAccess.Models
 {
-    public partial class Role
+    public partial class Page
     {
-        public Role()
+        public Page()
         {
             Rolepermissions = new HashSet<Rolepermission>();
-            Userroles = new HashSet<Userrole>();
 
             Id = Guid.NewGuid().ToString().Trim('-');
         }
 
         public string Id { get; set; }
-        public string RoleName { get; set; }
-        public string EntityInfoId { get; set; }
+        public string PageName { get; set; }
 
-        public virtual Entitiesinfo EntityInfo { get; set; }
         public virtual ICollection<Rolepermission> Rolepermissions { get; set; }
-        public virtual ICollection<Userrole> Userroles { get; set; }
     }
 }

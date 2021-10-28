@@ -7,6 +7,8 @@ using CIT.Presentation.Filters;
 using CIT.BusinessLogic.Contracts;
 using CIT.BusinessLogic.Services;
 using CIT.Dtos.Requests;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace CIT.Presentation.Controllers
 {

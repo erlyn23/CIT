@@ -25,20 +25,27 @@ namespace CIT.Presentation.Filters
 
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
-            var decodedToken = _tokenCreator.DecodeToken(context.HttpContext.Request);
-            var operation = context.HttpContext.Request.Headers["Operation"].ToString();
-            var page = context.HttpContext.Request.Headers["Page"].ToString();
+            try
+            {
+                var decodedToken = _tokenCreator.DecodeToken(context.HttpContext.Request);
+                var operation = context.HttpContext.Request.Headers["Operation"].ToString();
+                var page = context.HttpContext.Request.Headers["Page"].ToString();
 
 
-            var roleId = decodedToken.Claims.FirstOrDefault(c => c.Type.Equals("Role")).Value;
-            var userRole = await _roleService.GetRoleByIdAsync(roleId);
+                var roleId = decodedToken.Claims.FirstOrDefault(c => c.Type.Equals("Role")).Value;
+                var userRole = await _roleService.GetRoleByIdAsync(roleId);
 
-            var permission = userRole.RolePermissions.FirstOrDefault(r => r.PermissionName.Equals(operation) && r.Page.Equals(page));
+                var permission = userRole.RolePermissions.FirstOrDefault(r => r.OperationName.Equals(operation) && r.PageName.Equals(page));
 
-            if (permission != null)
-                await next();
-            else
-                context.Result = new BadRequestObjectResult("No tienes permisos para esta operación");
+                if (permission != null)
+                    await next();
+                else
+                    context.Result = new BadRequestObjectResult("No tienes permisos para esta operación");
+            }
+            catch(Exception ex)
+            {
+                context.Result = new BadRequestObjectResult(ex.ToString());
+            }
         }
 
         

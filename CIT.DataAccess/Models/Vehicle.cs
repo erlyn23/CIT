@@ -9,7 +9,8 @@ namespace CIT.DataAccess.Models
     {
         public Vehicle()
         {
-            Id = new Random().Next(0, 5043232).ToString();
+
+            Id = Guid.NewGuid().ToString().Trim('-');
         }
         public string Id { get; set; }
         public string Brand { get; set; }

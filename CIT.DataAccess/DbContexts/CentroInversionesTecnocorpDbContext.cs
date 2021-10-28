@@ -22,6 +22,8 @@ namespace CIT.DataAccess.DbContexts
         public virtual DbSet<Entitiesinfo> Entitiesinfos { get; set; }
         public virtual DbSet<Loan> Loans { get; set; }
         public virtual DbSet<Log> Logs { get; set; }
+        public virtual DbSet<Operation> Operations { get; set; }
+        public virtual DbSet<Page> Pages { get; set; }
         public virtual DbSet<Payment> Payments { get; set; }
         public virtual DbSet<Role> Roles { get; set; }
         public virtual DbSet<Rolepermission> Rolepermissions { get; set; }
@@ -29,7 +31,6 @@ namespace CIT.DataAccess.DbContexts
         public virtual DbSet<Useraddress> Useraddresses { get; set; }
         public virtual DbSet<Userrole> Userroles { get; set; }
         public virtual DbSet<Vehicle> Vehicles { get; set; }
-
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -143,6 +144,28 @@ namespace CIT.DataAccess.DbContexts
                     .HasConstraintName("Fk_Logs_Users");
             });
 
+            modelBuilder.Entity<Operation>(entity =>
+            {
+                entity.ToTable("operations");
+
+                entity.Property(e => e.Id).HasMaxLength(50);
+
+                entity.Property(e => e.OperationName)
+                    .IsRequired()
+                    .HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<Page>(entity =>
+            {
+                entity.ToTable("pages");
+
+                entity.Property(e => e.Id).HasMaxLength(50);
+
+                entity.Property(e => e.PageName)
+                    .IsRequired()
+                    .HasMaxLength(50);
+            });
+
             modelBuilder.Entity<Payment>(entity =>
             {
                 entity.HasKey(e => new { e.Id, e.UserId, e.LoanId })
@@ -211,30 +234,45 @@ namespace CIT.DataAccess.DbContexts
                     .HasForeignKey(d => d.EntityInfoId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("Fk_Roles_EntitiesInfo");
+
             });
 
             modelBuilder.Entity<Rolepermission>(entity =>
             {
                 entity.ToTable("rolepermissions");
 
+                entity.HasIndex(e => e.PageId, "Fk_RolePermission_Pages");
+
                 entity.HasIndex(e => e.RoleId, "Fk_RolePermissions_Roles");
 
-                entity.HasIndex(e => e.PermissionName, "PermissionName")
+                entity.HasIndex(e => e.OperationId, "PermissionName")
                     .IsUnique();
 
                 entity.Property(e => e.Id).HasMaxLength(50);
 
-                entity.Property(e => e.Page)
-                    .IsRequired()
-                    .HasMaxLength(50);
-
-                entity.Property(e => e.PermissionName)
+                entity.Property(e => e.OperationId)
                     .IsRequired()
                     .HasMaxLength(30);
+
+                entity.Property(e => e.PageId)
+                    .IsRequired()
+                    .HasMaxLength(50);
 
                 entity.Property(e => e.RoleId)
                     .IsRequired()
                     .HasMaxLength(50);
+
+                entity.HasOne(d => d.Operation)
+                    .WithOne(p => p.Rolepermission)
+                    .HasForeignKey<Rolepermission>(d => d.OperationId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("Fk_RolePermissions_Operations");
+
+                entity.HasOne(d => d.Page)
+                    .WithMany(p => p.Rolepermissions)
+                    .HasForeignKey(d => d.PageId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("Fk_RolePermission_Pages");
 
                 entity.HasOne(d => d.Role)
                     .WithMany(p => p.Rolepermissions)
@@ -338,8 +376,7 @@ namespace CIT.DataAccess.DbContexts
 
                 entity.HasIndex(e => e.EntityInfoId, "Fk_UserRoles_EntitiesInfo");
 
-                entity.HasIndex(e => e.RoleId, "RoleId")
-                    .IsUnique();
+                entity.HasIndex(e => e.RoleId, "RoleId");
 
                 entity.HasIndex(e => e.UserId, "UserId")
                     .IsUnique();
@@ -361,8 +398,8 @@ namespace CIT.DataAccess.DbContexts
                     .HasConstraintName("Fk_UserRoles_EntitiesInfo");
 
                 entity.HasOne(d => d.Role)
-                    .WithOne(p => p.Userrole)
-                    .HasForeignKey<Userrole>(d => d.RoleId)
+                    .WithMany(p => p.Userroles)
+                    .HasForeignKey(d => d.RoleId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("Fk_UserRoles_RoleId");
 

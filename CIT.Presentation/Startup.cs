@@ -68,7 +68,10 @@ namespace CIT.Presentation
             services.AddScoped<IRoleRepository, RoleRepository>();
             services.AddScoped<IRoleService, RoleService>();
             services.AddScoped<IUserRoleRepository, UserRoleRepository>();
+            services.AddScoped<IRolePermissionRepository, RolePermissionRepository>();
             services.AddScoped<IEntitesInfoRepository, EntitiesInfoRepository>();
+            services.AddScoped<IPageRepository, PageRepository>();
+            services.AddScoped<IOperationRepository, OperationRepository>();
             services.AddScoped<IEntitiesInfoService, EntitiesInfoService>();
         }
 
@@ -90,9 +93,9 @@ namespace CIT.Presentation
 
             app.UseRouting();
 
-            app.UseAuthorization();
-
             app.UseAuthentication();
+
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

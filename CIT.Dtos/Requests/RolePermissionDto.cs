@@ -10,7 +10,9 @@ namespace CIT.Dtos.Requests
     {
         public string Id { get; set; }
         public string RoleId { get; set; }
-        public string PermissionName { get; set; }
-        public string Page { get; set; }
+        public string OperationId { get; set; }
+        public string OperationName { get; set; }
+        public string PageId { get; set; }
+        public string PageName { get; set; }
     }
 }

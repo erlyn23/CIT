@@ -35,14 +35,20 @@ namespace CIT.DataAccess.Repositories
         public void Delete(T entity) =>
             _dbContext.Set<T>().Remove(entity);
 
-        public async Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> expression) =>
-            await _dbContext.Set<T>().Where(expression).FirstOrDefaultAsync();
+        public async Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> expression)
+        {
+            return await _dbContext.Set<T>().Where(expression).FirstOrDefaultAsync();
+        }
 
-        public async Task<List<T>> GetAllAsync() =>
-            await _dbContext.Set<T>().ToListAsync();
+        public async Task<List<T>> GetAllAsync()
+        {
+            return await _dbContext.Set<T>().ToListAsync();
+        }
 
-        public async Task<List<T>> GetAllWithFilterAsync(Expression<Func<T, bool>> expression) =>
-            await _dbContext.Set<T>().Where(expression).ToListAsync();
+        public async Task<List<T>> GetAllWithFilterAsync(Expression<Func<T, bool>> expression)
+        {
+            return await _dbContext.Set<T>().Where(expression).ToListAsync();
+        }
 
         public T Update(T entity)
         {

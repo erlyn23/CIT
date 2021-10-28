@@ -1,4 +1,6 @@
 ﻿using CIT.Presentation.Filters;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -13,6 +15,7 @@ namespace CIT.Presentation.Controllers
         {
             return View();
         }
+
 
         [ServiceFilter(typeof(AuthFilter))]
         [HttpGet]

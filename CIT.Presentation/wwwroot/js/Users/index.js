@@ -1,11 +1,13 @@
-﻿$.ajax({
+﻿const token = `Bearer ${JSON.parse(localStorage.getItem('user'))?.token}`;
+
+$.ajax({
     url: '/Users/GetNumbers',
     method: 'GET',
     headers: {
         'content-type': 'application/json',
+        'Authorization': token,
         'Page': 'Users',
         'Operation': 'List',
-        'Authorization': `Bearer ${JSON.parse(localStorage.getItem('user'))?.token}`
     },
     success: function (data) {
         console.log(data);

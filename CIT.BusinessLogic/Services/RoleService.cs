@@ -13,10 +13,16 @@ namespace CIT.BusinessLogic.Services
     public class RoleService : IRoleService
     {
         private readonly IRoleRepository _roleRepository;
+        private readonly IRolePermissionRepository _rolePermissionRepository;
+        private readonly IOperationRepository _operationRepository;
+        private readonly IPageRepository _pageRepository;
 
-        public RoleService(IRoleRepository roleRepository)
+        public RoleService(IRoleRepository roleRepository, IRolePermissionRepository rolePermissionRepository, IPageRepository pageRepository, IOperationRepository operationRepository)
         {
             _roleRepository = roleRepository;
+            _rolePermissionRepository = rolePermissionRepository;
+            _operationRepository = operationRepository;
+            _pageRepository = pageRepository;
         }
         public async Task<RoleDto> CreateRoleAsync(RoleDto role)
         {
@@ -43,43 +49,45 @@ namespace CIT.BusinessLogic.Services
 
         public async Task<RoleDto> GetRoleByIdAsync(string roleId)
         {
-            var role = await _roleRepository.GetRoleWithRelationAsync(r => r.Id.Equals(roleId));
-            var rolePermissions = role.Rolepermissions.Select(r => new RolePermissionDto()
-            {
-                Id = r.Id,
-                RoleId = r.RoleId,
-                Page = r.Page,
-                PermissionName = r.PermissionName
-            }).ToList();
-            var roleDto = new RoleDto()
-            {
-                RoleId = role.Id,
-                Role = role.RoleName,
-                RolePermissions = rolePermissions
-            };
+            var role = await _roleRepository.FirstOrDefaultAsync(r => r.Id.Equals(roleId));
+            var roleDto = await MapRoleAsync(role);
             return roleDto;
         }
 
         public async Task<RoleDto> GetRoleByNameAsync(string roleName)
         {
-            var role = await _roleRepository.GetRoleWithRelationAsync(r => r.RoleName.Equals(roleName));
-            var roleDto = new RoleDto()
-            {
-                RoleId = role.Id,
-                Role = role.RoleName
-            };
+            var role = await _roleRepository.FirstOrDefaultAsync(r => r.RoleName.Equals(roleName));
+            var roleDto = await MapRoleAsync(role);
             return roleDto;
         }
 
         public async Task<List<RoleDto>> GetRolesAsync()
         {
-            var roles = await _roleRepository.GetRolesWithRelationsAsync();
-            var rolesDto = roles.Select(r => new RoleDto()
-            {
-                RoleId = r.Id,
-                Role = r.RoleName
-            }).ToList();
+            var roles = await _roleRepository.GetAllAsync();
+            var rolesDto = roles.Select(r => MapRoleAsync(r).Result).ToList();
             return rolesDto;
+        }
+
+        private async Task<RoleDto> MapRoleAsync(Role role)
+        {
+            var rolePermissions = await _rolePermissionRepository.GetAllWithFilterAsync(r => r.RoleId.Equals(role.Id));
+            var pages = await _pageRepository.GetAllAsync();
+            var operations = await _operationRepository.GetAllAsync();
+            var roleDto = new RoleDto()
+            {
+                RoleId = role.Id,
+                Role = role.RoleName,
+                RolePermissions = rolePermissions.Select(r => new RolePermissionDto() 
+                { 
+                    Id = r.Id,
+                    RoleId = r.RoleId,
+                    OperationName = operations.Where(o => o.Id.Equals(r.OperationId)).FirstOrDefault().OperationName,
+                    OperationId = operations.Where(o => o.Id.Equals(r.OperationId)).FirstOrDefault().Id,
+                    PageId = pages.Where(p => p.Id.Equals(r.PageId)).FirstOrDefault().Id,
+                    PageName = pages.Where(p => p.Id.Equals(r.PageId)).FirstOrDefault().PageName
+                }).ToList()
+            };
+            return roleDto;
         }
 
         public async Task<RoleDto> UpdateRoleAsync(RoleDto role)

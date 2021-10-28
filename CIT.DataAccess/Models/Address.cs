@@ -10,7 +10,7 @@ namespace CIT.DataAccess.Models
         public Address()
         {
             Useraddresses = new HashSet<Useraddress>();
-            Id = new Random().Next(0, 5043232).ToString();
+            Id = Guid.NewGuid().ToString().Trim('-');
         }
 
         public string Id { get; set; }
