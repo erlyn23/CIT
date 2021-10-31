@@ -13,18 +13,15 @@ namespace CIT.BusinessLogic.Services
     public class RoleService : IRoleService
     {
         private readonly IRoleRepository _roleRepository;
-        private readonly IRolePermissionRepository _rolePermissionRepository;
-        private readonly IOperationRepository _operationRepository;
-        private readonly IPageRepository _pageRepository;
         private readonly IEntitiesInfoService _entitiesInfoService;
+        private readonly IRolePermissionService _rolePermissionService;
 
-        public RoleService(IRoleRepository roleRepository, IRolePermissionRepository rolePermissionRepository, IPageRepository pageRepository, IOperationRepository operationRepository, IEntitiesInfoService entitiesInfoService)
+        public RoleService(IRoleRepository roleRepository, IEntitiesInfoService entitiesInfoService,
+            IRolePermissionService rolePermissionService)
         {
             _roleRepository = roleRepository;
-            _rolePermissionRepository = rolePermissionRepository;
-            _operationRepository = operationRepository;
-            _pageRepository = pageRepository;
             _entitiesInfoService = entitiesInfoService;
+            _rolePermissionService = rolePermissionService;
         }
 
         public async Task<RoleDto> CreateRoleAsync(RoleDto role)
@@ -46,31 +43,14 @@ namespace CIT.BusinessLogic.Services
 
             var savedRole = await _roleRepository.AddAsync(roleEntity);
 
-            if (role.RolePermissions.Count() > 0)
-                await SaveRolePermissionsAsync(role, roleEntity.Id);
+            await _roleRepository.SaveChangesAsync();
 
-            await _rolePermissionRepository.SaveChangesAsync();
+            if (role.RolePermissions.Count() > 0)
+                await _rolePermissionService.AddRolePermissionsAsync(role.RolePermissions, roleEntity.Id);
+
 
             role.RoleId = savedRole.Id;
             return role;
-        }
-
-        private async Task SaveRolePermissionsAsync(RoleDto role, int roleId)
-        {
-            var rolePermissionsResult = new List<Rolepermission>();
-
-            foreach (var rolePermission in role.RolePermissions)
-            {
-                var permission = new Rolepermission()
-                {
-                    OperationId = rolePermission.OperationId,
-                    PageId = rolePermission.PageId,
-                    RoleId = roleId
-                };
-                rolePermissionsResult.Add(permission);
-            }
-
-            await _rolePermissionRepository.AddRangeAsync(rolePermissionsResult.ToArray());
         }
 
         public async Task DeleteRoleAsync(int roleId)
@@ -108,23 +88,13 @@ namespace CIT.BusinessLogic.Services
 
         private async Task<RoleDto> MapRoleAsync(Role role)
         {
-            var rolePermissions = await _rolePermissionRepository.GetAllWithFilterAsync(r => r.RoleId == role.Id);
-            var pages = await _pageRepository.GetAllAsync();
-            var operations = await _operationRepository.GetAllAsync();
+            var rolePermissions = await _rolePermissionService.GetRolePermissionsAsync(role.Id);
             var entityinfo = await _entitiesInfoService.GetEntityInfoAsync(role.EntityInfoId);
             var roleDto = new RoleDto()
             {
                 RoleId = role.Id,
                 Role = role.RoleName,
-                RolePermissions = rolePermissions.Select(r => new RolePermissionDto() 
-                { 
-                    Id = r.Id,
-                    RoleId = r.RoleId,
-                    OperationName = operations.Where(o => o.Id.Equals(r.OperationId)).FirstOrDefault().OperationName,
-                    OperationId = operations.Where(o => o.Id.Equals(r.OperationId)).FirstOrDefault().Id,
-                    PageId = pages.Where(p => p.Id.Equals(r.PageId)).FirstOrDefault().Id,
-                    PageName = pages.Where(p => p.Id.Equals(r.PageId)).FirstOrDefault().PageName
-                }).ToList(),
+                RolePermissions = rolePermissions,
                 EntityInfo = new EntityInfoDto()
                 {
                     CreatedAt = entityinfo.CreatedAt,

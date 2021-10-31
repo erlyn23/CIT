@@ -26,7 +26,7 @@ namespace CIT.DataAccess.Repositories
             return entity;
         }
 
-        public async Task<List<T>> AddRangeAsync(T[] entities)
+        public async Task<List<T>> AddRangeAsync(List<T> entities)
         {
             await _dbContext.Set<T>().AddRangeAsync(entities);
             return entities.ToList();

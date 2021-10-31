@@ -13,7 +13,7 @@ namespace CIT.DataAccess.Contracts
         Task<List<T>> GetAllWithFilterAsync(Expression<Func<T, bool>> expression);
         Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> expression);
         Task<T> AddAsync(T entity);
-        Task<List<T>> AddRangeAsync(T[] entities);
+        Task<List<T>> AddRangeAsync(List<T> entities);
         T Update(T entity);
         void Delete(T entity);
         Task<bool> SaveChangesAsync();

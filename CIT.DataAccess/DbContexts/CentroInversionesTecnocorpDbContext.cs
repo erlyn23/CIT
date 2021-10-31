@@ -241,6 +241,8 @@ namespace CIT.DataAccess.DbContexts
 
                 entity.HasIndex(e => e.OperationId, "Fk_RolePermissions_Operations");
 
+                entity.HasKey(e => new { e.Id, e.OperationId, e.PageId }).HasName("PRIMARY");
+
                 entity.Property(e => e.Id).HasColumnType("int").UseMySqlIdentityColumn();
 
                 entity.Property(e => e.OperationId)
@@ -253,8 +255,8 @@ namespace CIT.DataAccess.DbContexts
                     .IsRequired().HasColumnType("int");
 
                 entity.HasOne(d => d.Operation)
-                    .WithOne(p => p.Rolepermission)
-                    .HasForeignKey<Rolepermission>(d => d.OperationId)
+                    .WithMany(p => p.Rolepermissions)
+                    .HasForeignKey(d => d.OperationId)
                     .OnDelete(DeleteBehavior.NoAction)
                     .HasConstraintName("Fk_RolePermissions_Operations");
 

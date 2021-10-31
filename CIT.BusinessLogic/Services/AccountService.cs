@@ -66,6 +66,8 @@ namespace CIT.BusinessLogic.Services
             if (!string.IsNullOrEmpty(userDto.Photo))
                 userEntity.Photo = await UploadProfilePhotoAsync(userDto.Photo, userEntity.Id);
 
+            await _userRepository.SaveChangesAsync();
+
             var rolePermissions = await SetAdminRolePermissions();
             var administratorRole = await _roleService.GetRoleByNameAsync("Administrador");
             var savedRoleId = (administratorRole != null) ? administratorRole.RoleId : 0;
@@ -88,7 +90,7 @@ namespace CIT.BusinessLogic.Services
                 EntityInfoId = entitiesInfo.Id
             };
             await _userRoleRepository.AddAsync(userRole);
-            await _userRepository.SaveChangesAsync();
+            await _userRoleRepository.SaveChangesAsync();
 
 
             return new AccountResponse()

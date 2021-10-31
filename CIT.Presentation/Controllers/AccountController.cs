@@ -51,6 +51,9 @@ namespace CIT.Presentation.Controllers
             }
             catch(Exception ex)
             {
+                if(ex.InnerException != null)
+                    return BadRequest(ex.InnerException.Message);
+
                 return BadRequest(ex.Message);
             }
         }

@@ -21,6 +21,7 @@ namespace CIT.BusinessLogic.Services
         public async Task<Entitiesinfo> AddEntityInfoAsync(Entitiesinfo entitesInfo)
         {
             var savedEntityInfo = await _entitiesInfoRepository.AddAsync(entitesInfo);
+            await _entitiesInfoRepository.SaveChangesAsync();
             return savedEntityInfo;
         }
 

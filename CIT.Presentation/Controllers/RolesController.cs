@@ -48,7 +48,7 @@ namespace CIT.Presentation.Controllers
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [ServiceFilter(typeof(AuthFilter))]
         [HttpDelete("{roleId}")]
-        public async Task<IActionResult> DeleteRoleAsync(string roleId)
+        public async Task<IActionResult> DeleteRoleAsync(int roleId)
         {
             await _roleService.DeleteRoleAsync(roleId);
             return Json("Rol eliminado correctamente");

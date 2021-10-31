@@ -47,7 +47,10 @@ const templateRolesList = (roles) => {
         html += `<tr>
                     <td>${role.roleId}</td>
                     <td>${role.role}</td>
-                    <td><button type="button" class="btn btn-sm btn-warning" data-toggle="modal" data-target="#UpdateRoleModal"><i class="fas fa-edit"></i></button></td>
+                    <td>
+                        <button type="button" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></button>
+                        <button type="button" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                    </td>
                 </tr>`;
     });
     return html;

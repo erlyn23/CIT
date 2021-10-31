@@ -38,7 +38,7 @@ namespace CIT.Presentation
             services.AddControllersWithViews();
 
             string connectionString = Configuration.GetConnectionString("CITConnection");
-            services.AddDbContext<CentroInversionesTecnocorpDbContext>(builder=>
+            services.AddDbContext<CentroInversionesTecnocorpDbContext>(builder =>
             {
                 builder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
             });
@@ -84,6 +84,7 @@ namespace CIT.Presentation
             services.AddScoped<IEntitiesInfoService, EntitiesInfoService>();
             services.AddScoped<IPageService, PagesService>();
             services.AddScoped<IOperationService, OperationService>();
+            services.AddScoped<IRolePermissionService, RolePermissionService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

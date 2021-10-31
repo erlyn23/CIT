@@ -9,7 +9,7 @@ namespace CIT.DataAccess.Models
     {
         public int Id { get; set; }
         public int UserId { get; set; }
-        public string LoanId { get; set; }
+        public int LoanId { get; set; }
         public DateTime Date { get; set; }
         public decimal Pay { get; set; }
         public int EntityInfoId { get; set; }
