@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace CIT.Presentation.Controllers
 {
-    [ExceptionFilter]
+    [ServiceFilter(typeof(ExceptionFilter))]
     public class UsersController : Controller
     {
         private readonly IAccountService _accountService;

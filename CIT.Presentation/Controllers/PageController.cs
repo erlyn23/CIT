@@ -9,8 +9,8 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace CIT.Presentation.Controllers
-{
-    [ExceptionFilter]
+{    
+    [ServiceFilter(typeof(ExceptionFilter))]
     public class PageController : Controller
     {
         private readonly IPageService _pageService;

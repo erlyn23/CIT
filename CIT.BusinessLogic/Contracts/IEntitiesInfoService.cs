@@ -11,7 +11,7 @@ namespace CIT.BusinessLogic.Contracts
     {
         Task<Entitiesinfo> AddEntityInfoAsync(Entitiesinfo entitesInfo);
         Task<Entitiesinfo> GetEntityInfoAsync(int entityInfoId);
-        Entitiesinfo UpdateEntityInfo(Entitiesinfo entitiesInfo);
+        Task<Entitiesinfo> UpdateEntityInfo(Entitiesinfo entitiesInfo);
         Task DeleteEntityInfoAsync(int entityInfoId);
     }
 }

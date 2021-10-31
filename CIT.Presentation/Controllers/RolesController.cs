@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace CIT.Presentation.Controllers
 {
-    [ExceptionFilter]
+    [ServiceFilter(typeof(ExceptionFilter))]
     public class RolesController : Controller
     {
         private readonly IRoleService _roleService;
@@ -47,10 +47,9 @@ namespace CIT.Presentation.Controllers
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [ServiceFilter(typeof(AuthFilter))]
-        [HttpDelete("{roleId}")]
-        public async Task<IActionResult> DeleteRoleAsync(int roleId)
+        public async Task<IActionResult> DeleteRoleAsync(int id)
         {
-            await _roleService.DeleteRoleAsync(roleId);
+            await _roleService.DeleteRoleAsync(id);
             return Json("Rol eliminado correctamente");
         }
 

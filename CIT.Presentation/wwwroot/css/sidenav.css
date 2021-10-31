@@ -153,6 +153,14 @@ a {
         padding-left: calc(var(--nav-width) + 2rem)
     }
 
+    .modal{
+        width: 100% !important;
+    }
+
+    .fade{
+        width: 100% !important;
+    }
+
     .header {
         height: calc(var(--header-height) + 1rem);
         padding: 0 2rem 0 calc(var(--nav-width) + 2rem)

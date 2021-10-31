@@ -30,9 +30,10 @@ namespace CIT.BusinessLogic.Services
             return await _entitiesInfoRepository.FirstOrDefaultAsync(e => e.Id == entityInfoId);
         }
 
-        public Entitiesinfo UpdateEntityInfo(Entitiesinfo entitiesInfo)
+        public async Task<Entitiesinfo> UpdateEntityInfo(Entitiesinfo entitiesInfo)
         {
             _entitiesInfoRepository.Update(entitiesInfo);
+            await _entitiesInfoRepository.SaveChangesAsync();
             return entitiesInfo;
         }
 
@@ -41,6 +42,8 @@ namespace CIT.BusinessLogic.Services
             var entityInfo = await _entitiesInfoRepository.FirstOrDefaultAsync(e => e.Id == entityInfoId);
             if(entityInfo != null)
                 _entitiesInfoRepository.Delete(entityInfo);
+
+            await _entitiesInfoRepository.SaveChangesAsync();
         }
     }
 }

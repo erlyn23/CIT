@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc.Filters;
+﻿using CIT.BusinessLogic.Contracts;
+using CIT.Dtos.Requests;
+using CIT.Tools;
+using Microsoft.AspNetCore.Mvc.Filters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,9 +13,17 @@ namespace CIT.Presentation.Filters
 {
     public class ExceptionFilter : ExceptionFilterAttribute
     {
-        public override void OnException(ExceptionContext context)
+        private readonly ILogService _logService;
+        private readonly TokenCreator _tokenCreator;
+
+        public ExceptionFilter(ILogService logService, TokenCreator tokenCreator)
         {
-            //TODO: Guardar los errores en la tabla de logs y mostrar al usuario solamente que se ha ocurrido un error.
+            _logService = logService;
+            _tokenCreator = tokenCreator;
+        }
+
+        public override async Task OnExceptionAsync(ExceptionContext context)
+        {
             var stringBuilder = new StringBuilder();
             stringBuilder.AppendLine(context.Exception.Message);
             stringBuilder.AppendLine(context.Exception.StackTrace);
@@ -22,7 +33,18 @@ namespace CIT.Presentation.Filters
                 stringBuilder.AppendLine(context.Exception.InnerException.StackTrace);
             }
 
-            context.Result = new Microsoft.AspNetCore.Mvc.BadRequestObjectResult(stringBuilder.ToString());
+            var userId = _tokenCreator.DecodeToken(context.HttpContext.Request).Claims.FirstOrDefault(c => c.Type.ToLower().Equals("nameid")).Value;
+
+            var logDto = new LogDto()
+            {
+                Operation = context.HttpContext.Request.Headers["Operation"],
+                UserId = int.Parse(userId),
+                ResultMessageOrObject = stringBuilder.ToString(),
+                LogDate = DateTime.UtcNow
+            };
+            await _logService.SaveLogAsync(logDto);
+
+            context.Result = new Microsoft.AspNetCore.Mvc.BadRequestObjectResult("Ha ocurrido un error al ejecutar la operación, pídele a tu administrador que revise los registros de errores");
             
         }
     }

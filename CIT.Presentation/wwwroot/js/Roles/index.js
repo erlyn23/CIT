@@ -2,6 +2,7 @@
 let pages = [];
 let operations = [];
 
+if (!localStorage.getItem('user')) window.href.location = '/Account/Index';
 
 const appHeaders = {
     'content-type': 'application/json',
@@ -49,11 +50,33 @@ const templateRolesList = (roles) => {
                     <td>${role.role}</td>
                     <td>
                         <button type="button" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></button>
-                        <button type="button" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                        <button type="button" class="btn btn-sm btn-danger" onclick="deleteRole(${role.roleId})"><i class="fas fa-trash"></i></button>
                     </td>
                 </tr>`;
     });
     return html;
+}
+
+const deleteRole = function (roleId) {
+    $("#DeleteConfirmRoleModal").modal('show');
+    $("#roleId").val(roleId);
+
+    $("#deleteRoleBtn").on('click', function () {
+        doRequest(
+            {
+                url: '/Roles/DeleteRole/' + roleId,
+                method: 'GET',
+                data: null,
+                headers: { ...appHeaders, 'Operation': 'Eliminar' },
+                successCallback: function (data) {
+                    $("#DeleteConfirmRoleModal").modal('hide');
+                    alert(data);
+                    getRoles();
+                },
+                errorCallback: function (error) { onError(error) }
+            }
+        );
+    });
 }
 
 getRoles();
@@ -167,4 +190,8 @@ const onError = function (error) {
     console.log(error);
     $("#errorMessage").removeClass('d-none');
     $("#errorMessage").html("<p>" + error.responseText + "</p>");
+
+    setTimeout(function () {
+        $("#errorMessage").html("");
+    }, 5000);
 }

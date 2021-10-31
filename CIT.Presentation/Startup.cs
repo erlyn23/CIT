@@ -71,20 +71,24 @@ namespace CIT.Presentation
 
             //Dependency Injections
             services.AddScoped<AuthFilter>();
+            services.AddScoped<ExceptionFilter>();
+            services.AddTransient<TokenCreator>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IAccountService, AccountService>();
-            services.AddTransient<TokenCreator>();
             services.AddScoped<IRoleRepository, RoleRepository>();
             services.AddScoped<IRoleService, RoleService>();
             services.AddScoped<IUserRoleRepository, UserRoleRepository>();
             services.AddScoped<IRolePermissionRepository, RolePermissionRepository>();
-            services.AddScoped<IEntitesInfoRepository, EntitiesInfoRepository>();
-            services.AddScoped<IPageRepository, PageRepository>();
-            services.AddScoped<IOperationRepository, OperationRepository>();
-            services.AddScoped<IEntitiesInfoService, EntitiesInfoService>();
-            services.AddScoped<IPageService, PagesService>();
-            services.AddScoped<IOperationService, OperationService>();
             services.AddScoped<IRolePermissionService, RolePermissionService>();
+            services.AddScoped<IEntitesInfoRepository, EntitiesInfoRepository>();
+            services.AddScoped<IEntitiesInfoService, EntitiesInfoService>();
+            services.AddScoped<IPageRepository, PageRepository>();
+            services.AddScoped<IPageService, PagesService>();
+            services.AddScoped<IOperationRepository, OperationRepository>();
+            services.AddScoped<IOperationService, OperationService>();
+            services.AddScoped<IUserRoleService, UserRoleService>();
+            services.AddScoped<ILogRepository, LogRepository>();
+            services.AddScoped<ILogService, LogService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -9,8 +9,8 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace CIT.Presentation.Controllers
-{
-    [ExceptionFilter]
+{    
+    [ServiceFilter(typeof(ExceptionFilter))]
     public class OperationController : Controller
     {
         private readonly IOperationService _operationService;

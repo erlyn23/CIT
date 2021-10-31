@@ -1,0 +1,33 @@
+﻿<div class="modal fade" id="DeleteConfirmRoleModal" tabindex="-1" aria-labelledby="DeleteConfirmRoleModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmar Eliminar</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">
+                    <span></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <input type="hidden" id="roleId">
+                        <p>¿Estás seguro/a de querer eliminar este rol? Esto tiene implicaciones delicadas como las siguientes: </p>
+                        <ol type="1">
+                            <li>Los usuarios que tengan asignados un rol, perderán los permisos y accesos que tengan dentro del sistema</li>
+                            <li>Los permisos de las páginas y las páginas que estén asociadas a este rol van a dejar de existir</li>
+                        </ol>
+                        <p>Si estás de acuerdo persona aceptar, si se trata de un error presiona cancelar.</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 offset-2">
+                        <button class="btn btn-danger" id="deleteRoleBtn">Confirmar</button>
+                    </div>
+                    <div class="col-md-4">
+                        <button class="btn btn-success" data-dismiss="modal">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

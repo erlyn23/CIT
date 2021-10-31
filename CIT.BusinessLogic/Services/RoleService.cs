@@ -15,13 +15,15 @@ namespace CIT.BusinessLogic.Services
         private readonly IRoleRepository _roleRepository;
         private readonly IEntitiesInfoService _entitiesInfoService;
         private readonly IRolePermissionService _rolePermissionService;
+        private readonly IUserRoleService _userRoleService;
 
         public RoleService(IRoleRepository roleRepository, IEntitiesInfoService entitiesInfoService,
-            IRolePermissionService rolePermissionService)
+            IRolePermissionService rolePermissionService, IUserRoleService userRoleService)
         {
             _roleRepository = roleRepository;
             _entitiesInfoService = entitiesInfoService;
             _rolePermissionService = rolePermissionService;
+            _userRoleService = userRoleService;
         }
 
         public async Task<RoleDto> CreateRoleAsync(RoleDto role)
@@ -58,8 +60,10 @@ namespace CIT.BusinessLogic.Services
             var role = await _roleRepository.FirstOrDefaultAsync(r => r.Id == roleId);
             if(role != null)
             {
-                await _entitiesInfoService.DeleteEntityInfoAsync(role.EntityInfoId);
+                await _rolePermissionService.DeleteRolePermissionsByRoleIdAsync(roleId);
+                await _userRoleService.DeleteUserRoleByRoleIdAsync(roleId);
                 _roleRepository.Delete(role);
+                await _entitiesInfoService.DeleteEntityInfoAsync(role.EntityInfoId);
             }
 
             await _roleRepository.SaveChangesAsync();
