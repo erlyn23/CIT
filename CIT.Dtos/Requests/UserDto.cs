@@ -11,7 +11,7 @@ namespace CIT.Dtos.Requests
 {
     public class UserDto
     {
-        public string Id { get; set; }
+        public int Id { get; set; }
         [Required(ErrorMessage = "Debes escribir tu nombre")]
         public string Name { get; set; }
         [Required(ErrorMessage = "Debes escribir tu apellido")]

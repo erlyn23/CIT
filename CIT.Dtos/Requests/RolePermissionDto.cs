@@ -9,13 +9,13 @@ namespace CIT.Dtos.Requests
 {
     public class RolePermissionDto
     {
-        public string Id { get; set; }
-        public string RoleId { get; set; }
+        public int Id { get; set; }
+        public int RoleId { get; set; }
         [Required(ErrorMessage = "Debes seleccionar una operación")]
-        public string OperationId { get; set; }
+        public int OperationId { get; set; }
         public string OperationName { get; set; }
         [Required(ErrorMessage = "Debes seleccionar una página")]
-        public string PageId { get; set; }
+        public int PageId { get; set; }
         public string PageName { get; set; }
     }
 }

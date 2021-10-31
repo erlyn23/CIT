@@ -55,7 +55,7 @@ namespace CIT.BusinessLogic.Services
             return role;
         }
 
-        private async Task SaveRolePermissionsAsync(RoleDto role, string roleId)
+        private async Task SaveRolePermissionsAsync(RoleDto role, int roleId)
         {
             var rolePermissionsResult = new List<Rolepermission>();
 
@@ -73,9 +73,9 @@ namespace CIT.BusinessLogic.Services
             await _rolePermissionRepository.AddRangeAsync(rolePermissionsResult.ToArray());
         }
 
-        public async Task DeleteRoleAsync(string roleId)
+        public async Task DeleteRoleAsync(int roleId)
         {
-            var role = await _roleRepository.FirstOrDefaultAsync(r => r.Id.Equals(roleId));
+            var role = await _roleRepository.FirstOrDefaultAsync(r => r.Id == roleId);
             if(role != null)
             {
                 await _entitiesInfoService.DeleteEntityInfoAsync(role.EntityInfoId);
@@ -85,9 +85,9 @@ namespace CIT.BusinessLogic.Services
             await _roleRepository.SaveChangesAsync();
         }
 
-        public async Task<RoleDto> GetRoleByIdAsync(string roleId)
+        public async Task<RoleDto> GetRoleByIdAsync(int roleId)
         {
-            var role = await _roleRepository.FirstOrDefaultAsync(r => r.Id.Equals(roleId));
+            var role = await _roleRepository.FirstOrDefaultAsync(r => r.Id == roleId);
             var roleDto = await MapRoleAsync(role);
             return roleDto;
         }
@@ -108,7 +108,7 @@ namespace CIT.BusinessLogic.Services
 
         private async Task<RoleDto> MapRoleAsync(Role role)
         {
-            var rolePermissions = await _rolePermissionRepository.GetAllWithFilterAsync(r => r.RoleId.Equals(role.Id));
+            var rolePermissions = await _rolePermissionRepository.GetAllWithFilterAsync(r => r.RoleId == role.Id);
             var pages = await _pageRepository.GetAllAsync();
             var operations = await _operationRepository.GetAllAsync();
             var entityinfo = await _entitiesInfoService.GetEntityInfoAsync(role.EntityInfoId);
@@ -137,7 +137,7 @@ namespace CIT.BusinessLogic.Services
 
         public async Task<RoleDto> UpdateRoleAsync(RoleDto role)
         {
-            var roleEntity = await _roleRepository.FirstOrDefaultAsync(r => r.Id.Equals(role.RoleId));
+            var roleEntity = await _roleRepository.FirstOrDefaultAsync(r => r.Id == role.RoleId);
 
             if (roleEntity != null)
             {

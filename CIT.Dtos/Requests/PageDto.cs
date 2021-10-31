@@ -8,7 +8,7 @@ namespace CIT.Dtos.Requests
 {
     public class PageDto
     {
-        public string PageId { get; set; }
+        public int PageId { get; set; }
         public string PageName { get; set; }
     }
 }

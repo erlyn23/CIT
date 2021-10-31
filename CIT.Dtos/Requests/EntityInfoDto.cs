@@ -8,7 +8,7 @@ namespace CIT.Dtos.Requests
 {
     public class EntityInfoDto
     {
-        public string Id { get; set; }
+        public int Id { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public short Status { get; set; }

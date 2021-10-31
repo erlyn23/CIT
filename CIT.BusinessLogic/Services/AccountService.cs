@@ -68,7 +68,7 @@ namespace CIT.BusinessLogic.Services
 
             var rolePermissions = await SetAdminRolePermissions();
             var administratorRole = await _roleService.GetRoleByNameAsync("Administrador");
-            var savedRoleId = (administratorRole != null) ? administratorRole.RoleId : string.Empty;
+            var savedRoleId = (administratorRole != null) ? administratorRole.RoleId : 0;
             if (administratorRole == null)
             {
                 administratorRole = new RoleDto()
@@ -98,13 +98,13 @@ namespace CIT.BusinessLogic.Services
             };
         }
 
-        private async Task<string> UploadProfilePhotoAsync(string photo, string userId)
+        private async Task<string> UploadProfilePhotoAsync(string photo, int userId)
         {
             string imagePath = $"{Environment.CurrentDirectory}/ProfilePhotos";
             string[] imageSplitted = photo.Split(',');
             byte[] imageInBytes = Convert.FromBase64String(imageSplitted[1]);
 
-            string fileName = $"profile_photo_{userId.Trim('-')}.jpg";
+            string fileName = $"profile_photo_{userId}.jpg";
             string path = Path.Combine(imagePath, fileName);
 
 

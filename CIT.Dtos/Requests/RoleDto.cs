@@ -9,7 +9,7 @@ namespace CIT.Dtos.Requests
 {
     public class RoleDto
     {
-        public string RoleId { get; set; }
+        public int RoleId { get; set; }
         [Required(ErrorMessage = "Debes escribir un rol")]
         public string Role { get; set; }
         public List<RolePermissionDto> RolePermissions { get; set; }
