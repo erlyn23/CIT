@@ -7,16 +7,12 @@ namespace CIT.DataAccess.Models
 {
     public partial class Payment
     {
-        public Payment()
-        {
-            Id = Guid.NewGuid().ToString().Trim('-');
-        }
-        public string Id { get; set; }
-        public string UserId { get; set; }
+        public int Id { get; set; }
+        public int UserId { get; set; }
         public string LoanId { get; set; }
         public DateTime Date { get; set; }
         public decimal Pay { get; set; }
-        public string EntityInfoId { get; set; }
+        public int EntityInfoId { get; set; }
 
         public virtual Entitiesinfo EntityInfo { get; set; }
         public virtual Loan Loan { get; set; }

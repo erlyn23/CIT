@@ -16,33 +16,71 @@ namespace CIT.BusinessLogic.Services
         private readonly IRolePermissionRepository _rolePermissionRepository;
         private readonly IOperationRepository _operationRepository;
         private readonly IPageRepository _pageRepository;
+        private readonly IEntitiesInfoService _entitiesInfoService;
 
-        public RoleService(IRoleRepository roleRepository, IRolePermissionRepository rolePermissionRepository, IPageRepository pageRepository, IOperationRepository operationRepository)
+        public RoleService(IRoleRepository roleRepository, IRolePermissionRepository rolePermissionRepository, IPageRepository pageRepository, IOperationRepository operationRepository, IEntitiesInfoService entitiesInfoService)
         {
             _roleRepository = roleRepository;
             _rolePermissionRepository = rolePermissionRepository;
             _operationRepository = operationRepository;
             _pageRepository = pageRepository;
+            _entitiesInfoService = entitiesInfoService;
         }
+
         public async Task<RoleDto> CreateRoleAsync(RoleDto role)
         {
+            var entityInfo = new Entitiesinfo()
+            {
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now,
+                Status = 1
+            };
+
+            await _entitiesInfoService.AddEntityInfoAsync(entityInfo);
+
             var roleEntity = new Role()
             {
-                RoleName = role.Role
+                RoleName = role.Role,
+                EntityInfoId = entityInfo.Id
             };
 
             var savedRole = await _roleRepository.AddAsync(roleEntity);
-            await _roleRepository.SaveChangesAsync();
+
+            if (role.RolePermissions.Count() > 0)
+                await SaveRolePermissionsAsync(role, roleEntity.Id);
+
+            await _rolePermissionRepository.SaveChangesAsync();
 
             role.RoleId = savedRole.Id;
             return role;
+        }
+
+        private async Task SaveRolePermissionsAsync(RoleDto role, string roleId)
+        {
+            var rolePermissionsResult = new List<Rolepermission>();
+
+            foreach (var rolePermission in role.RolePermissions)
+            {
+                var permission = new Rolepermission()
+                {
+                    OperationId = rolePermission.OperationId,
+                    PageId = rolePermission.PageId,
+                    RoleId = roleId
+                };
+                rolePermissionsResult.Add(permission);
+            }
+
+            await _rolePermissionRepository.AddRangeAsync(rolePermissionsResult.ToArray());
         }
 
         public async Task DeleteRoleAsync(string roleId)
         {
             var role = await _roleRepository.FirstOrDefaultAsync(r => r.Id.Equals(roleId));
             if(role != null)
+            {
+                await _entitiesInfoService.DeleteEntityInfoAsync(role.EntityInfoId);
                 _roleRepository.Delete(role);
+            }
 
             await _roleRepository.SaveChangesAsync();
         }
@@ -57,7 +95,7 @@ namespace CIT.BusinessLogic.Services
         public async Task<RoleDto> GetRoleByNameAsync(string roleName)
         {
             var role = await _roleRepository.FirstOrDefaultAsync(r => r.RoleName.Equals(roleName));
-            var roleDto = await MapRoleAsync(role);
+            var roleDto = (role != null) ? await MapRoleAsync(role) : null;
             return roleDto;
         }
 
@@ -73,6 +111,7 @@ namespace CIT.BusinessLogic.Services
             var rolePermissions = await _rolePermissionRepository.GetAllWithFilterAsync(r => r.RoleId.Equals(role.Id));
             var pages = await _pageRepository.GetAllAsync();
             var operations = await _operationRepository.GetAllAsync();
+            var entityinfo = await _entitiesInfoService.GetEntityInfoAsync(role.EntityInfoId);
             var roleDto = new RoleDto()
             {
                 RoleId = role.Id,
@@ -85,19 +124,33 @@ namespace CIT.BusinessLogic.Services
                     OperationId = operations.Where(o => o.Id.Equals(r.OperationId)).FirstOrDefault().Id,
                     PageId = pages.Where(p => p.Id.Equals(r.PageId)).FirstOrDefault().Id,
                     PageName = pages.Where(p => p.Id.Equals(r.PageId)).FirstOrDefault().PageName
-                }).ToList()
+                }).ToList(),
+                EntityInfo = new EntityInfoDto()
+                {
+                    CreatedAt = entityinfo.CreatedAt,
+                    UpdatedAt = entityinfo.UpdatedAt,
+                    Status = entityinfo.Status
+                }
             };
             return roleDto;
         }
 
         public async Task<RoleDto> UpdateRoleAsync(RoleDto role)
         {
-            var roleEntity = new Role()
+            var roleEntity = await _roleRepository.FirstOrDefaultAsync(r => r.Id.Equals(role.RoleId));
+
+            if (roleEntity != null)
             {
-                Id = role.RoleId,
-                RoleName = role.Role
-            };
-            _roleRepository.Update(roleEntity);
+                _roleRepository.Update(roleEntity);
+                var entityInfo = await _entitiesInfoService.GetEntityInfoAsync(roleEntity.EntityInfoId);
+
+                entityInfo.UpdatedAt = DateTime.Now;
+                entityInfo.Status = role.EntityInfo.Status;
+
+                _entitiesInfoService.UpdateEntityInfo(entityInfo);
+            }
+            else throw new Exception("Este rol no existe en la base de datos.");
+
             await _roleRepository.SaveChangesAsync();
             return role;
         }

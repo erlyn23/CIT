@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
     <link rel="stylesheet" href="~/css/sidenav.css" />
+    <link rel="stylesheet" href="~/paginationjs/pagination.css">
     <script src="https://kit.fontawesome.com/3d05e5b342.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
 </head>
@@ -24,7 +25,7 @@
                     <span class="nav_logo-name">SIP</span>
                 </a>
                 <div class="nav_list">
-                    <a href="#" class="nav_link active">
+                    <a class="nav_link active" asp-controller="Dashboard" asp-action="Index">
                         <i class='bx bx-grid-alt nav_icon'></i>
                         <span class="nav_name">Dashboard</span>
                     </a>
@@ -71,16 +72,18 @@
     <script src="~/lib/popper.js/umd/popper.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="~/paginationjs/pagination.js"></script>
     <script src="~/js/Common/request.js"></script>
     <script src="~/js/sidenav.js"></script>
     @if (!string.IsNullOrEmpty(ViewData["Page"].ToString()))
     {
-
-
         @switch (ViewData["Page"].ToString())
         {
             case "Users":
                 <script src="~/js/Users/index.js"></script>
+                break;
+            case "Roles":
+                <script src="~/js/Roles/index.js"></script>
                 break;
         }
     }

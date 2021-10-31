@@ -11,13 +11,11 @@ namespace CIT.DataAccess.Models
         {
             Rolepermissions = new HashSet<Rolepermission>();
             Userroles = new HashSet<Userrole>();
-
-            Id = Guid.NewGuid().ToString().Trim('-');
         }
 
-        public string Id { get; set; }
+        public int Id { get; set; }
         public string RoleName { get; set; }
-        public string EntityInfoId { get; set; }
+        public int EntityInfoId { get; set; }
 
         public virtual Entitiesinfo EntityInfo { get; set; }
         public virtual ICollection<Rolepermission> Rolepermissions { get; set; }

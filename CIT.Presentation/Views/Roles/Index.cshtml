@@ -1,0 +1,82 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+    ViewData["Page"] = "Roles";
+    Layout = "~/Views/Shared/_SystemLayout.cshtml";
+}
+
+
+<div class="row mt-5 text-center">
+    <div class="col-md-12">
+        <h3>Configuración de Roles y Permisos</h3>
+    </div>
+</div>
+
+<div class="row mt-3">
+    <div class="col-md-12">
+        <div class="card box-shadow">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-5" id="loadingRoles">
+                        <div class="spinner-grow text-dark" role="status">
+                            <span class="sr-only"></span>
+                        </div>
+                        &nbsp;<span>Obteniendo datos, por favor espere</span>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-md-12">
+                        <div class="card p-3 mb-2">
+                            <div class="text-center">
+                                <h4>Agregar nuevo rol</h4>
+                            </div>
+                            <hr>
+                            <form id="roleForm">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input type="text" id="roleName" placeholder="Nombre del rol" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <label><b>Páginas del sistema</b></label>
+                                    <div class="col-md-12 form-check-inline" id="pages">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <label> <b>Operaciones del sistema</b></label>
+                                    <div class="col-md-12 form-check-inline" id="operations">
+
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <button id="addOrUpdateRoleBtn" type="button" class="btn btn-sm btn-success">
+                                            <i class="fas fa-circle-plus"></i>
+                                            <span>Agregar rol</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12 alert alert-danger d-none" role="alert" id="errorMessage">
+                </div>
+                <table class="table table-striped table-responsive d-none" id="rolesTable">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Id</th>
+                            <th>Rol</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rolesList">
+                    </tbody>
+                </table>
+                <div id="paginator-container">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

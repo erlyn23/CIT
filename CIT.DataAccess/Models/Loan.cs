@@ -11,11 +11,9 @@ namespace CIT.DataAccess.Models
         {
             Payments = new HashSet<Payment>();
 
-
-            Id = Guid.NewGuid().ToString().Trim('-');
         }
 
-        public string Id { get; set; }
+        public int Id { get; set; }
         public int DuesQuantity { get; set; }
         public decimal TotalLoan { get; set; }
         public DateTime StartDate { get; set; }
@@ -23,7 +21,7 @@ namespace CIT.DataAccess.Models
         public int PayDay { get; set; }
         public decimal InterestRate { get; set; }
         public decimal MensualPay { get; set; }
-        public string EntityInfoId { get; set; }
+        public int EntityInfoId { get; set; }
 
         public virtual Entitiesinfo EntityInfo { get; set; }
         public virtual ICollection<Payment> Payments { get; set; }

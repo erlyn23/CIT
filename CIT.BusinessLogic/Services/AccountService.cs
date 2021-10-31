@@ -18,16 +18,20 @@ namespace CIT.BusinessLogic.Services
         private readonly IUserRepository _userRepository;
         private readonly IUserRoleRepository _userRoleRepository;
         private readonly IEntitiesInfoService _entitiesInfoService;
+        private readonly IOperationService _operationService;
+        private readonly IPageService _pageService;
         private readonly TokenCreator _tokenCreator;
-        private readonly IRoleRepository _roleRepository;
+        private readonly IRoleService _roleService;
 
-        public AccountService(IUserRepository userRepository, IRoleRepository roleRepository, IUserRoleRepository userRoleRepository, IEntitiesInfoService entitiesInfoService, TokenCreator tokenCreator)
+        public AccountService(IUserRepository userRepository, IRoleService roleService, IUserRoleRepository userRoleRepository, IEntitiesInfoService entitiesInfoService, IOperationService operationService, IPageService pageService, TokenCreator tokenCreator)
         {
             _userRepository = userRepository;
             _tokenCreator = tokenCreator;
             _userRoleRepository = userRoleRepository;
             _entitiesInfoService = entitiesInfoService;
-            _roleRepository = roleRepository;
+            _operationService = operationService;
+            _pageService = pageService;
+            _roleService = roleService;
         }
 
         public async Task<AccountResponse> RegisterUserAsync(UserDto userDto)
@@ -62,23 +66,24 @@ namespace CIT.BusinessLogic.Services
             if (!string.IsNullOrEmpty(userDto.Photo))
                 userEntity.Photo = await UploadProfilePhotoAsync(userDto.Photo, userEntity.Id);
 
-
-            var administratorRole = await _roleRepository.FirstOrDefaultAsync(r => r.RoleName.Equals("Administrador"));
-
+            var rolePermissions = await SetAdminRolePermissions();
+            var administratorRole = await _roleService.GetRoleByNameAsync("Administrador");
+            var savedRoleId = (administratorRole != null) ? administratorRole.RoleId : string.Empty;
             if (administratorRole == null)
             {
-                administratorRole = new Role()
+                administratorRole = new RoleDto()
                 {
-                    RoleName = "Administrador",
-                    EntityInfoId = entitiesInfo.Id
+                    Role = "Administrador",
+                    RolePermissions = rolePermissions
                 };
-                await _roleRepository.AddAsync(administratorRole);
+                var savedRole = await _roleService.CreateRoleAsync(administratorRole);
+                savedRoleId = savedRole.RoleId;
             }
 
 
             var userRole = new Userrole()
             {
-                RoleId = administratorRole.Id,
+                RoleId = savedRoleId,
                 UserId = userEntity.Id,
                 EntityInfoId = entitiesInfo.Id
             };
@@ -110,6 +115,29 @@ namespace CIT.BusinessLogic.Services
             }
 
             return path;
+        }
+
+
+        private async Task<List<RolePermissionDto>> SetAdminRolePermissions()
+        {
+            var operations = await _operationService.GetOperationsAsync();
+            var pages = await _pageService.GetPagesAsync();
+
+            var rolePermissions = new List<RolePermissionDto>();
+
+            foreach (var page in pages)
+            {
+                foreach (var operation in operations)
+                {
+                    rolePermissions.Add(new RolePermissionDto()
+                    {
+                        PageId = page.PageId,
+                        OperationId = operation.OperationId
+                    });
+                }
+            }
+
+            return rolePermissions;
         }
 
         public async Task<AccountResponse> SignInAsync(string email, string password)

@@ -7,15 +7,10 @@ namespace CIT.DataAccess.Models
 {
     public partial class Rolepermission
     {
-        public Rolepermission()
-        {
-
-            Id = Guid.NewGuid().ToString().Trim('-');
-        }
-        public string Id { get; set; }
-        public string RoleId { get; set; }
-        public string OperationId { get; set; }
-        public string PageId { get; set; }
+        public int Id { get; set; }
+        public int RoleId { get; set; }
+        public int OperationId { get; set; }
+        public int PageId { get; set; }
 
         public virtual Operation Operation { get; set; }
         public virtual Page Page { get; set; }

@@ -13,10 +13,9 @@ namespace CIT.DataAccess.Models
             Payments = new HashSet<Payment>();
             Useraddresses = new HashSet<Useraddress>();
 
-            Id = Guid.NewGuid().ToString().Trim('-');
         }
 
-        public string Id { get; set; }
+        public int Id { get; set; }
         public string Name { get; set; }
         public string LastName { get; set; }
         public string IdentificationDocument { get; set; }
@@ -24,7 +23,7 @@ namespace CIT.DataAccess.Models
         public string Email { get; set; }
         public string Password { get; set; }
         public string Photo { get; set; }
-        public string EntityInfoId { get; set; }
+        public int EntityInfoId { get; set; }
 
         public virtual Entitiesinfo EntityInfo { get; set; }
         public virtual Userrole Userrole { get; set; }

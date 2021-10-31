@@ -1,5 +1,4 @@
 ﻿using CIT.BusinessLogic.Contracts;
-using CIT.Dtos.Requests;
 using CIT.Presentation.Filters;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -12,18 +11,25 @@ using System.Threading.Tasks;
 namespace CIT.Presentation.Controllers
 {
     [ExceptionFilter]
-    public class UsersController : Controller
+    public class PageController : Controller
     {
-        private readonly IAccountService _accountService;
+        private readonly IPageService _pageService;
 
-        public UsersController(IAccountService accountService)
+        public PageController(IPageService pageService)
         {
-            _accountService = accountService;
+            _pageService = pageService;
         }
         public IActionResult Index()
         {
             return View();
         }
 
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [ServiceFilter(typeof(AuthFilter))]
+        [HttpGet]
+        public async Task<IActionResult> GetPagesAsync()
+        {
+            return Json(await _pageService.GetPagesAsync());
+        }
     }
 }

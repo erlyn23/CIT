@@ -19,12 +19,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MySql.EntityFrameworkCore;
 
 namespace CIT.Presentation
 {
     public class Startup
     {
+        private readonly string _myCors = "CITCors";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -37,9 +37,10 @@ namespace CIT.Presentation
         {
             services.AddControllersWithViews();
 
+            string connectionString = Configuration.GetConnectionString("CITConnection");
             services.AddDbContext<CentroInversionesTecnocorpDbContext>(builder=>
             {
-                builder.UseMySQL(Configuration.GetConnectionString("CITConnection"));
+                builder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
             });
 
 
@@ -55,9 +56,17 @@ namespace CIT.Presentation
                 bearer.TokenValidationParameters = new TokenValidationParameters()
                 {
                     ValidateAudience = false,
-                    ValidateIssuer = true,
+                    ValidateIssuer = false,
                     IssuerSigningKey = new SymmetricSecurityKey(secretKey)
                 };
+            });
+
+            services.AddCors(builder => 
+            {
+                builder.AddPolicy(_myCors, policy =>
+                {
+                    policy.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod();
+                });
             });
 
             //Dependency Injections
@@ -73,6 +82,8 @@ namespace CIT.Presentation
             services.AddScoped<IPageRepository, PageRepository>();
             services.AddScoped<IOperationRepository, OperationRepository>();
             services.AddScoped<IEntitiesInfoService, EntitiesInfoService>();
+            services.AddScoped<IPageService, PagesService>();
+            services.AddScoped<IOperationService, OperationService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -89,7 +100,10 @@ namespace CIT.Presentation
                 app.UseHsts();
             }
             app.UseHttpsRedirection();
+            
             app.UseStaticFiles();
+
+            app.UseCors(_myCors);
 
             app.UseRouting();
 

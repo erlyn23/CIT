@@ -10,6 +10,8 @@ namespace CIT.BusinessLogic.Contracts
     public interface IEntitiesInfoService
     {
         Task<Entitiesinfo> AddEntityInfoAsync(Entitiesinfo entitesInfo);
-        Task<Entitiesinfo> UpdateEntityInfoAsync(Entitiesinfo entitiesInfo);
+        Task<Entitiesinfo> GetEntityInfoAsync(string entityInfoId);
+        Entitiesinfo UpdateEntityInfo(Entitiesinfo entitiesInfo);
+        Task DeleteEntityInfoAsync(string entityInfoId);
     }
 }

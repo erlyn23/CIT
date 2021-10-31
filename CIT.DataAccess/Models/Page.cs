@@ -10,11 +10,9 @@ namespace CIT.DataAccess.Models
         public Page()
         {
             Rolepermissions = new HashSet<Rolepermission>();
-
-            Id = Guid.NewGuid().ToString().Trim('-');
         }
 
-        public string Id { get; set; }
+        public int Id { get; set; }
         public string PageName { get; set; }
 
         public virtual ICollection<Rolepermission> Rolepermissions { get; set; }

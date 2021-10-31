@@ -4,7 +4,6 @@ function doRequest({ url, method, data, headers, successCallback, errorCallback 
     const options = {
         method: method,
         contentType: 'application/json',
-        data: JSON.stringify(data),
         success: function (data) {
             successCallback(data);
         },
@@ -15,6 +14,9 @@ function doRequest({ url, method, data, headers, successCallback, errorCallback 
 
     if (headers !== null) {
         options.headers = headers;
+    }
+    if (data !== null) {
+        options.data = JSON.stringify(data);
     }
 
     $.ajax(url, options);

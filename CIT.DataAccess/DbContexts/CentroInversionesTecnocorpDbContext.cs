@@ -40,7 +40,7 @@ namespace CIT.DataAccess.DbContexts
 
                 entity.HasIndex(e => e.EntityInfoId, "Fk_Addresses_EntitiesInfo");
 
-                entity.Property(e => e.Id).HasMaxLength(50);
+                entity.Property(e => e.Id).HasColumnType("int").UseMySqlIdentityColumn();
 
                 entity.Property(e => e.City)
                     .IsRequired()
@@ -51,8 +51,7 @@ namespace CIT.DataAccess.DbContexts
                     .HasMaxLength(100);
 
                 entity.Property(e => e.EntityInfoId)
-                    .IsRequired()
-                    .HasMaxLength(50);
+                    .IsRequired().HasColumnType("int(11)");
 
                 entity.Property(e => e.HouseNumber).HasColumnType("int(11)");
 
@@ -83,7 +82,7 @@ namespace CIT.DataAccess.DbContexts
             {
                 entity.ToTable("entitiesinfo");
 
-                entity.Property(e => e.Id).HasMaxLength(50);
+                entity.Property(e => e.Id).HasColumnType("int").UseMySqlIdentityColumn();
 
                 entity.Property(e => e.Status).HasColumnType("smallint(6)");
             });
@@ -94,13 +93,12 @@ namespace CIT.DataAccess.DbContexts
 
                 entity.HasIndex(e => e.EntityInfoId, "Fk_Loans_EntitiesInfo");
 
-                entity.Property(e => e.Id).HasMaxLength(50);
+                entity.Property(e => e.Id).HasColumnType("int").UseMySqlIdentityColumn();
 
                 entity.Property(e => e.DuesQuantity).HasColumnType("int(11)");
 
                 entity.Property(e => e.EntityInfoId)
-                    .IsRequired()
-                    .HasMaxLength(50);
+                    .IsRequired().HasColumnType("int(11)");
 
                 entity.Property(e => e.InterestRate).HasColumnType("decimal(3,2)");
 
@@ -123,7 +121,7 @@ namespace CIT.DataAccess.DbContexts
 
                 entity.HasIndex(e => e.UserId, "Fk_Logs_Users");
 
-                entity.Property(e => e.Id).HasMaxLength(50);
+                entity.Property(e => e.Id).HasColumnType("int").UseMySqlIdentityColumn();
 
                 entity.Property(e => e.Operation)
                     .IsRequired()
@@ -133,9 +131,7 @@ namespace CIT.DataAccess.DbContexts
                     .HasMaxLength(255)
                     .HasDefaultValueSql("'NULL'");
 
-                entity.Property(e => e.UserId)
-                    .IsRequired()
-                    .HasMaxLength(50);
+                entity.Property(e => e.UserId).HasColumnType("int(11)");
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.Logs)
@@ -148,7 +144,7 @@ namespace CIT.DataAccess.DbContexts
             {
                 entity.ToTable("operations");
 
-                entity.Property(e => e.Id).HasMaxLength(50);
+                entity.Property(e => e.Id).HasColumnType("int").UseMySqlIdentityColumn();
 
                 entity.Property(e => e.OperationName)
                     .IsRequired()
@@ -159,7 +155,7 @@ namespace CIT.DataAccess.DbContexts
             {
                 entity.ToTable("pages");
 
-                entity.Property(e => e.Id).HasMaxLength(50);
+                entity.Property(e => e.Id).HasColumnType("int").UseMySqlIdentityColumn();
 
                 entity.Property(e => e.PageName)
                     .IsRequired()
@@ -179,11 +175,11 @@ namespace CIT.DataAccess.DbContexts
 
                 entity.HasIndex(e => e.UserId, "Fk_Payments_Users");
 
-                entity.Property(e => e.Id).HasMaxLength(50);
+                entity.Property(e => e.Id).HasColumnType("int").UseMySqlIdentityColumn();
 
-                entity.Property(e => e.UserId).HasMaxLength(50);
+                entity.Property(e => e.UserId).HasColumnType("int(11)");
 
-                entity.Property(e => e.LoanId).HasMaxLength(50);
+                entity.Property(e => e.LoanId).HasColumnType("int(11)");
 
                 entity.Property(e => e.EntityInfoId)
                     .IsRequired()
@@ -219,11 +215,9 @@ namespace CIT.DataAccess.DbContexts
                 entity.HasIndex(e => e.RoleName, "RoleName")
                     .IsUnique();
 
-                entity.Property(e => e.Id).HasMaxLength(50);
+                entity.Property(e => e.Id).HasColumnType("int").UseMySqlIdentityColumn();
 
-                entity.Property(e => e.EntityInfoId)
-                    .IsRequired()
-                    .HasMaxLength(50);
+                entity.Property(e => e.EntityInfoId).HasColumnType("int(11)");
 
                 entity.Property(e => e.RoleName)
                     .IsRequired()
@@ -245,39 +239,35 @@ namespace CIT.DataAccess.DbContexts
 
                 entity.HasIndex(e => e.RoleId, "Fk_RolePermissions_Roles");
 
-                entity.HasIndex(e => e.OperationId, "PermissionName")
-                    .IsUnique();
+                entity.HasIndex(e => e.OperationId, "Fk_RolePermissions_Operations");
 
-                entity.Property(e => e.Id).HasMaxLength(50);
+                entity.Property(e => e.Id).HasColumnType("int").UseMySqlIdentityColumn();
 
                 entity.Property(e => e.OperationId)
-                    .IsRequired()
-                    .HasMaxLength(30);
+                    .IsRequired().HasColumnType("int");
 
                 entity.Property(e => e.PageId)
-                    .IsRequired()
-                    .HasMaxLength(50);
+                    .IsRequired().HasColumnType("int");
 
                 entity.Property(e => e.RoleId)
-                    .IsRequired()
-                    .HasMaxLength(50);
+                    .IsRequired().HasColumnType("int");
 
                 entity.HasOne(d => d.Operation)
                     .WithOne(p => p.Rolepermission)
                     .HasForeignKey<Rolepermission>(d => d.OperationId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.NoAction)
                     .HasConstraintName("Fk_RolePermissions_Operations");
 
                 entity.HasOne(d => d.Page)
                     .WithMany(p => p.Rolepermissions)
                     .HasForeignKey(d => d.PageId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.NoAction)
                     .HasConstraintName("Fk_RolePermission_Pages");
 
                 entity.HasOne(d => d.Role)
                     .WithMany(p => p.Rolepermissions)
                     .HasForeignKey(d => d.RoleId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.NoAction)
                     .HasConstraintName("Fk_RolePermissions_Roles");
             });
 
@@ -296,15 +286,14 @@ namespace CIT.DataAccess.DbContexts
                 entity.HasIndex(e => e.Phone, "Phone")
                     .IsUnique();
 
-                entity.Property(e => e.Id).HasMaxLength(50);
+                entity.Property(e => e.Id).HasColumnType("int").UseMySqlIdentityColumn(); 
 
                 entity.Property(e => e.Email)
                     .IsRequired()
                     .HasMaxLength(50);
 
                 entity.Property(e => e.EntityInfoId)
-                    .IsRequired()
-                    .HasMaxLength(50);
+                    .IsRequired().HasColumnType("int");
 
                 entity.Property(e => e.IdentificationDocument)
                     .IsRequired()
@@ -348,11 +337,11 @@ namespace CIT.DataAccess.DbContexts
 
                 entity.HasIndex(e => e.UserId, "Fk_UserAddresses_Users");
 
-                entity.Property(e => e.Id).HasMaxLength(50);
+                entity.Property(e => e.Id).HasColumnType("int").UseMySqlIdentityColumn();
 
-                entity.Property(e => e.UserId).HasMaxLength(50);
+                entity.Property(e => e.UserId).HasColumnType("int(11)");
 
-                entity.Property(e => e.AddressId).HasMaxLength(50);
+                entity.Property(e => e.AddressId).HasColumnType("int(11)");
 
                 entity.HasOne(d => d.Address)
                     .WithMany(p => p.Useraddresses)
@@ -381,11 +370,11 @@ namespace CIT.DataAccess.DbContexts
                 entity.HasIndex(e => e.UserId, "UserId")
                     .IsUnique();
 
-                entity.Property(e => e.Id).HasMaxLength(50);
+                entity.Property(e => e.Id).HasColumnType("int").UseMySqlIdentityColumn();
 
-                entity.Property(e => e.RoleId).HasMaxLength(50);
+                entity.Property(e => e.RoleId).HasColumnType("int(11)");
 
-                entity.Property(e => e.UserId).HasMaxLength(50);
+                entity.Property(e => e.UserId).HasColumnType("int(11)");
 
                 entity.Property(e => e.EntityInfoId)
                     .IsRequired()
@@ -422,7 +411,7 @@ namespace CIT.DataAccess.DbContexts
                 entity.HasIndex(e => e.LicensePlate, "LicensePlate")
                     .IsUnique();
 
-                entity.Property(e => e.Id).HasMaxLength(50);
+                entity.Property(e => e.Id).HasColumnType("int").UseMySqlIdentityColumn();
 
                 entity.Property(e => e.Brand)
                     .IsRequired()
@@ -437,8 +426,7 @@ namespace CIT.DataAccess.DbContexts
                     .HasMaxLength(10);
 
                 entity.Property(e => e.EntityInfoId)
-                    .IsRequired()
-                    .HasMaxLength(50);
+                    .IsRequired().HasColumnType("int");
 
                 entity.Property(e => e.LicensePlate)
                     .IsRequired()

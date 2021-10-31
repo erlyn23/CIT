@@ -17,17 +17,29 @@ namespace CIT.BusinessLogic.Services
         {
             _entitiesInfoRepository = entitiesInfoRepository;
         }
+
         public async Task<Entitiesinfo> AddEntityInfoAsync(Entitiesinfo entitesInfo)
         {
             var savedEntityInfo = await _entitiesInfoRepository.AddAsync(entitesInfo);
             return savedEntityInfo;
         }
 
-        public async Task<Entitiesinfo> UpdateEntityInfoAsync(Entitiesinfo entitiesInfo)
+        public async Task<Entitiesinfo> GetEntityInfoAsync(string entityInfoId)
+        {
+            return await _entitiesInfoRepository.FirstOrDefaultAsync(e => e.Id.Equals(entityInfoId));
+        }
+
+        public Entitiesinfo UpdateEntityInfo(Entitiesinfo entitiesInfo)
         {
             _entitiesInfoRepository.Update(entitiesInfo);
-            await _entitiesInfoRepository.SaveChangesAsync();
             return entitiesInfo;
+        }
+
+        public async Task DeleteEntityInfoAsync(string entityInfoId)
+        {
+            var entityInfo = await _entitiesInfoRepository.FirstOrDefaultAsync(e => e.Id.Equals(entityInfoId));
+            if(entityInfo != null)
+                _entitiesInfoRepository.Delete(entityInfo);
         }
     }
 }
