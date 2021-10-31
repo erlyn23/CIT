@@ -33,7 +33,10 @@ namespace CIT.Presentation.Filters
 
 
                 var roleId = decodedToken.Claims.FirstOrDefault(c => c.Type.Equals("Role")).Value;
-                var userRole = await _roleService.GetRoleByIdAsync(roleId);
+
+                int roleIntId = 0;
+                int.TryParse(roleId, out roleIntId);
+                var userRole = await _roleService.GetRoleByIdAsync(roleIntId);
 
                 var permission = userRole.RolePermissions.FirstOrDefault(r => r.OperationName.Equals(operation) && r.PageName.Equals(page));
 
