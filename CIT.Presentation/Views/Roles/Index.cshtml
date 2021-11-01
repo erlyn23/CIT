@@ -28,11 +28,12 @@
                     <div class="col-md-12">
                         <div class="card p-3 mb-2">
                             <div class="text-center">
-                                <h4>Agregar nuevo rol</h4>
+                                <h4 id="form-title">Agregar nuevo rol</h4>
                             </div>
                             <hr>
                             <form id="roleForm">
                                 <div class="row">
+                                    <input type="hidden" id="roleId">
                                     <div class="col-md-12">
                                         <input type="text" id="roleName" placeholder="Nombre del rol" class="form-control">
                                     </div>
@@ -52,7 +53,7 @@
                                     <div class="col-md-4">
                                         <button id="addOrUpdateRoleBtn" type="button" class="btn btn-sm btn-success">
                                             <i class="fas fa-circle-plus"></i>
-                                            <span>Agregar rol</span>
+                                            <span id="action-title">Agregar rol</span>
                                         </button>
                                     </div>
                                 </div>

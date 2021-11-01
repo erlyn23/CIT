@@ -1,6 +1,11 @@
-﻿let rolePermissions = [];
-let pages = [];
+﻿let pages = [];
 let operations = [];
+
+
+const linkColor = document.getElementById('rolesLink')
+document.querySelectorAll('.nav_link').forEach(l => l.classList.remove('active'));
+linkColor.classList.add('active');
+
 
 if (!localStorage.getItem('user')) window.href.location = '/Account/Index';
 
@@ -49,7 +54,6 @@ const templateRolesList = (roles) => {
                     <td>${role.roleId}</td>
                     <td>${role.role}</td>
                     <td>
-                        <button type="button" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></button>
                         <button type="button" class="btn btn-sm btn-danger" onclick="deleteRole(${role.roleId})"><i class="fas fa-trash"></i></button>
                     </td>
                 </tr>`;
@@ -59,7 +63,6 @@ const templateRolesList = (roles) => {
 
 const deleteRole = function (roleId) {
     $("#DeleteConfirmRoleModal").modal('show');
-    $("#roleId").val(roleId);
 
     $("#deleteRoleBtn").on('click', function () {
         doRequest(
@@ -104,16 +107,15 @@ const onGetPages = function (pages) {
     $("#pages").html(html);
 }
 
-const selectPage = function (page) {
-    if ($("#page-" + page).is(':checked'))
-        pages.push(page);
+const selectPage = function (pageId) {
+
+    if ($("#page-" + pageId).is(':checked'))
+        pages.push(pageId);
     else {
-        const pageIndex = pages.indexOf(page);
+        const pageIndex = pages.indexOf(pageId);
         pages.splice(pageIndex, 1);
     }
-       
 }
-
 
 getPages();
 
@@ -139,11 +141,11 @@ const onGetOperations = function (operations) {
     $("#operations").html(html);
 }
 
-const selectOperation = function (operation) {
-    if ($("#operation-" + operation).is(':checked'))
-        operations.push(operation);
+const selectOperation = function (operationId) {
+    if ($("#operation-" + operationId).is(':checked'))
+        operations.push(operationId);
     else {
-        const operationIndex = operations.indexOf(operation);
+        const operationIndex = operations.indexOf(operationId);
         operations.splice(operationIndex, 1);
     }
 }
@@ -152,6 +154,7 @@ getOperations();
 
 $("#addOrUpdateRoleBtn").on('click', function () {
     let rolePermissions = [];
+
     pages.forEach(pageId => {
         operations.forEach(operationId => {
             rolePermissions.push({
@@ -183,15 +186,18 @@ $("#addOrUpdateRoleBtn").on('click', function () {
 
 const onSaveRole = function (data) {
     $("#roleForm").trigger('reset');
+    pages = [];
+    operations = [];
     getRoles();
 }
 
 const onError = function (error) {
-    console.log(error);
+    $("#DeleteConfirmRoleModal").modal('hide');
     $("#errorMessage").removeClass('d-none');
     $("#errorMessage").html("<p>" + error.responseText + "</p>");
 
     setTimeout(function () {
         $("#errorMessage").html("");
-    }, 5000);
+        $("#errorMessage").addClass('d-none');
+    }, 7000);
 }

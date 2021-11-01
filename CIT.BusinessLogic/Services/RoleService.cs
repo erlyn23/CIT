@@ -60,6 +60,9 @@ namespace CIT.BusinessLogic.Services
             var role = await _roleRepository.FirstOrDefaultAsync(r => r.Id == roleId);
             if(role != null)
             {
+                if (role.RoleName.Equals("Administrador"))
+                    throw new Exception("El rol administrador no puede ser eliminado");
+
                 await _rolePermissionService.DeleteRolePermissionsByRoleIdAsync(roleId);
                 await _userRoleService.DeleteUserRoleByRoleIdAsync(roleId);
                 _roleRepository.Delete(role);
@@ -121,7 +124,9 @@ namespace CIT.BusinessLogic.Services
                 entityInfo.UpdatedAt = DateTime.Now;
                 entityInfo.Status = role.EntityInfo.Status;
 
-                _entitiesInfoService.UpdateEntityInfo(entityInfo);
+                await _entitiesInfoService.UpdateEntityInfo(entityInfo);
+
+
             }
             else throw new Exception("Este rol no existe en la base de datos.");
 

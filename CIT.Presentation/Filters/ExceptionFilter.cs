@@ -44,7 +44,7 @@ namespace CIT.Presentation.Filters
             };
             await _logService.SaveLogAsync(logDto);
 
-            context.Result = new Microsoft.AspNetCore.Mvc.BadRequestObjectResult("Ha ocurrido un error al ejecutar la operación, pídele a tu administrador que revise los registros de errores");
+            context.Result = new Microsoft.AspNetCore.Mvc.BadRequestObjectResult("Ha ocurrido un error interno, revisa los registros de errores en la pantalla de errores del sistema");
             
         }
     }
