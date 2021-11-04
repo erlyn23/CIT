@@ -41,8 +41,12 @@ namespace CIT.BusinessLogic.Services
             var rolePermissionsDto = new List<RolePermissionDto>();
             
             foreach (var rolePermission in rolePermissions)
-                rolePermissionsDto.Add(await AddRolePermissionAsync(rolePermission, roleId));
+            {
+                var rolePermissionInDb = await GetRolePermissionByRolePageAndOperationId(roleId, rolePermission.OperationId, rolePermission.PageId);
 
+                if(rolePermissionInDb == null)
+                    rolePermissionsDto.Add(await AddRolePermissionAsync(rolePermission, roleId));
+            }
             return rolePermissionsDto;
         }
 
@@ -76,8 +80,12 @@ namespace CIT.BusinessLogic.Services
         {
             var rolePermission = await _rolePermissionRepository.FirstOrDefaultAsync(rp => rp.RoleId == roleId && rp.OperationId == operationId && rp.PageId == pageId);
 
-            var rolePermissionDto = await MapRolePermissionAsync(rolePermission);
-            return rolePermissionDto;
+            if(rolePermission != null)
+            {
+                var rolePermissionDto = await MapRolePermissionAsync(rolePermission);
+                return rolePermissionDto;
+            }
+            return null;
         }
 
         public async Task<List<RolePermissionDto>> GetRolePermissionsAsync(int roleId)

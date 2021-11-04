@@ -118,14 +118,29 @@ namespace CIT.BusinessLogic.Services
 
             if (roleEntity != null)
             {
+                roleEntity.RoleName = role.Role;
                 _roleRepository.Update(roleEntity);
                 var entityInfo = await _entitiesInfoService.GetEntityInfoAsync(roleEntity.EntityInfoId);
 
-                entityInfo.UpdatedAt = DateTime.Now;
-                entityInfo.Status = role.EntityInfo.Status;
+                //TODO: Hacer esto para el frontend primero
+                //entityInfo.UpdatedAt = DateTime.Now;
+                //entityInfo.Status = role.EntityInfo.Status;
 
-                await _entitiesInfoService.UpdateEntityInfo(entityInfo);
+                //await _entitiesInfoService.UpdateEntityInfo(entityInfo);
 
+                if(role.ToDelete.Count() > 0)
+                {
+                    foreach(var toDelete in role.ToDelete)
+                    {
+                        var rolePermission = await _rolePermissionService.GetRolePermissionByRolePageAndOperationId(toDelete.RoleId, toDelete.OperationId, toDelete.PageId);
+
+                        if (rolePermission != null) await _rolePermissionService.DeleteRolePermissionAsync(rolePermission.Id);
+                    } 
+                }
+
+
+                if (role.RolePermissions.Count() > 0)
+                    await _rolePermissionService.AddRolePermissionsAsync(role.RolePermissions, roleEntity.Id);
 
             }
             else throw new Exception("Este rol no existe en la base de datos.");

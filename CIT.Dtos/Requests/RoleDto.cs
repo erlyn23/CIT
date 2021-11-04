@@ -13,11 +13,13 @@ namespace CIT.Dtos.Requests
         [Required(ErrorMessage = "Debes escribir un rol")]
         public string Role { get; set; }
         public List<RolePermissionDto> RolePermissions { get; set; }
+        public List<RolePermissionDto> ToDelete { get; set; }
         public EntityInfoDto EntityInfo { get; set; }
 
         public RoleDto()
         {
             RolePermissions = new List<RolePermissionDto>();
+            ToDelete = new List<RolePermissionDto>();
         }
     }
 }
