@@ -32,8 +32,44 @@ namespace CIT.DataAccess.DbContexts
         public virtual DbSet<Userrole> Userroles { get; set; }
         public virtual DbSet<Vehicle> Vehicles { get; set; }
 
+        public virtual DbSet<LenderBusiness> LenderBusiness { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<LenderBusiness>(entity =>
+            {
+                entity.ToTable("lenderbusiness");
+
+                entity.HasIndex(e => e.Rnc, "Ix_LenderBusiness_Rnc").IsUnique();
+
+                entity.HasIndex(e => e.Email, "Ix_LenderBusiness_Email").IsUnique();
+
+                entity.HasIndex(e => e.Phone, "Ix_LenderBusiness_Phone").IsUnique();
+
+                entity.HasIndex(e => e.EntityInfoId, "Fk_LenderBusinesses_EntitiesInfo");
+
+                entity.Property(e => e.Id).HasColumnType("int").UseMySqlIdentityColumn();
+
+                entity.Property(e => e.Rnc).IsRequired().HasMaxLength(20);
+
+                entity.Property(e => e.Email).IsRequired().HasMaxLength(50);
+                
+                entity.Property(e => e.Phone).IsRequired().HasMaxLength(20);
+
+                entity.Property(e => e.Photo).HasMaxLength(255);
+
+                entity.Property(e => e.EntityInfoId).HasColumnType("int");
+
+                entity.Property(e => e.Password).IsRequired().HasMaxLength(255);
+
+                entity.HasOne(d => d.EntityInfo)
+                    .WithMany(p => p.LenderBusinesses)
+                    .HasForeignKey(e => e.EntityInfoId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("Fk_LenderBusiness_EntitiesInfo");
+
+            });
+
             modelBuilder.Entity<Address>(entity =>
             {
                 entity.ToTable("addresses");

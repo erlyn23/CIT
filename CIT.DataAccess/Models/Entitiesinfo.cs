@@ -16,6 +16,7 @@ namespace CIT.DataAccess.Models
             Userroles = new HashSet<Userrole>();
             Users = new HashSet<User>();
             Vehicles = new HashSet<Vehicle>();
+            LenderBusinesses = new HashSet<LenderBusiness>();
 
         }
 
@@ -31,5 +32,6 @@ namespace CIT.DataAccess.Models
         public virtual ICollection<Userrole> Userroles { get; set; }
         public virtual ICollection<User> Users { get; set; }
         public virtual ICollection<Vehicle> Vehicles { get; set; }
+        public virtual ICollection<LenderBusiness> LenderBusinesses { get; set; }
     }
 }

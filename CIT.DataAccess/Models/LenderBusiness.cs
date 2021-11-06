@@ -25,12 +25,13 @@ namespace CIT.DataAccess.Models
         public string Photo { get; set; }
         public int EntityInfoId { get; set; }
 
-        public ICollection<User> Users { get; set; }
-        public ICollection<Role> Roles { get; set; }
-        public ICollection<Loan> Loans { get; set; }
-        public ICollection<Log> Logs { get; set; }
-        public ICollection<Payment> Payments { get; set; }
-        public ICollection<Vehicle> Vehicles { get; set; }
-        public Useraddress UserAddress { get; set; }
+        public virtual ICollection<User> Users { get; set; }
+        public virtual ICollection<Role> Roles { get; set; }
+        public virtual ICollection<Loan> Loans { get; set; }
+        public virtual ICollection<Log> Logs { get; set; }
+        public virtual ICollection<Payment> Payments { get; set; }
+        public virtual ICollection<Vehicle> Vehicles { get; set; }
+        public virtual Useraddress UserAddress { get; set; }
+        public virtual Entitiesinfo EntityInfo { get; set; }
     }
 }
