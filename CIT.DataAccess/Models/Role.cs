@@ -15,10 +15,12 @@ namespace CIT.DataAccess.Models
 
         public int Id { get; set; }
         public string RoleName { get; set; }
+        public int LenderBusinessId { get; set; }
         public int EntityInfoId { get; set; }
 
         public virtual Entitiesinfo EntityInfo { get; set; }
         public virtual ICollection<Rolepermission> Rolepermissions { get; set; }
         public virtual ICollection<Userrole> Userroles { get; set; }
+        public virtual LenderBusiness LenderBusiness { get; set; }
     }
 }

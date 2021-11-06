@@ -10,6 +10,11 @@
     <link rel="stylesheet" href="~/paginationjs/pagination.css">
     <script src="https://kit.fontawesome.com/3d05e5b342.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.5.1/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.5.1/mapbox-gl.js"></script>
+    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.2/mapbox-gl-geocoder.min.js"></script>
+    <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.2/mapbox-gl-geocoder.css" type="text/css">
+
 </head>
 <body id="body-pd" class="body-pd">
 
@@ -80,6 +85,7 @@
         @switch (ViewData["Page"].ToString())
         {
             case "Users":
+                <script src="~/js/Users/validations.js"></script>
                 <script src="~/js/Users/index.js"></script>
                 break;
             case "Roles":

@@ -9,7 +9,9 @@ document.querySelectorAll('.nav_link').forEach(l => l.classList.remove('active')
 linkColor.classList.add('active');
 
 
-if (!localStorage.getItem('user')) window.href.location = '/Account/Index';
+if (!localStorage.getItem('user')) {
+    window.location = '/Account/Index';
+}
 
 const appHeaders = {
     'content-type': 'application/json',

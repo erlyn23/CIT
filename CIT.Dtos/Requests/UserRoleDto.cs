@@ -11,9 +11,9 @@ namespace CIT.Dtos.Requests
     {
 
         public int UserRoleId { get; set; }
-        [Required(ErrorMessage = "Debes especificar el usuario")]
         public int UserId { get; set; }
         [Required(ErrorMessage = "Debes especificar el rol del usuario")]
         public int RoleId { get; set; }
+        public RoleDto Role { get; set; }
     }
 }

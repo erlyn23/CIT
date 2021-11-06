@@ -7,11 +7,6 @@ namespace CIT.DataAccess.Models
 {
     public partial class Address
     {
-        public Address()
-        {
-            Useraddresses = new HashSet<Useraddress>();
-        }
-
         public int Id { get; set; }
         public string Country { get; set; }
         public string City { get; set; }
@@ -24,6 +19,6 @@ namespace CIT.DataAccess.Models
         public int EntityInfoId { get; set; }
 
         public virtual Entitiesinfo EntityInfo { get; set; }
-        public virtual ICollection<Useraddress> Useraddresses { get; set; }
+        public virtual Useraddress UserAddress { get; set; }
     }
 }

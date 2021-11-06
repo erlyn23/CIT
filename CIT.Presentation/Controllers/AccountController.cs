@@ -46,7 +46,7 @@ namespace CIT.Presentation.Controllers
             try
             {
                 if (ModelState.IsValid)
-                    return Json(await _accountService.RegisterUserAsync(userDto));
+                    return Json(await _accountService.RegisterUserAsync(userDto, true));
                 else
                     return Json(ModelState.Values.ToList());
             }

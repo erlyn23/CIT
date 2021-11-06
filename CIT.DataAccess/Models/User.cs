@@ -11,7 +11,6 @@ namespace CIT.DataAccess.Models
         {
             Logs = new HashSet<Log>();
             Payments = new HashSet<Payment>();
-            Useraddresses = new HashSet<Useraddress>();
 
         }
 
@@ -23,12 +22,15 @@ namespace CIT.DataAccess.Models
         public string Email { get; set; }
         public string Password { get; set; }
         public string Photo { get; set; }
+        public int LenderBusinessId { get; set; }
         public int EntityInfoId { get; set; }
 
         public virtual Entitiesinfo EntityInfo { get; set; }
         public virtual Userrole Userrole { get; set; }
         public virtual ICollection<Log> Logs { get; set; }
         public virtual ICollection<Payment> Payments { get; set; }
-        public virtual ICollection<Useraddress> Useraddresses { get; set; }
+        public virtual Useraddress UserAddress { get; set; }
+        public virtual VehicleAssignment VehicleAssignment { get; set; }
+        public virtual LenderBusiness LenderBusiness { get; set; }
     }
 }

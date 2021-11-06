@@ -14,8 +14,11 @@ namespace CIT.DataAccess.Models
         public string LicensePlate { get; set; }
         public string Color { get; set; }
         public int Year { get; set; }
+        public int LenderBusinessId { get; set; }
         public int EntityInfoId { get; set; }
 
         public virtual Entitiesinfo EntityInfo { get; set; }
+        public virtual VehicleAssignment VehicleAssignment { get; set; }
+        public virtual LenderBusiness LenderBusiness { get; set; }
     }
 }

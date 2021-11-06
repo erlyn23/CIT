@@ -11,8 +11,10 @@ namespace CIT.DataAccess.Models
         public string Operation { get; set; }
         public int UserId { get; set; }
         public string ResultMessageOrObject { get; set; }
+        public int LenderBusinessId { get; set; }
         public DateTime LogDate { get; set; }
 
         public virtual User User { get; set; }
+        public virtual LenderBusiness LenderBusiness { get; set; }
     }
 }

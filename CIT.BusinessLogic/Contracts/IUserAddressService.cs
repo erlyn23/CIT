@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CIT.DataAccess.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,6 @@ namespace CIT.BusinessLogic.Contracts
 {
     public interface IUserAddressService
     {
-
+        Task<Useraddress> CreateUserAddress(int userId, int addressId);
     }
 }

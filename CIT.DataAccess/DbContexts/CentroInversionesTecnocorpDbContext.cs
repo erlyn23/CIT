@@ -92,6 +92,8 @@ namespace CIT.DataAccess.DbContexts
                 entity.ToTable("loans");
 
                 entity.HasIndex(e => e.EntityInfoId, "Fk_Loans_EntitiesInfo");
+                
+                entity.HasIndex(e => e.LenderBusinessId, "Fk_Loans_LenderBusiness");
 
                 entity.Property(e => e.Id).HasColumnType("int").UseMySqlIdentityColumn();
 
@@ -113,6 +115,12 @@ namespace CIT.DataAccess.DbContexts
                     .HasForeignKey(d => d.EntityInfoId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("Fk_Loans_EntitiesInfo");
+                
+                entity.HasOne(d => d.LenderBusiness)
+                    .WithMany(p => p.Loans)
+                    .HasForeignKey(d => d.LenderBusinessId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("Fk_Loans_LenderBusiness");
             });
 
             modelBuilder.Entity<Log>(entity =>
@@ -120,6 +128,8 @@ namespace CIT.DataAccess.DbContexts
                 entity.ToTable("logs");
 
                 entity.HasIndex(e => e.UserId, "Fk_Logs_Users");
+                
+                entity.HasIndex(e => e.LenderBusinessId, "Fk_Logs_LenderBusiness");
 
                 entity.Property(e => e.Id).HasColumnType("int").UseMySqlIdentityColumn();
 
@@ -138,6 +148,12 @@ namespace CIT.DataAccess.DbContexts
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("Fk_Logs_Users");
+
+                entity.HasOne(d => d.LenderBusiness)
+                    .WithMany(p => p.Logs)
+                    .HasForeignKey(d => d.LenderBusinessId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("Fk_Logs_LenderBusiness");
             });
 
             modelBuilder.Entity<Operation>(entity =>
@@ -170,6 +186,8 @@ namespace CIT.DataAccess.DbContexts
                 entity.ToTable("payments");
 
                 entity.HasIndex(e => e.EntityInfoId, "Fk_Payments_EntitiesInfo");
+                
+                entity.HasIndex(e => e.LenderBusinessId, "Fk_Payments_LenderBusiness");
 
                 entity.HasIndex(e => e.LoanId, "Fk_Payments_Loans");
 
@@ -204,6 +222,12 @@ namespace CIT.DataAccess.DbContexts
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("Fk_Payments_Users");
+
+                entity.HasOne(d => d.LenderBusiness)
+                    .WithMany(p => p.Payments)
+                    .HasForeignKey(d => d.LenderBusinessId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("Fk_Payments_LenderBusiness");
             });
 
             modelBuilder.Entity<Role>(entity =>
@@ -211,9 +235,12 @@ namespace CIT.DataAccess.DbContexts
                 entity.ToTable("roles");
 
                 entity.HasIndex(e => e.EntityInfoId, "Fk_Roles_EntitiesInfo");
+                
+                entity.HasIndex(e => e.LenderBusinessId, "Fk_Roles_LenderBusiness");
 
                 entity.HasIndex(e => e.RoleName, "RoleName")
                     .IsUnique();
+
 
                 entity.Property(e => e.Id).HasColumnType("int").UseMySqlIdentityColumn();
 
@@ -228,6 +255,12 @@ namespace CIT.DataAccess.DbContexts
                     .HasForeignKey(d => d.EntityInfoId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("Fk_Roles_EntitiesInfo");
+
+                entity.HasOne(d => d.LenderBusiness)
+                    .WithMany(p => p.Roles)
+                    .HasForeignKey(d => d.LenderBusinessId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("Fk_Roles_LenderBusiness");
 
             });
 
@@ -282,6 +315,8 @@ namespace CIT.DataAccess.DbContexts
 
                 entity.HasIndex(e => e.EntityInfoId, "Fk_Users_EntitiesInfo");
 
+                entity.HasIndex(e => e.LenderBusinessId, "Fk_Users_LenderBusiness");
+
                 entity.HasIndex(e => e.IdentificationDocument, "IdentificationDocument")
                     .IsUnique();
 
@@ -326,6 +361,12 @@ namespace CIT.DataAccess.DbContexts
                     .HasForeignKey(d => d.EntityInfoId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("Fk_Users_EntitiesInfo");
+
+                entity.HasOne(d => d.LenderBusiness)
+                      .WithMany(p => p.Users)
+                      .HasForeignKey(d => d.LenderBusinessId)
+                      .OnDelete(DeleteBehavior.ClientSetNull)
+                      .HasConstraintName("Fk_Users_LenderBusiness");
             });
 
             modelBuilder.Entity<Useraddress>(entity =>
@@ -337,7 +378,7 @@ namespace CIT.DataAccess.DbContexts
 
                 entity.HasIndex(e => e.AddressId, "Fk_UserAddresses_Address");
 
-                entity.HasIndex(e => e.UserId, "Fk_UserAddresses_Users");
+                entity.HasIndex(e => e.UserId, "Fk_UserAddresses_Users").IsUnique();
 
                 entity.Property(e => e.Id).HasColumnType("int").UseMySqlIdentityColumn();
 
@@ -346,14 +387,14 @@ namespace CIT.DataAccess.DbContexts
                 entity.Property(e => e.AddressId).HasColumnType("int(11)");
 
                 entity.HasOne(d => d.Address)
-                    .WithMany(p => p.Useraddresses)
-                    .HasForeignKey(d => d.AddressId)
+                    .WithOne(p => p.UserAddress)
+                    .HasForeignKey<Useraddress>(d => d.AddressId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("Fk_UserAddresses_Address");
 
                 entity.HasOne(d => d.User)
-                    .WithMany(p => p.Useraddresses)
-                    .HasForeignKey(d => d.UserId)
+                    .WithOne(p => p.UserAddress)
+                    .HasForeignKey<Useraddress>(d => d.AddressId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("Fk_UserAddresses_Users");
             });
@@ -410,6 +451,8 @@ namespace CIT.DataAccess.DbContexts
 
                 entity.HasIndex(e => e.EntityInfoId, "Fk_Vehicles_EntitiesInfo");
 
+                entity.HasIndex(e => e.LenderBusinessId, "Fk_Vehicles_LenderBusiness");
+
                 entity.HasIndex(e => e.LicensePlate, "LicensePlate")
                     .IsUnique();
 
@@ -445,6 +488,12 @@ namespace CIT.DataAccess.DbContexts
                     .HasForeignKey(d => d.EntityInfoId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("Fk_Vehicles_EntitiesInfo");
+
+                entity.HasOne(d => d.LenderBusiness)
+                      .WithMany(p => p.Vehicles)
+                      .HasForeignKey(d => d.LenderBusinessId)
+                      .OnDelete(DeleteBehavior.ClientSetNull)
+                      .HasConstraintName("Fk_Vehicles_LenderBusiness");
             });
 
             OnModelCreatingPartial(modelBuilder);

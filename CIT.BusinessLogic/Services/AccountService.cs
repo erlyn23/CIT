@@ -20,10 +20,12 @@ namespace CIT.BusinessLogic.Services
         private readonly IEntitiesInfoService _entitiesInfoService;
         private readonly IOperationService _operationService;
         private readonly IPageService _pageService;
+        private readonly IAddressService _addressService;
+        private readonly IUserAddressService _userAddressService;
         private readonly TokenCreator _tokenCreator;
         private readonly IRoleService _roleService;
 
-        public AccountService(IUserRepository userRepository, IRoleService roleService, IUserRoleRepository userRoleRepository, IEntitiesInfoService entitiesInfoService, IOperationService operationService, IPageService pageService, TokenCreator tokenCreator)
+        public AccountService(IUserRepository userRepository, IRoleService roleService, IUserRoleRepository userRoleRepository, IEntitiesInfoService entitiesInfoService, IOperationService operationService, IPageService pageService, IAddressService addressService, IUserAddressService userAddressService, TokenCreator tokenCreator)
         {
             _userRepository = userRepository;
             _tokenCreator = tokenCreator;
@@ -31,10 +33,12 @@ namespace CIT.BusinessLogic.Services
             _entitiesInfoService = entitiesInfoService;
             _operationService = operationService;
             _pageService = pageService;
+            _addressService = addressService;
+            _userAddressService = userAddressService;
             _roleService = roleService;
         }
 
-        public async Task<AccountResponse> RegisterUserAsync(UserDto userDto)
+        public async Task<AccountResponse> RegisterUserAsync(UserDto userDto, bool isAdmin)
         {
             var userEntity = new User()
             {
@@ -58,34 +62,31 @@ namespace CIT.BusinessLogic.Services
             };
 
             var savedEntityInfo = await _entitiesInfoService.AddEntityInfoAsync(entitiesInfo);
-
             userEntity.EntityInfoId = savedEntityInfo.Id;
 
+
             await _userRepository.AddAsync(userEntity);
+            await _userRepository.SaveChangesAsync();
 
             if (!string.IsNullOrEmpty(userDto.Photo))
                 userEntity.Photo = await UploadProfilePhotoAsync(userDto.Photo, userEntity.Id);
 
+            _userRepository.Update(userEntity);
             await _userRepository.SaveChangesAsync();
 
-            var rolePermissions = await SetAdminRolePermissions();
-            var administratorRole = await _roleService.GetRoleByNameAsync("Administrador");
-            var savedRoleId = (administratorRole != null) ? administratorRole.RoleId : 0;
-            if (administratorRole == null)
-            {
-                administratorRole = new RoleDto()
-                {
-                    Role = "Administrador",
-                    RolePermissions = rolePermissions
-                };
-                var savedRole = await _roleService.CreateRoleAsync(administratorRole);
-                savedRoleId = savedRole.RoleId;
-            }
+            var savedAddress = await _addressService.CreateAddressAsync(userDto.Address);
+            await _userAddressService.CreateUserAddress(userEntity.Id, savedAddress.Id);
 
+
+            int roleId;
+            if (isAdmin)
+                roleId = await SaveAdminRole();
+            else
+                roleId = userDto.UserRole.RoleId;
 
             var userRole = new Userrole()
             {
-                RoleId = savedRoleId,
+                RoleId = roleId,
                 UserId = userEntity.Id,
                 EntityInfoId = entitiesInfo.Id
             };
@@ -119,6 +120,23 @@ namespace CIT.BusinessLogic.Services
             return path;
         }
 
+        private async Task<int> SaveAdminRole()
+        {
+            var rolePermissions = await SetAdminRolePermissions();
+            var administratorRole = await _roleService.GetRoleByNameAsync("Administrador");
+            var savedRoleId = (administratorRole != null) ? administratorRole.RoleId : 0;
+            if (administratorRole == null)
+            {
+                administratorRole = new RoleDto()
+                {
+                    Role = "Administrador",
+                    RolePermissions = rolePermissions
+                };
+                var savedRole = await _roleService.CreateRoleAsync(administratorRole);
+                savedRoleId = savedRole.RoleId;
+            }
+            return savedRoleId;
+        }
 
         private async Task<List<RolePermissionDto>> SetAdminRolePermissions()
         {
@@ -140,6 +158,43 @@ namespace CIT.BusinessLogic.Services
             }
 
             return rolePermissions;
+        }
+
+        public async Task<List<UserDto>> GetUsersAsync()
+        {
+            var users = await _userRepository.GetAllWithRelationsAsync();
+
+            var usersDto = users.Select(u => MapUserAsync(u).Result).ToList();
+            return usersDto;
+        }
+
+        private async Task<UserDto> MapUserAsync(User user)
+        {
+            var entityInfo = await _entitiesInfoService.GetEntityInfoAsync(user.EntityInfoId);
+            var address = await _addressService.GetAddressAsync(user.UserAddress.AddressId);
+            var role = await _roleService.GetRoleByIdAsync(user.Userrole.RoleId);
+            var userRole = await _userRoleRepository.FirstOrDefaultAsync(ur => ur.UserId == user.Id);
+
+            var userDto = new UserDto()
+            {
+                Id = user.Id,
+                Name = user.Name,
+                LastName = user.LastName,
+                IdentificationDocument = user.IdentificationDocument,
+                Phone = user.Phone,
+                Email = user.Email,
+                Photo = user.Photo,
+                Address = address,
+                UserRole = new UserRoleDto()
+                {
+                    UserRoleId = userRole.Id,
+                    UserId = user.Id,
+                    RoleId = role.RoleId,
+                    Role = role
+                }
+            };
+
+            return userDto;
         }
 
         public async Task<AccountResponse> SignInAsync(string email, string password)

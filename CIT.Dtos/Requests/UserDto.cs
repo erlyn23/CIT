@@ -39,6 +39,8 @@ namespace CIT.Dtos.Requests
         [RegularExpression("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{6,20}$", ErrorMessage = "La confirmación de contraseña no es segura")]
         public string ConfirmPassword { get; set; }
         public string Photo { get; set; }
+        public UserRoleDto UserRole { get; set; }
+        public AddressDto Address { get; set; }
 
 
         private abstract class UniqueValidation : ValidationAttribute

@@ -25,5 +25,25 @@ namespace CIT.Presentation.Controllers
             return View();
         }
 
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [ServiceFilter(typeof(AuthFilter))]
+        [HttpPost]
+        public async Task<IActionResult> SaveUserAsync([FromBody] UserDto user)
+        {
+            if (ModelState.IsValid)
+                return Json(await _accountService.RegisterUserAsync(user, false));
+            else
+                return Json(ModelState.Values.ToList());
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [ServiceFilter(typeof(AuthFilter))]
+        [HttpGet]
+        public async Task<IActionResult> GetUsersAsync()
+        {
+            return Json(await _accountService.GetUsersAsync());
+        }
+
+
     }
 }

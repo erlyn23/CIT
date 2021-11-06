@@ -70,28 +70,29 @@ $("#registerBtn").on('click', function () {
             url: '/Account/Register', method: 'POST', data: newUser, headers: null,
                 successCallback: function (data) {
                     if (Array.isArray(data)) {
-                    $("#errorMessages").html("");
-                    for (let validationObject of data) {
-                        for (let errorValidation of validationObject.errors) {
-                            let errorMsg = `<p class="text-danger"><i class="fas fa-exclamation-circle"></i>&nbsp; ${errorValidation.errorMessage}</p>`;
-                            $("#errorMessages").append(errorMsg);
-                            $("#LoadingModal").modal('hide');
+                        $("#errorMessages").html("");
+                        for (let validationObject of data) {
+                            for (let errorValidation of validationObject.errors) {
+                                let errorMsg = `<p class="text-danger"><i class="fas fa-exclamation-circle"></i>&nbsp; ${errorValidation.errorMessage}</p>`;
+                                $("#errorMessages").append(errorMsg);
+                                $("#LoadingModal").modal('hide');
 
-                            setTimeout(function () {
-                                $("#ErrorMessagesModal").modal('show');
-                            }, 1000);
+                                setTimeout(function () {
+                                    $("#ErrorMessagesModal").modal('show');
+                                }, 1000);
+                            }
                         }
-                    }
-                } else {
-                    $("#errorMessages").html("");
-                    let successMsg = `<p class="text-success"><i class="fas fa-check-circle"></i>&nbsp; Usuario registrado correctamente, ya puedes iniciar sesión</p>`;
-                    $("#errorMessages").append(successMsg);
-                    $("#LoadingModal").modal('hide');
+                    } else {
+                        $("form").eq(0).trigger('reset');
+                        $("#errorMessages").html("");
+                        let successMsg = `<p class="text-success"><i class="fas fa-check-circle"></i>&nbsp; Usuario registrado correctamente, ya puedes iniciar sesión</p>`;
+                        $("#errorMessages").append(successMsg);
+                        $("#LoadingModal").modal('hide');
 
-                    setTimeout(function () {
-                        $("#ErrorMessagesModal").modal('show');
-                    }, 1000);
-                }
+                        setTimeout(function () {
+                            $("#ErrorMessagesModal").modal('show');
+                        }, 1000);
+                    }
             },
             errorCallback: function (err) {
                 $("#errorMessages").html("");

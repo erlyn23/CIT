@@ -10,6 +10,7 @@ namespace CIT.DataAccess.Contracts
 {
     public interface IUserRepository : IGenericRepository<User>
     {
+        Task<List<User>> GetAllWithRelationsAsync();
         Task<User> FirstOrDefaultWithRelationsAsync(Expression<Func<User, bool>> expression);
     }
 }

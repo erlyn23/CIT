@@ -1,0 +1,145 @@
+﻿<div class="modal fade" id="CreteUserModal" tabindex="-1" aria-labelledby="CreteUserModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Crear nuevo usuario</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">
+                    <span></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="row mb-2">
+                        <div class="col-md-4 offset-4">
+                            <input type="hidden" id="sendPhoto">
+                            <label class="upload-photo-file" for="userPhoto">
+                                <input type="file" accept="image/*" class="upload-photo-file-input" id="userPhoto">
+                                <img src="" style="width: 100%; height: 100%" class="upload-photo-container" id="uploadedPhoto">
+                            </label>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" id="firstName" placeholder="Nombre">
+                            <div class="invalid-feedback" id="firstNameValidation">
+
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" id="lastName" placeholder="Apellido">
+                            <div class="invalid-feedback" id="lastNameValidation">
+
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="number" class="form-control" id="identificationDocument" placeholder="Cédula">
+                            <div class="invalid-feedback" id="identificationDocumentValidation">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-6">
+                            <input type="email" id="email" class="form-control" placeholder="Correo electrónico">
+                            <div class="invalid-feedback" id="emailValidation">
+
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <input type="number" id="phoneNumber" class="form-control" placeholder="Teléfono">
+                            <div class="invalid-feedback" id="phoneValidation">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-4">
+                            <select id="country" class="form-control">
+                                <option value="" selected disabled>Selecciona un país</option>
+                            </select>
+                            <div class="invalid-feedback" id="countryValidation">
+
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" id="city" class="form-control" placeholder="Ciudad">
+                            <div class="invalid-feedback" id="cityValidation">
+
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" id="province" class="form-control" placeholder="Provincia">
+                            <div class="invalid-feedback" id="provinceValidation">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" id="street1" placeholder="Calle 1">
+                            <div class="invalid-feedback" id="street1Validation">
+
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" id="street2" placeholder="Calle 2 (opcional)">
+                        </div>
+                        <div class="col-md-4">
+                            <input type="number" class="form-control" id="houseNumber" placeholder="Número de casa o puerta">
+                            <div class="invalid-feedback" id="houseNumberValidation">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-12">
+                            <input type="hidden" id="latitude" />
+                            <input type="hidden" id="longitude" />
+                            <label for="userMap">Dirección exacta:</label>
+                            <div id="userMap" style="width: 100%; height: 300px">
+
+                            </div>
+                            <div class="text-danger" id="latLngValidation">
+
+                            </div>
+                        </div>  
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-4">
+                            <select id="userRole" class="form-control">
+                                <option value="" disabled selected>Selecciona un rol</option>
+                            </select>
+                            <div class="invalid-feedback" id="roleValidation">
+
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="password" class="form-control" id="password" placeholder="Contraseña">
+                            <div class="invalid-feedback" id="passwordValidation">
+
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="password" class="form-control" id="confirmPassword" placeholder="Confirmar contraseña">
+                            <div class="invalid-feedback" id="confirmPasswordValidation">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-6 offset-md-3">
+                            <button type="button" id="saveUserBtn" class="btn btn-success">
+                                <i class="fas fa-check"></i>
+                                <span>Guardar usuario</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="text-center text-danger" id="finalValidation">
+                        
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>

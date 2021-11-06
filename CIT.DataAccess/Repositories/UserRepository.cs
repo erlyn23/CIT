@@ -18,7 +18,10 @@ namespace CIT.DataAccess.Repositories
         {
             _dbContext = dbContext;
         }
-
+        
+        public async Task<List<User>> GetAllWithRelationsAsync()=>
+            await _dbContext.Users.Include(u => u.EntityInfo).Include(u => u.Userrole).Include(u => u.UserAddress).ToListAsync();
+        
         public async Task<User> FirstOrDefaultWithRelationsAsync(Expression<Func<User, bool>> expression) => 
             await _dbContext.Users.Where(expression)
                 .Include(u => u.EntityInfo).Include(u => u.Userrole).FirstOrDefaultAsync();
