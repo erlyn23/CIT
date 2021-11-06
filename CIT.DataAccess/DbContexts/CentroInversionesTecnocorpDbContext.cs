@@ -31,8 +31,8 @@ namespace CIT.DataAccess.DbContexts
         public virtual DbSet<Useraddress> Useraddresses { get; set; }
         public virtual DbSet<Userrole> Userroles { get; set; }
         public virtual DbSet<Vehicle> Vehicles { get; set; }
-
         public virtual DbSet<LenderBusiness> LenderBusiness { get; set; }
+        public virtual DbSet<LenderAddress> LenderAddress { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -69,6 +69,38 @@ namespace CIT.DataAccess.DbContexts
                     .HasConstraintName("Fk_LenderBusiness_EntitiesInfo");
 
             });
+
+            modelBuilder.Entity<LenderAddress>(entity =>
+            {
+                entity.ToTable("lenderaddress");
+
+                entity.HasKey(e => new { e.Id, e.LenderBusinessId, e.AddressId })
+                    .HasName("PRIMARY");
+
+                entity.HasIndex(e => e.AddressId, "Fk_LenderAddresses_Address").IsUnique();
+
+                entity.HasIndex(e => e.LenderBusinessId, "Fk_LenderAddresses_LenderBusinesses").IsUnique();
+
+                entity.Property(e => e.Id).HasColumnType("int").UseMySqlIdentityColumn();
+
+                entity.Property(e => e.LenderBusinessId).HasColumnType("int(11)");
+
+                entity.Property(e => e.AddressId).HasColumnType("int(11)");
+
+                entity.HasOne(d => d.Address)
+                    .WithOne(p => p.LenderAddress)
+                    .HasForeignKey<LenderAddress>(d => d.AddressId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("Fk_LenderAddresses_Address");
+
+                entity.HasOne(d => d.LenderBusiness)
+                    .WithOne(p => p.LenderAddress)
+                    .HasForeignKey<LenderAddress>(d => d.AddressId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("Fk_LenderAddresses_LenderBusinesses");
+            });
+
+
 
             modelBuilder.Entity<Address>(entity =>
             {
@@ -412,7 +444,7 @@ namespace CIT.DataAccess.DbContexts
 
                 entity.ToTable("useraddresses");
 
-                entity.HasIndex(e => e.AddressId, "Fk_UserAddresses_Address");
+                entity.HasIndex(e => e.AddressId, "Fk_UserAddresses_Address").IsUnique();
 
                 entity.HasIndex(e => e.UserId, "Fk_UserAddresses_Users").IsUnique();
 

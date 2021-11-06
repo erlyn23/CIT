@@ -31,7 +31,7 @@ namespace CIT.DataAccess.Models
         public virtual ICollection<Log> Logs { get; set; }
         public virtual ICollection<Payment> Payments { get; set; }
         public virtual ICollection<Vehicle> Vehicles { get; set; }
-        public virtual Useraddress UserAddress { get; set; }
+        public virtual LenderAddress LenderAddress { get; set; }
         public virtual Entitiesinfo EntityInfo { get; set; }
     }
 }

@@ -20,5 +20,6 @@ namespace CIT.DataAccess.Models
 
         public virtual Entitiesinfo EntityInfo { get; set; }
         public virtual Useraddress UserAddress { get; set; }
+        public virtual LenderAddress LenderAddress { get; set; }
     }
 }

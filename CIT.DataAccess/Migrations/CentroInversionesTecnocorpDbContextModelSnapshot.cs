@@ -91,47 +91,81 @@ namespace CIT.DataAccess.Migrations
                     b.ToTable("entitiesinfo");
                 });
 
+            modelBuilder.Entity("CIT.DataAccess.Models.LenderAddress", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int")
+                        .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("LenderBusinessId")
+                        .HasColumnType("int(11)");
+
+                    b.Property<int>("AddressId")
+                        .HasColumnType("int(11)");
+
+                    b.HasKey("Id", "LenderBusinessId", "AddressId")
+                        .HasName("PRIMARY");
+
+                    b.HasIndex(new[] { "AddressId" }, "Fk_LenderAddresses_Address")
+                        .IsUnique();
+
+                    b.HasIndex(new[] { "LenderBusinessId" }, "Fk_LenderAddresses_LenderBusinesses")
+                        .IsUnique();
+
+                    b.ToTable("lenderaddress");
+                });
+
             modelBuilder.Entity("CIT.DataAccess.Models.LenderBusiness", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("BusinessName")
                         .HasColumnType("longtext");
 
                     b.Property<string>("Email")
-                        .HasColumnType("longtext");
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
 
                     b.Property<int>("EntityInfoId")
                         .HasColumnType("int");
 
                     b.Property<string>("Password")
-                        .HasColumnType("longtext");
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("Phone")
-                        .HasColumnType("longtext");
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
 
                     b.Property<string>("Photo")
-                        .HasColumnType("longtext");
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("Rnc")
-                        .HasColumnType("longtext");
-
-                    b.Property<int?>("UserAddressAddressId")
-                        .HasColumnType("int(11)");
-
-                    b.Property<int?>("UserAddressId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("UserAddressUserId")
-                        .HasColumnType("int(11)");
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserAddressId", "UserAddressUserId", "UserAddressAddressId");
+                    b.HasIndex(new[] { "EntityInfoId" }, "Fk_LenderBusinesses_EntitiesInfo");
 
-                    b.ToTable("LenderBusiness");
+                    b.HasIndex(new[] { "Email" }, "Ix_LenderBusiness_Email")
+                        .IsUnique();
+
+                    b.HasIndex(new[] { "Phone" }, "Ix_LenderBusiness_Phone")
+                        .IsUnique();
+
+                    b.HasIndex(new[] { "Rnc" }, "Ix_LenderBusiness_Rnc")
+                        .IsUnique();
+
+                    b.ToTable("lenderbusiness");
                 });
 
             modelBuilder.Entity("CIT.DataAccess.Models.Loan", b =>
@@ -427,10 +461,8 @@ namespace CIT.DataAccess.Migrations
                     b.HasKey("Id", "UserId", "AddressId")
                         .HasName("PRIMARY");
 
-                    b.HasIndex("AddressId")
+                    b.HasIndex(new[] { "AddressId" }, "Fk_UserAddresses_Address")
                         .IsUnique();
-
-                    b.HasIndex(new[] { "AddressId" }, "Fk_UserAddresses_Address");
 
                     b.HasIndex(new[] { "UserId" }, "Fk_UserAddresses_Users")
                         .IsUnique();
@@ -558,13 +590,34 @@ namespace CIT.DataAccess.Migrations
                     b.Navigation("EntityInfo");
                 });
 
+            modelBuilder.Entity("CIT.DataAccess.Models.LenderAddress", b =>
+                {
+                    b.HasOne("CIT.DataAccess.Models.Address", "Address")
+                        .WithOne("LenderAddress")
+                        .HasForeignKey("CIT.DataAccess.Models.LenderAddress", "AddressId")
+                        .HasConstraintName("Fk_LenderAddresses_Address")
+                        .IsRequired();
+
+                    b.HasOne("CIT.DataAccess.Models.LenderBusiness", "LenderBusiness")
+                        .WithOne("LenderAddress")
+                        .HasForeignKey("CIT.DataAccess.Models.LenderAddress", "AddressId")
+                        .HasConstraintName("Fk_LenderAddresses_LenderBusinesses")
+                        .IsRequired();
+
+                    b.Navigation("Address");
+
+                    b.Navigation("LenderBusiness");
+                });
+
             modelBuilder.Entity("CIT.DataAccess.Models.LenderBusiness", b =>
                 {
-                    b.HasOne("CIT.DataAccess.Models.Useraddress", "UserAddress")
-                        .WithMany()
-                        .HasForeignKey("UserAddressId", "UserAddressUserId", "UserAddressAddressId");
+                    b.HasOne("CIT.DataAccess.Models.Entitiesinfo", "EntityInfo")
+                        .WithMany("LenderBusinesses")
+                        .HasForeignKey("EntityInfoId")
+                        .HasConstraintName("Fk_LenderBusiness_EntitiesInfo")
+                        .IsRequired();
 
-                    b.Navigation("UserAddress");
+                    b.Navigation("EntityInfo");
                 });
 
             modelBuilder.Entity("CIT.DataAccess.Models.Loan", b =>
@@ -794,12 +847,16 @@ namespace CIT.DataAccess.Migrations
 
             modelBuilder.Entity("CIT.DataAccess.Models.Address", b =>
                 {
+                    b.Navigation("LenderAddress");
+
                     b.Navigation("UserAddress");
                 });
 
             modelBuilder.Entity("CIT.DataAccess.Models.Entitiesinfo", b =>
                 {
                     b.Navigation("Addresses");
+
+                    b.Navigation("LenderBusinesses");
 
                     b.Navigation("Loans");
 
@@ -816,6 +873,8 @@ namespace CIT.DataAccess.Migrations
 
             modelBuilder.Entity("CIT.DataAccess.Models.LenderBusiness", b =>
                 {
+                    b.Navigation("LenderAddress");
+
                     b.Navigation("Loans");
 
                     b.Navigation("Logs");
