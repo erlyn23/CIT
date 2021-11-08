@@ -31,14 +31,15 @@ namespace CIT.DataAccess.DbContexts
         public virtual DbSet<Useraddress> Useraddresses { get; set; }
         public virtual DbSet<Userrole> Userroles { get; set; }
         public virtual DbSet<Vehicle> Vehicles { get; set; }
-        public virtual DbSet<LenderBusiness> LenderBusiness { get; set; }
-        public virtual DbSet<LenderAddress> LenderAddress { get; set; }
+        public virtual DbSet<LenderBusiness> LenderBusinesses { get; set; }
+        public virtual DbSet<LenderAddress> LenderAddresses { get; set; }
+        public virtual DbSet<LenderRole> LenderRoles { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<LenderBusiness>(entity =>
             {
-                entity.ToTable("lenderbusiness");
+                entity.ToTable("lenderbusinesses");
 
                 entity.HasIndex(e => e.Rnc, "Ix_LenderBusiness_Rnc").IsUnique();
 
@@ -508,6 +509,39 @@ namespace CIT.DataAccess.DbContexts
                     .HasForeignKey<Userrole>(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("Fk_UserRoles_UserId");
+            });
+
+            modelBuilder.Entity<LenderRole>(entity =>
+            {
+                entity.HasKey(e => new { e.Id, e.RoleId, e.LenderBusinessId })
+                    .HasName("PRIMARY");
+
+                entity.ToTable("lenderroles");
+
+
+                entity.HasIndex(e => e.RoleId, "RoleId");
+
+                entity.HasIndex(e => e.LenderBusinessId, "LenderBusinessId")
+                    .IsUnique();
+
+                entity.Property(e => e.Id).HasColumnType("int").UseMySqlIdentityColumn();
+
+                entity.Property(e => e.RoleId).HasColumnType("int(11)");
+
+                entity.Property(e => e.LenderBusinessId).HasColumnType("int(11)");
+
+
+                entity.HasOne(d => d.Role)
+                    .WithMany(p => p.LenderRoles)
+                    .HasForeignKey(d => d.RoleId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("Fk_LenderRole_Roles");
+
+                entity.HasOne(d => d.LenderBusiness)
+                    .WithOne(p => p.LenderRole)
+                    .HasForeignKey<LenderRole>(d => d.LenderBusinessId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("Fk_LenderRole_LenderBusiness");
             });
 
             modelBuilder.Entity<Vehicle>(entity =>

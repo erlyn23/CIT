@@ -91,7 +91,7 @@ namespace CIT.DataAccess.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "lenderbusiness",
+                name: "lenderbusinesses",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -112,7 +112,7 @@ namespace CIT.DataAccess.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_lenderbusiness", x => x.Id);
+                    table.PrimaryKey("PK_lenderbusinesses", x => x.Id);
                     table.ForeignKey(
                         name: "Fk_LenderBusiness_EntitiesInfo",
                         column: x => x.EntityInfoId,
@@ -143,7 +143,7 @@ namespace CIT.DataAccess.Migrations
                     table.ForeignKey(
                         name: "Fk_LenderAddresses_LenderBusinesses",
                         column: x => x.AddressId,
-                        principalTable: "lenderbusiness",
+                        principalTable: "lenderbusinesses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 })
@@ -177,7 +177,7 @@ namespace CIT.DataAccess.Migrations
                     table.ForeignKey(
                         name: "Fk_Loans_LenderBusiness",
                         column: x => x.LenderBusinessId,
-                        principalTable: "lenderbusiness",
+                        principalTable: "lenderbusinesses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 })
@@ -206,7 +206,7 @@ namespace CIT.DataAccess.Migrations
                     table.ForeignKey(
                         name: "Fk_Roles_LenderBusiness",
                         column: x => x.LenderBusinessId,
-                        principalTable: "lenderbusiness",
+                        principalTable: "lenderbusinesses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 })
@@ -247,7 +247,7 @@ namespace CIT.DataAccess.Migrations
                     table.ForeignKey(
                         name: "Fk_Users_LenderBusiness",
                         column: x => x.LenderBusinessId,
-                        principalTable: "lenderbusiness",
+                        principalTable: "lenderbusinesses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 })
@@ -285,7 +285,34 @@ namespace CIT.DataAccess.Migrations
                     table.ForeignKey(
                         name: "Fk_Vehicles_LenderBusiness",
                         column: x => x.LenderBusinessId,
-                        principalTable: "lenderbusiness",
+                        principalTable: "lenderbusinesses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "lenderroles",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    LenderBusinessId = table.Column<int>(type: "int(11)", nullable: false),
+                    RoleId = table.Column<int>(type: "int(11)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PRIMARY", x => new { x.Id, x.RoleId, x.LenderBusinessId });
+                    table.ForeignKey(
+                        name: "Fk_LenderRole_LenderBusiness",
+                        column: x => x.LenderBusinessId,
+                        principalTable: "lenderbusinesses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "Fk_LenderRole_Roles",
+                        column: x => x.RoleId,
+                        principalTable: "roles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 })
@@ -342,7 +369,7 @@ namespace CIT.DataAccess.Migrations
                     table.ForeignKey(
                         name: "Fk_Logs_LenderBusiness",
                         column: x => x.LenderBusinessId,
-                        principalTable: "lenderbusiness",
+                        principalTable: "lenderbusinesses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -379,7 +406,7 @@ namespace CIT.DataAccess.Migrations
                     table.ForeignKey(
                         name: "Fk_Payments_LenderBusiness",
                         column: x => x.LenderBusinessId,
-                        principalTable: "lenderbusiness",
+                        principalTable: "lenderbusinesses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -504,26 +531,37 @@ namespace CIT.DataAccess.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "Fk_LenderBusinesses_EntitiesInfo",
-                table: "lenderbusiness",
+                table: "lenderbusinesses",
                 column: "EntityInfoId");
 
             migrationBuilder.CreateIndex(
                 name: "Ix_LenderBusiness_Email",
-                table: "lenderbusiness",
+                table: "lenderbusinesses",
                 column: "Email",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "Ix_LenderBusiness_Phone",
-                table: "lenderbusiness",
+                table: "lenderbusinesses",
                 column: "Phone",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "Ix_LenderBusiness_Rnc",
-                table: "lenderbusiness",
+                table: "lenderbusinesses",
                 column: "Rnc",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "LenderBusinessId",
+                table: "lenderroles",
+                column: "LenderBusinessId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "RoleId",
+                table: "lenderroles",
+                column: "RoleId");
 
             migrationBuilder.CreateIndex(
                 name: "Fk_Loans_EntitiesInfo",
@@ -614,7 +652,7 @@ namespace CIT.DataAccess.Migrations
                 column: "EntityInfoId");
 
             migrationBuilder.CreateIndex(
-                name: "RoleId",
+                name: "RoleId1",
                 table: "userroles",
                 column: "RoleId");
 
@@ -693,6 +731,9 @@ namespace CIT.DataAccess.Migrations
                 name: "lenderaddress");
 
             migrationBuilder.DropTable(
+                name: "lenderroles");
+
+            migrationBuilder.DropTable(
                 name: "logs");
 
             migrationBuilder.DropTable(
@@ -732,7 +773,7 @@ namespace CIT.DataAccess.Migrations
                 name: "vehicles");
 
             migrationBuilder.DropTable(
-                name: "lenderbusiness");
+                name: "lenderbusinesses");
 
             migrationBuilder.DropTable(
                 name: "entitiesinfo");

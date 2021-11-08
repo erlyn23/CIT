@@ -9,7 +9,7 @@ namespace CIT.BusinessLogic.Contracts
 {
     public interface IRoleService
     {
-        Task<RoleDto> CreateRoleAsync(RoleDto role);
+        Task<RoleDto> CreateRoleAsync(RoleDto role, int lenderBusinessId);
         Task<RoleDto> UpdateRoleAsync(RoleDto role);
         Task<List<RoleDto>> GetRolesAsync();
         Task<RoleDto> GetRoleByIdAsync(int roleId);

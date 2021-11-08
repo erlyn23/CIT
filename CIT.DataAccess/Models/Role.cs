@@ -11,6 +11,7 @@ namespace CIT.DataAccess.Models
         {
             Rolepermissions = new HashSet<Rolepermission>();
             Userroles = new HashSet<Userrole>();
+            LenderRoles = new HashSet<LenderRole>();
         }
 
         public int Id { get; set; }
@@ -21,6 +22,7 @@ namespace CIT.DataAccess.Models
         public virtual Entitiesinfo EntityInfo { get; set; }
         public virtual ICollection<Rolepermission> Rolepermissions { get; set; }
         public virtual ICollection<Userrole> Userroles { get; set; }
+        public virtual ICollection<LenderRole> LenderRoles { get; set; }
         public virtual LenderBusiness LenderBusiness { get; set; }
     }
 }

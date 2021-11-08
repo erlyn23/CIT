@@ -26,20 +26,14 @@ namespace CIT.BusinessLogic.Services
             _userRoleService = userRoleService;
         }
 
-        public async Task<RoleDto> CreateRoleAsync(RoleDto role)
+        public async Task<RoleDto> CreateRoleAsync(RoleDto role, int lenderBusinessId)
         {
-            var entityInfo = new Entitiesinfo()
-            {
-                CreatedAt = DateTime.Now,
-                UpdatedAt = DateTime.Now,
-                Status = 1
-            };
-
-            await _entitiesInfoService.AddEntityInfoAsync(entityInfo);
+            var entityInfo = await _entitiesInfoService.AddEntityInfoAsync();
 
             var roleEntity = new Role()
             {
                 RoleName = role.Role,
+                LenderBusinessId = lenderBusinessId,
                 EntityInfoId = entityInfo.Id
             };
 

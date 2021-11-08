@@ -56,9 +56,8 @@ $("#signInBtn").on('click', function (e) {
 $("#registerBtn").on('click', function () {
 
     const newUser = {
-        name: $("#name").val(),
-        lastName: $("#lastName").val(),
-        identificationDocument: $("#identificationDocument").val(),
+        businessName: $("#businessName").val(),
+        rnc: $("#Rnc").val(),
         phone: $("#phone").val(),
         email: $("#email").val(),
         password: $("#password").val(),

@@ -1,4 +1,5 @@
-﻿using CIT.Dtos.Responses;
+﻿using CIT.Dtos.Requests;
+using CIT.Dtos.Responses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,7 @@ namespace CIT.BusinessLogic.Contracts
 {
     public interface ILenderBusinessService
     {
-        Task<AccountResponse> CreateLenderBusinessAsync();
+        Task<AccountResponse> CreateLenderBusinessAsync(LenderBusinessDto lenderBusiness);
+        Task<LenderBusinessDto> GetLenderBusinessAsync(int lenderBusinessId);
     }
 }

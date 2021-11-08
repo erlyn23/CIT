@@ -18,27 +18,23 @@ namespace CIT.BusinessLogic.Services
         private readonly IUserRepository _userRepository;
         private readonly IUserRoleRepository _userRoleRepository;
         private readonly IEntitiesInfoService _entitiesInfoService;
-        private readonly IOperationService _operationService;
-        private readonly IPageService _pageService;
         private readonly IAddressService _addressService;
         private readonly IUserAddressService _userAddressService;
         private readonly TokenCreator _tokenCreator;
         private readonly IRoleService _roleService;
 
-        public AccountService(IUserRepository userRepository, IRoleService roleService, IUserRoleRepository userRoleRepository, IEntitiesInfoService entitiesInfoService, IOperationService operationService, IPageService pageService, IAddressService addressService, IUserAddressService userAddressService, TokenCreator tokenCreator)
+        public AccountService(IUserRepository userRepository, IRoleService roleService, IUserRoleRepository userRoleRepository, IEntitiesInfoService entitiesInfoService, IAddressService addressService, IUserAddressService userAddressService, TokenCreator tokenCreator)
         {
             _userRepository = userRepository;
             _tokenCreator = tokenCreator;
             _userRoleRepository = userRoleRepository;
             _entitiesInfoService = entitiesInfoService;
-            _operationService = operationService;
-            _pageService = pageService;
             _addressService = addressService;
             _userAddressService = userAddressService;
             _roleService = roleService;
         }
 
-        public async Task<AccountResponse> RegisterUserAsync(UserDto userDto, bool isAdmin)
+        public async Task<AccountResponse> RegisterUserAsync(UserDto userDto)
         {
             var userEntity = new User()
             {
@@ -47,21 +43,15 @@ namespace CIT.BusinessLogic.Services
                 IdentificationDocument = userDto.IdentificationDocument,
                 Phone = userDto.Phone,
                 Email = userDto.Email,
-                Password = Encryption.Encrypt(userDto.Password)
+                Password = Encryption.Encrypt(userDto.Password),
+                LenderBusinessId = userDto.LenderBusinessId
             };
 
             if (!userDto.Password.Equals(userDto.ConfirmPassword))
                 throw new Exception("Las contraseñas no coinciden");
 
 
-            var entitiesInfo = new Entitiesinfo()
-            {
-                CreatedAt = DateTime.Now,
-                UpdatedAt = DateTime.Now,
-                Status = 1
-            };
-
-            var savedEntityInfo = await _entitiesInfoService.AddEntityInfoAsync(entitiesInfo);
+            var savedEntityInfo = await _entitiesInfoService.AddEntityInfoAsync();
             userEntity.EntityInfoId = savedEntityInfo.Id;
 
 
@@ -69,7 +59,7 @@ namespace CIT.BusinessLogic.Services
             await _userRepository.SaveChangesAsync();
 
             if (!string.IsNullOrEmpty(userDto.Photo))
-                userEntity.Photo = await UploadProfilePhotoAsync(userDto.Photo, userEntity.Id);
+                userEntity.Photo = await UploadPhoto.UploadProfilePhotoAsync($"user_profile_photo_{userEntity.Id}.jpg", userDto.Photo);
 
             _userRepository.Update(userEntity);
             await _userRepository.SaveChangesAsync();
@@ -77,18 +67,13 @@ namespace CIT.BusinessLogic.Services
             var savedAddress = await _addressService.CreateAddressAsync(userDto.Address);
             await _userAddressService.CreateUserAddress(userEntity.Id, savedAddress.Id);
 
-
-            int roleId;
-            if (isAdmin)
-                roleId = await SaveAdminRole();
-            else
-                roleId = userDto.UserRole.RoleId;
+            int roleId = userDto.UserRole.RoleId;
 
             var userRole = new Userrole()
             {
                 RoleId = roleId,
                 UserId = userEntity.Id,
-                EntityInfoId = entitiesInfo.Id
+                EntityInfoId = savedEntityInfo.Id
             };
             await _userRoleRepository.AddAsync(userRole);
             await _userRoleRepository.SaveChangesAsync();
@@ -101,71 +86,20 @@ namespace CIT.BusinessLogic.Services
             };
         }
 
-        private async Task<string> UploadProfilePhotoAsync(string photo, int userId)
+        public async Task<List<UserDto>> GetUsersAsync(int lenderBusinessId)
         {
-            string imagePath = $"{Environment.CurrentDirectory}/ProfilePhotos";
-            string[] imageSplitted = photo.Split(',');
-            byte[] imageInBytes = Convert.FromBase64String(imageSplitted[1]);
-
-            string fileName = $"profile_photo_{userId}.jpg";
-            string path = Path.Combine(imagePath, fileName);
-
-
-            using (var stream = new FileStream(path, FileMode.Create))
-            {
-                await stream.WriteAsync(imageInBytes, 0, imageInBytes.Length);
-                await stream.FlushAsync();
-            }
-
-            return path;
-        }
-
-        private async Task<int> SaveAdminRole()
-        {
-            var rolePermissions = await SetAdminRolePermissions();
-            var administratorRole = await _roleService.GetRoleByNameAsync("Administrador");
-            var savedRoleId = (administratorRole != null) ? administratorRole.RoleId : 0;
-            if (administratorRole == null)
-            {
-                administratorRole = new RoleDto()
-                {
-                    Role = "Administrador",
-                    RolePermissions = rolePermissions
-                };
-                var savedRole = await _roleService.CreateRoleAsync(administratorRole);
-                savedRoleId = savedRole.RoleId;
-            }
-            return savedRoleId;
-        }
-
-        private async Task<List<RolePermissionDto>> SetAdminRolePermissions()
-        {
-            var operations = await _operationService.GetOperationsAsync();
-            var pages = await _pageService.GetPagesAsync();
-
-            var rolePermissions = new List<RolePermissionDto>();
-
-            foreach (var page in pages)
-            {
-                foreach (var operation in operations)
-                {
-                    rolePermissions.Add(new RolePermissionDto()
-                    {
-                        PageId = page.PageId,
-                        OperationId = operation.OperationId
-                    });
-                }
-            }
-
-            return rolePermissions;
-        }
-
-        public async Task<List<UserDto>> GetUsersAsync()
-        {
-            var users = await _userRepository.GetAllWithRelationsAsync();
+            var users = await _userRepository.GetAllWithFilterAndWithRelationsAsync(u => u.LenderBusinessId == lenderBusinessId);
 
             var usersDto = users.Select(u => MapUserAsync(u).Result).ToList();
             return usersDto;
+        }
+
+        public async Task<UserDto> GetUserAsync(int userId)
+        {
+            var user = await _userRepository.FirstOrDefaultWithRelationsAsync(u => u.Id == userId);
+            var userDto = await MapUserAsync(user);
+
+            return userDto;
         }
 
         private async Task<UserDto> MapUserAsync(User user)
@@ -191,7 +125,8 @@ namespace CIT.BusinessLogic.Services
                     UserId = user.Id,
                     RoleId = role.RoleId,
                     Role = role
-                }
+                },
+                LenderBusinessId = user.LenderBusinessId
             };
 
             return userDto;

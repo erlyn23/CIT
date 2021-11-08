@@ -93,6 +93,12 @@ namespace CIT.Presentation
             services.AddScoped<IAddressService, AddressService>();
             services.AddScoped<IUserAddressRepository, UserAddressRepository>();
             services.AddScoped<IUserAddressService, UserAddressService>();
+            services.AddScoped<ILenderRoleRepository, LenderRoleRepository>();
+            services.AddScoped<ILenderAddressRepository, LenderAddressRepository>();
+            services.AddScoped<ILenderBusinessRepository, LenderBusinessRepository>();
+            services.AddScoped<ILenderBusinessService, LenderBusinessService>();
+            services.AddScoped<ILenderRoleService, LenderRoleService>();
+            services.AddScoped<ILenderAddressService, LenderAddressService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

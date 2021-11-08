@@ -29,7 +29,32 @@ namespace CIT.Tools
             {
                 new Claim(ClaimTypes.Email, user.Email),
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim("Role", user.Userrole.RoleId.ToString())
+                new Claim("Role", user.Userrole.RoleId.ToString()),
+                new Claim("UserType", "User")
+            };
+
+            var jwtSecurityTokenDescriptor = new SecurityTokenDescriptor()
+            {
+                Subject = new ClaimsIdentity(claims),
+                Expires = DateTime.UtcNow.AddDays(30),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secretKey)), SecurityAlgorithms.HmacSha256)
+            };
+
+            var token = jwtSecurityTokenHandler.CreateToken(jwtSecurityTokenDescriptor);
+            return jwtSecurityTokenHandler.WriteToken(token);
+        }
+
+        public string BuildToken(LenderBusiness lenderBusiness)
+        {
+            var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
+            var secretKey = _configuration["SecretKey"];
+
+            var claims = new List<Claim>()
+            {
+                new Claim(ClaimTypes.Email, lenderBusiness.Email),
+                new Claim(ClaimTypes.NameIdentifier, lenderBusiness.Id.ToString()),
+                new Claim("Role", lenderBusiness.LenderRole.RoleId.ToString()),
+                new Claim("UserType", "Lender")
             };
 
             var jwtSecurityTokenDescriptor = new SecurityTokenDescriptor()

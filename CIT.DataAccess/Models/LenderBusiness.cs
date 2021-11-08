@@ -33,5 +33,6 @@ namespace CIT.DataAccess.Models
         public virtual ICollection<Vehicle> Vehicles { get; set; }
         public virtual LenderAddress LenderAddress { get; set; }
         public virtual Entitiesinfo EntityInfo { get; set; }
+        public virtual LenderRole LenderRole { get; set; }
     }
 }

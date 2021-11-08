@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CIT.DataAccess.Migrations
 {
     [DbContext(typeof(CentroInversionesTecnocorpDbContext))]
-    [Migration("20211106205808_LenderBusinessMigration")]
+    [Migration("20211106215555_LenderBusinessMigration")]
     partial class LenderBusinessMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -167,7 +167,31 @@ namespace CIT.DataAccess.Migrations
                     b.HasIndex(new[] { "Rnc" }, "Ix_LenderBusiness_Rnc")
                         .IsUnique();
 
-                    b.ToTable("lenderbusiness");
+                    b.ToTable("lenderbusinesses");
+                });
+
+            modelBuilder.Entity("CIT.DataAccess.Models.LenderRole", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int(11)");
+
+                    b.Property<int>("LenderBusinessId")
+                        .HasColumnType("int(11)");
+
+                    b.HasKey("Id", "RoleId", "LenderBusinessId")
+                        .HasName("PRIMARY");
+
+                    b.HasIndex(new[] { "LenderBusinessId" }, "LenderBusinessId")
+                        .IsUnique();
+
+                    b.HasIndex(new[] { "RoleId" }, "RoleId");
+
+                    b.ToTable("lenderroles");
                 });
 
             modelBuilder.Entity("CIT.DataAccess.Models.Loan", b =>
@@ -494,7 +518,8 @@ namespace CIT.DataAccess.Migrations
 
                     b.HasIndex(new[] { "EntityInfoId" }, "Fk_UserRoles_EntitiesInfo");
 
-                    b.HasIndex(new[] { "RoleId" }, "RoleId");
+                    b.HasIndex(new[] { "RoleId" }, "RoleId")
+                        .HasDatabaseName("RoleId1");
 
                     b.HasIndex(new[] { "UserId" }, "UserId")
                         .IsUnique();
@@ -620,6 +645,25 @@ namespace CIT.DataAccess.Migrations
                         .IsRequired();
 
                     b.Navigation("EntityInfo");
+                });
+
+            modelBuilder.Entity("CIT.DataAccess.Models.LenderRole", b =>
+                {
+                    b.HasOne("CIT.DataAccess.Models.LenderBusiness", "LenderBusiness")
+                        .WithOne("LenderRole")
+                        .HasForeignKey("CIT.DataAccess.Models.LenderRole", "LenderBusinessId")
+                        .HasConstraintName("Fk_LenderRole_LenderBusiness")
+                        .IsRequired();
+
+                    b.HasOne("CIT.DataAccess.Models.Role", "Role")
+                        .WithMany("LenderRoles")
+                        .HasForeignKey("RoleId")
+                        .HasConstraintName("Fk_LenderRole_Roles")
+                        .IsRequired();
+
+                    b.Navigation("LenderBusiness");
+
+                    b.Navigation("Role");
                 });
 
             modelBuilder.Entity("CIT.DataAccess.Models.Loan", b =>
@@ -877,6 +921,8 @@ namespace CIT.DataAccess.Migrations
                 {
                     b.Navigation("LenderAddress");
 
+                    b.Navigation("LenderRole");
+
                     b.Navigation("Loans");
 
                     b.Navigation("Logs");
@@ -907,6 +953,8 @@ namespace CIT.DataAccess.Migrations
 
             modelBuilder.Entity("CIT.DataAccess.Models.Role", b =>
                 {
+                    b.Navigation("LenderRoles");
+
                     b.Navigation("Rolepermissions");
 
                     b.Navigation("Userroles");

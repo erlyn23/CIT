@@ -11,10 +11,12 @@ namespace CIT.Presentation.Controllers
 {
     public class AccountController : Controller
     {
+        private readonly ILenderBusinessService _lenderBusinessService;
         private readonly IAccountService _accountService;
 
-        public AccountController(IAccountService accountService)
+        public AccountController(ILenderBusinessService lenderBusinessService, IAccountService accountService)
         {
+            _lenderBusinessService = lenderBusinessService;
             _accountService = accountService;
         }
         public IActionResult Index()
@@ -41,12 +43,12 @@ namespace CIT.Presentation.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Register([FromBody] UserDto userDto)
+        public async Task<IActionResult> Register([FromBody] LenderBusinessDto lenderBusiness)
         {
             try
             {
                 if (ModelState.IsValid)
-                    return Json(await _accountService.RegisterUserAsync(userDto, true));
+                    return Json(await _lenderBusinessService.CreateLenderBusinessAsync(lenderBusiness));
                 else
                     return Json(ModelState.Values.ToList());
             }
