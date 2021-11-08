@@ -14,6 +14,7 @@ namespace CIT.Dtos.Requests
         public string Role { get; set; }
         public List<RolePermissionDto> RolePermissions { get; set; }
         public List<RolePermissionDto> ToDelete { get; set; }
+        public int LenderBusinessId { get; set; }
         public EntityInfoDto EntityInfo { get; set; }
 
         public RoleDto()

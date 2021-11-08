@@ -1,4 +1,5 @@
-﻿using CIT.DataAccess.Models;
+﻿using CIT.DataAccess.Contracts;
+using CIT.DataAccess.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -15,10 +16,15 @@ namespace CIT.Tools
     public class TokenCreator
     {
         private readonly IConfiguration _configuration;
+        private readonly IUserRepository _userRepository;
+        private readonly ILenderBusinessRepository _lenderBusinessRepository;
+        private int _userId;
 
-        public TokenCreator(IConfiguration configuration)
+        public TokenCreator(IConfiguration configuration, IUserRepository userRepository, ILenderBusinessRepository lenderBusinessRepository)
         {
             _configuration = configuration;
+            _userRepository = userRepository;
+            _lenderBusinessRepository = lenderBusinessRepository;
         }
         public string BuildToken(User user)
         {
@@ -66,6 +72,30 @@ namespace CIT.Tools
 
             var token = jwtSecurityTokenHandler.CreateToken(jwtSecurityTokenDescriptor);
             return jwtSecurityTokenHandler.WriteToken(token);
+        }
+
+        public async Task<int> GetLenderBusinessId(HttpRequest request)
+        {
+            var userType = GetUserTypeAndUserId(request);
+            int lenderBusinessId;
+            if (userType.Equals("User"))
+            {
+                var user = await _userRepository.FirstOrDefaultAsync(u => u.Id == _userId);
+                lenderBusinessId = user.LenderBusinessId;
+            }
+            else
+            {
+                var lenderBusiness = await _lenderBusinessRepository.FirstOrDefaultAsync(l => l.Id == _userId);
+                lenderBusinessId = lenderBusiness.Id;
+            }
+            return lenderBusinessId;
+        }
+
+        private string GetUserTypeAndUserId(HttpRequest request)
+        {
+            var decodedToken = DecodeToken(request);
+            _userId = int.Parse(decodedToken.Claims.Where(c => c.Type.Equals("nameid")).FirstOrDefault().Value);
+            return decodedToken.Claims.Where(c => c.Type.Equals("UserType")).FirstOrDefault().Value;
         }
 
         public JwtSecurityToken DecodeToken(HttpRequest request)

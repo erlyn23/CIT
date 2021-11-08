@@ -51,7 +51,18 @@ namespace CIT.Dtos.Requests
                 var sendedValue = value.ToString();
                 var lenderBusiness = new LenderBusiness();
 
-                dbContext.LenderBusinesses.Where(l => l.GetType().GetProperty(Field).GetValue(l).ToString().Equals(sendedValue)).FirstOrDefault();
+                switch (Field)
+                {
+                    case "Email":
+                        lenderBusiness = dbContext.LenderBusinesses.Where(u => u.Email.Equals(sendedValue)).FirstOrDefault();
+                        break;
+                    case "Phone":
+                        lenderBusiness = dbContext.LenderBusinesses.Where(u => u.Phone.Equals(sendedValue)).FirstOrDefault();
+                        break;
+                    case "Rnc":
+                        lenderBusiness = dbContext.LenderBusinesses.Where(u => u.Rnc.Equals(sendedValue)).FirstOrDefault();
+                        break;
+                }
 
 
                 if (lenderBusiness != null)

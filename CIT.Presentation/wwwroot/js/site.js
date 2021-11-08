@@ -53,59 +53,124 @@ $("#signInBtn").on('click', function (e) {
     });
 });
 
-$("#registerBtn").on('click', function () {
+const loadMap = function () {
+    mapboxgl.accessToken = 'pk.eyJ1IjoiZXJseW4yMyIsImEiOiJja2Q4NnFtYmkwMW5jMzRzZ3N0aTEwZWEzIn0.cO65NFyyEyHN8OSn-9uNYw';
 
-    const newUser = {
-        businessName: $("#businessName").val(),
-        rnc: $("#Rnc").val(),
-        phone: $("#phone").val(),
-        email: $("#email").val(),
-        password: $("#password").val(),
-        confirmPassword: $("#confirmPassword").val(),
-        photo: $("#photoBase64").val()
-    };
+    const map = new mapboxgl.Map({
+        container: 'userMap',
+        style: 'mapbox://styles/mapbox/streets-v11',
+        center: [-69.929611, 18.483402],
+        zoom: 9
+    });
 
+    map.addControl(
+        new MapboxGeocoder({
+            accessToken: mapboxgl.accessToken,
+            mapboxgl: mapboxgl
+        })
+    );
+    map.addControl(new mapboxgl.NavigationControl());
+
+    const marker = new mapboxgl.Marker();
+
+    map.on('click', function (event) {
+        const coordinates = event.lngLat;
+
+        $("#latitude").val(coordinates.lat);
+        $("#longitude").val(coordinates.lng);
+        marker.setLngLat(coordinates).addTo(map);
+    });
+}
+
+loadMap();
+
+const loadCountries = function () {
     doRequest({
+        url: 'https://restcountries.com/v2/all',
+        method: 'GET',
+        data: null,
+        headers: {
+            'content-type': 'application/json'
+        },
+        successCallback: function (data) {
+            let countriesHtml = `<option value="" disabled selected>Selecciona un país</option>`;
+            data.forEach(country => {
+                countriesHtml += `<option value="${country.translations.es}">${country.translations.es}</option>`;
+            });
+            $("#country").html(countriesHtml);
+        },
+        errorCallback: function (error) {
+
+        }
+    });
+}
+
+loadCountries();
+
+$("#registerBtn").on('click', function () {
+    if (!validateOnClick()) {
+        const newUser = {
+            businessName: $("#businessName").val(),
+            rnc: $("#rnc").val(),
+            phone: $("#phone").val(),
+            email: $("#email").val(),
+            password: $("#password").val(),
+            confirmPassword: $("#confirmPassword").val(),
+            photo: $("#photoBase64").val(),
+            address: {
+                country: $("#country").val(),
+                city: $("#city").val(),
+                province: $("#province").val(),
+                street1: $("#street1").val(),
+                street2: $("#street2").val(),
+                houseNumber: $("#houseNumber").val(),
+                latitude: $("#latitude").val(),
+                longitude: $("#longitude").val()
+            }
+        };
+
+        doRequest({
             url: '/Account/Register', method: 'POST', data: newUser, headers: null,
-                successCallback: function (data) {
-                    if (Array.isArray(data)) {
-                        $("#errorMessages").html("");
-                        for (let validationObject of data) {
-                            for (let errorValidation of validationObject.errors) {
-                                let errorMsg = `<p class="text-danger"><i class="fas fa-exclamation-circle"></i>&nbsp; ${errorValidation.errorMessage}</p>`;
-                                $("#errorMessages").append(errorMsg);
-                                $("#LoadingModal").modal('hide');
+            successCallback: function (data) {
+                if (Array.isArray(data)) {
+                    $("#errorMessages").html("");
+                    for (let validationObject of data) {
+                        for (let errorValidation of validationObject.errors) {
+                            let errorMsg = `<p class="text-danger"><i class="fas fa-exclamation-circle"></i>&nbsp; ${errorValidation.errorMessage}</p>`;
+                            $("#errorMessages").append(errorMsg);
+                            $("#LoadingModal").modal('hide');
 
-                                setTimeout(function () {
-                                    $("#ErrorMessagesModal").modal('show');
-                                }, 1000);
-                            }
+                            setTimeout(function () {
+                                $("#ErrorMessagesModal").modal('show');
+                            }, 1000);
                         }
-                    } else {
-                        $("form").eq(0).trigger('reset');
-                        $("#errorMessages").html("");
-                        let successMsg = `<p class="text-success"><i class="fas fa-check-circle"></i>&nbsp; Usuario registrado correctamente, ya puedes iniciar sesión</p>`;
-                        $("#errorMessages").append(successMsg);
-                        $("#LoadingModal").modal('hide');
-
-                        setTimeout(function () {
-                            $("#ErrorMessagesModal").modal('show');
-                        }, 1000);
                     }
+                } else {
+                    $("form").eq(0).trigger('reset');
+                    $("#errorMessages").html("");
+                    let successMsg = `<p class="text-success"><i class="fas fa-check-circle"></i>&nbsp; Negocio registrado correctamente, ya puedes iniciar sesión</p>`;
+                    $("#errorMessages").append(successMsg);
+                    $("#LoadingModal").modal('hide');
+
+                    setTimeout(function () {
+                        $("#ErrorMessagesModal").modal('show');
+                    }, 1000);
+                }
             },
             errorCallback: function (err) {
                 $("#errorMessages").html("");
                 let errorMsg = `<p class="text-danger"><i class="fas fa-exclamation-circle"></i>${err.responseText}</p>`;
                 $("#errorMessages").append(errorMsg);
                 $("#LoadingModal").modal('hide');
-                
+
                 setTimeout(function () {
                     $("#ErrorMessagesModal").modal('show');
                 }, 1000);
 
             }
         }
-    );
+        );
+    }
 });
 
 $("#photo").on('change', function (e) {

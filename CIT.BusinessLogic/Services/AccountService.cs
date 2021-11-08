@@ -21,12 +21,16 @@ namespace CIT.BusinessLogic.Services
         private readonly IAddressService _addressService;
         private readonly IUserAddressService _userAddressService;
         private readonly TokenCreator _tokenCreator;
+        private readonly ILoginRepository _loginRepository;
         private readonly IRoleService _roleService;
+        private readonly ILenderBusinessRepository _lenderBusinessRepository;
 
-        public AccountService(IUserRepository userRepository, IRoleService roleService, IUserRoleRepository userRoleRepository, IEntitiesInfoService entitiesInfoService, IAddressService addressService, IUserAddressService userAddressService, TokenCreator tokenCreator)
+        public AccountService(IUserRepository userRepository, IRoleService roleService, IUserRoleRepository userRoleRepository, IEntitiesInfoService entitiesInfoService, IAddressService addressService, IUserAddressService userAddressService, TokenCreator tokenCreator, ILoginRepository loginRepository, ILenderBusinessRepository lenderBusinessRepository)
         {
             _userRepository = userRepository;
             _tokenCreator = tokenCreator;
+            _loginRepository = loginRepository;
+            _lenderBusinessRepository = lenderBusinessRepository;
             _userRoleRepository = userRoleRepository;
             _entitiesInfoService = entitiesInfoService;
             _addressService = addressService;
@@ -135,18 +139,26 @@ namespace CIT.BusinessLogic.Services
         public async Task<AccountResponse> SignInAsync(string email, string password)
         {
             var encryptedPassword = Encryption.Encrypt(password);
-            var user = await _userRepository.FirstOrDefaultWithRelationsAsync(u => u.Email.Equals(email) && u.Password.Equals(encryptedPassword));
+            var login = await _loginRepository.FirstOrDefaultAsync(l => l.Email.Equals(email) && l.Password.Equals(encryptedPassword));
 
-            if (user != null)
+
+            if (login == null)
+                throw new Exception("Usuario o contraseña incorrecta");
+            if (login.Status == 0)
+                throw new Exception("Usuario o negocio inactivo o eliminado");
+
+
+
+            var lenderBusiness = await _lenderBusinessRepository.FirstOrDefaultWithRelationsAsync(l => l.Email.Equals(email) && l.Password.Equals(encryptedPassword));
+
+            if(lenderBusiness != null)
+                return new AccountResponse() { Email = email, Token = _tokenCreator.BuildToken(lenderBusiness) };
+            else
             {
-                if (user.EntityInfo.Status == 0)
-                    throw new Exception("Este usuario ha sido deshabilitado o eliminado");
-
+               var user = await _userRepository.FirstOrDefaultWithRelationsAsync(u => u.Email.Equals(email) && u.Password.Equals(encryptedPassword));
                 return new AccountResponse() { Email = email, Token = _tokenCreator.BuildToken(user) };
             }
-            
 
-            throw new Exception("Usuario o contraseña incorrecta");
         }
     }
 }

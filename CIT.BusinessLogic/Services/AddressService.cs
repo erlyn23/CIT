@@ -35,14 +35,7 @@ namespace CIT.BusinessLogic.Services
                 Longitude = address.Longitude
             };
 
-            var entityInfo = new Entitiesinfo()
-            {
-                CreatedAt = DateTime.Now,
-                UpdatedAt = DateTime.Now,
-                Status = 1
-            };
-
-            var savedEntityInfo = await _entitiesInfoService.AddEntityInfoAsync(entityInfo);
+            var savedEntityInfo = await _entitiesInfoService.AddEntityInfoAsync();
 
             addressEntity.EntityInfoId = savedEntityInfo.Id;
             await _addressRepository.AddAsync(addressEntity);

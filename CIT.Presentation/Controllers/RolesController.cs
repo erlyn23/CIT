@@ -1,6 +1,7 @@
 ﻿using CIT.BusinessLogic.Contracts;
 using CIT.Dtos.Requests;
 using CIT.Presentation.Filters;
+using CIT.Tools;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,10 +16,12 @@ namespace CIT.Presentation.Controllers
     public class RolesController : Controller
     {
         private readonly IRoleService _roleService;
+        private readonly TokenCreator _tokenCreator;
 
-        public RolesController(IRoleService roleService)
+        public RolesController(IRoleService roleService, TokenCreator tokenCreator)
         {
             _roleService = roleService;
+            _tokenCreator = tokenCreator;
         }
         public IActionResult Index()
         {
@@ -30,7 +33,8 @@ namespace CIT.Presentation.Controllers
         [HttpGet]
         public async Task<IActionResult> GetRolesAsync()
         {
-            return Json(await _roleService.GetRolesAsync());
+            int lenderBusinessId = await _tokenCreator.GetLenderBusinessId(Request);
+            return Json(await _roleService.GetRolesAsync(lenderBusinessId));
         }
 
 
@@ -39,8 +43,9 @@ namespace CIT.Presentation.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateRoleAsync([FromBody] RoleDto roleDto)
         {
+            int lenderBusinessId = await _tokenCreator.GetLenderBusinessId(Request);
             if (ModelState.IsValid)
-                return Json(await _roleService.CreateRoleAsync(roleDto));
+                return Json(await _roleService.CreateRoleAsync(roleDto, lenderBusinessId));
 
             return BadRequest(ModelState.Values.ToList());
         }

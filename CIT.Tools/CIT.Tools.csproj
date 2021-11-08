@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CIT.DataAccess\CIT.DataAccess.csproj" />
+    <ProjectReference Include="..\CIT.Dtos\CIT.Dtos.csproj" />
   </ItemGroup>
 
 </Project>

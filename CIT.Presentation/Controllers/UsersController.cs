@@ -16,14 +16,11 @@ namespace CIT.Presentation.Controllers
     public class UsersController : Controller
     {
         private readonly IAccountService _accountService;
-        private readonly ILenderBusinessService _lenderBusinessService;
         private readonly TokenCreator _tokenCreator;
-        private int _userId;
 
-        public UsersController(IAccountService accountService, ILenderBusinessService lenderBusinessService, TokenCreator tokenCreator)
+        public UsersController(IAccountService accountService, TokenCreator tokenCreator)
         {
             _accountService = accountService;
-            _lenderBusinessService = lenderBusinessService;
             _tokenCreator = tokenCreator;
         }
         public IActionResult Index()
@@ -36,20 +33,10 @@ namespace CIT.Presentation.Controllers
         [HttpPost]
         public async Task<IActionResult> SaveUserAsync([FromBody] UserDto user)
         {
-            var userType = GetUserTypeAndUserId();
             if (ModelState.IsValid)
             {
-                int lenderBusinessId;
-                if (userType.Equals("User"))
-                {
-                    var userInDb = await _accountService.GetUserAsync(_userId);
-                    lenderBusinessId = userInDb.LenderBusinessId;
-                }
-                else
-                {
-                    var lenderBusiness = await _lenderBusinessService.GetLenderBusinessAsync(_userId);
-                    lenderBusinessId = lenderBusiness.Id;
-                }
+
+                int lenderBusinessId = await _tokenCreator.GetLenderBusinessId(Request);
                 user.LenderBusinessId = lenderBusinessId;
                 return Json(await _accountService.RegisterUserAsync(user));
             }
@@ -62,27 +49,9 @@ namespace CIT.Presentation.Controllers
         [HttpGet]
         public async Task<IActionResult> GetUsersAsync()
         {
-            var userType = GetUserTypeAndUserId();
-            if (userType.Equals("User"))
-            {
-                var user = await _accountService.GetUserAsync(_userId);
-                return Json(await _accountService.GetUsersAsync(user.LenderBusinessId));
-            }
-            else
-            {
-                var lender = await _lenderBusinessService.GetLenderBusinessAsync(_userId);
-                return Json(await _accountService.GetUsersAsync(lender.Id));
-            }
+            var lenderBusinessId = await _tokenCreator.GetLenderBusinessId(Request);
+            return Json(await _accountService.GetUsersAsync(lenderBusinessId));
 
         }
-
-        private string GetUserTypeAndUserId()
-        {
-            var decodedToken = _tokenCreator.DecodeToken(Request);
-            _userId = int.Parse(decodedToken.Claims.Where(c => c.Type.Equals("nameid")).FirstOrDefault().Value);
-            return decodedToken.Claims.Where(c => c.Type.Equals("UserType")).FirstOrDefault().Value;
-        }
-
-
     }
 }

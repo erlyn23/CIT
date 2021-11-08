@@ -34,9 +34,25 @@ namespace CIT.DataAccess.DbContexts
         public virtual DbSet<LenderBusiness> LenderBusinesses { get; set; }
         public virtual DbSet<LenderAddress> LenderAddresses { get; set; }
         public virtual DbSet<LenderRole> LenderRoles { get; set; }
+        public virtual DbSet<Login> Logins { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Login>(entity =>
+            {
+                entity.ToTable("logins");
+
+                entity.HasIndex(e => e.Email, "Ix_LenderBusiness_Email").IsUnique();
+
+                entity.Property(e => e.Id).HasColumnType("int").UseMySqlIdentityColumn();
+
+                entity.Property(e => e.Email).IsRequired().HasMaxLength(50);
+
+                entity.Property(e => e.Password).IsRequired().HasMaxLength(255);
+
+                entity.Property(e => e.Status).HasColumnType("int");
+            });
             modelBuilder.Entity<LenderBusiness>(entity =>
             {
                 entity.ToTable("lenderbusinesses");
@@ -96,7 +112,7 @@ namespace CIT.DataAccess.DbContexts
 
                 entity.HasOne(d => d.LenderBusiness)
                     .WithOne(p => p.LenderAddress)
-                    .HasForeignKey<LenderAddress>(d => d.AddressId)
+                    .HasForeignKey<LenderAddress>(d => d.LenderBusinessId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("Fk_LenderAddresses_LenderBusinesses");
             });

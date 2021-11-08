@@ -99,6 +99,7 @@ namespace CIT.Presentation
             services.AddScoped<ILenderBusinessService, LenderBusinessService>();
             services.AddScoped<ILenderRoleService, LenderRoleService>();
             services.AddScoped<ILenderAddressService, LenderAddressService>();
+            services.AddScoped<ILoginRepository, LoginRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
