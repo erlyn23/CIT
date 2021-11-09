@@ -4,6 +4,7 @@ using CIT.DataAccess.Models;
 using CIT.Dtos.Requests;
 using CIT.Dtos.Responses;
 using CIT.Tools;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -24,13 +25,15 @@ namespace CIT.BusinessLogic.Services
         private readonly ILoginRepository _loginRepository;
         private readonly IRoleService _roleService;
         private readonly ILenderBusinessRepository _lenderBusinessRepository;
+        private readonly AccountTools _accountTools;
 
-        public AccountService(IUserRepository userRepository, IRoleService roleService, IUserRoleRepository userRoleRepository, IEntitiesInfoService entitiesInfoService, IAddressService addressService, IUserAddressService userAddressService, TokenCreator tokenCreator, ILoginRepository loginRepository, ILenderBusinessRepository lenderBusinessRepository)
+        public AccountService(IUserRepository userRepository, IRoleService roleService, IUserRoleRepository userRoleRepository, IEntitiesInfoService entitiesInfoService, IAddressService addressService, IUserAddressService userAddressService, TokenCreator tokenCreator, ILoginRepository loginRepository, ILenderBusinessRepository lenderBusinessRepository, AccountTools accountTools)
         {
             _userRepository = userRepository;
             _tokenCreator = tokenCreator;
             _loginRepository = loginRepository;
             _lenderBusinessRepository = lenderBusinessRepository;
+            _accountTools = accountTools;
             _userRoleRepository = userRoleRepository;
             _entitiesInfoService = entitiesInfoService;
             _addressService = addressService;
@@ -63,10 +66,12 @@ namespace CIT.BusinessLogic.Services
             await _userRepository.SaveChangesAsync();
 
             if (!string.IsNullOrEmpty(userDto.Photo))
+            {
                 userEntity.Photo = await UploadPhoto.UploadProfilePhotoAsync($"user_profile_photo_{userEntity.Id}.jpg", userDto.Photo);
 
-            _userRepository.Update(userEntity);
-            await _userRepository.SaveChangesAsync();
+                _userRepository.Update(userEntity);
+                await _userRepository.SaveChangesAsync();
+            }
 
             var savedAddress = await _addressService.CreateAddressAsync(userDto.Address);
             await _userAddressService.CreateUserAddress(userEntity.Id, savedAddress.Id);
@@ -145,7 +150,7 @@ namespace CIT.BusinessLogic.Services
             if (login == null)
                 throw new Exception("Usuario o contraseña incorrecta");
             if (login.Status == 0)
-                throw new Exception("Usuario o negocio inactivo o eliminado");
+                throw new Exception("Usuario inactivo o eliminado");
 
 
 
@@ -159,6 +164,42 @@ namespace CIT.BusinessLogic.Services
                 return new AccountResponse() { Email = email, Token = _tokenCreator.BuildToken(user) };
             }
 
+        }
+
+        public async Task<bool> ActivateAccountAsync(string email, string verificationNumber)
+        {
+            var user = await _loginRepository.FirstOrDefaultAsync(u => u.Email.Equals(email));
+
+            var confirmationDataSaved = _accountTools.GetConfirmationDataFromJsonFile();
+
+            var confirmationDataWanted = confirmationDataSaved.Where(e => e.UserEmail.Equals(user.Email)).FirstOrDefault();
+
+            DateTime now = DateTime.UtcNow;
+            TimeSpan difference = confirmationDataWanted.ExpireDate - now;
+            int minutes = difference.Minutes;
+
+            if (minutes <= 30)
+            {
+                if (string.Equals(verificationNumber, confirmationDataWanted.RandomCode))
+                {
+                    user.Status = 1;
+                    _loginRepository.Update(user);
+                    await _loginRepository.SaveChangesAsync();
+                    int toDelete = confirmationDataSaved.IndexOf(confirmationDataWanted);
+                    confirmationDataSaved.RemoveAt(toDelete);
+                    string jsonString = JsonConvert.SerializeObject(confirmationDataSaved);
+                    File.WriteAllText(_accountTools.FilePath, jsonString);
+                    return true;
+                }
+                else
+                {
+                    throw new Exception("Este usuario no existe o no se ha registrado");
+                }
+            }
+            else
+            {
+                throw new Exception("Este código ya expiró, reenvía la verificación");
+            }
         }
     }
 }

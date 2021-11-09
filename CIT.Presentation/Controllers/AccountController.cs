@@ -60,5 +60,24 @@ namespace CIT.Presentation.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Activate(string email, string code)
+        {
+            try
+            {
+                var isActivated = await _accountService.ActivateAccountAsync(email, code);
+                if (isActivated)
+                    ViewBag.Success = "Tu cuenta ha sido activada correctamente, puedes iniciar sesión";
+            }
+            catch(Exception ex)
+            {
+                if (ex.InnerException != null)
+                    ViewBag.FatalError = ex.InnerException.Message;
+
+                ViewBag.Error = ex.Message;
+            }
+            return View();
+        }
     }
 }

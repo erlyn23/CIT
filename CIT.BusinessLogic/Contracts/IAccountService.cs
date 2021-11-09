@@ -14,5 +14,6 @@ namespace CIT.BusinessLogic.Contracts
         Task<AccountResponse> RegisterUserAsync(UserDto userDto);
         Task<List<UserDto>> GetUsersAsync(int lenderBusinessId);
         Task<UserDto> GetUserAsync(int userId);
+        Task<bool> ActivateAccountAsync(string email, string verificationNumber);
     }
 }

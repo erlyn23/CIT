@@ -1,0 +1,39 @@
+﻿
+@{
+    ViewData["Title"] = "Activar cuenta";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@if (!string.IsNullOrEmpty(ViewBag.Success))
+{
+    <div class="row">
+        <div class="col-md-4 offset-md-4">
+            <div class="card box-shadow p-3">
+                <div class="text-center">
+                    <h3>Resultado</h3>
+                </div>
+                <div class="text-center text-success">
+                    <p><i class="fas fa-check-circle"></i> @ViewBag.Success</p>
+                    <p><a asp-controller="Account" asp-action="Index">Iniciar sesión</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(ViewBag.Error) || !string.IsNullOrEmpty(ViewBag.FatalError))
+{
+    <div class="row">
+        <div class="col-md-4 offset-md-4">
+            <div class="card box-shadow">
+                <div class="text-center">
+                    <h3>Resultado</h3>
+                </div>
+                <div class="text-center text-danger">
+                    <p><i class="fas fa-times"></i> @ViewBag.Error @ViewBag.FatalError</p>
+                    <p>Volver a <a asp-controller="Account" asp-action="Index">Iniciar sesión</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+}

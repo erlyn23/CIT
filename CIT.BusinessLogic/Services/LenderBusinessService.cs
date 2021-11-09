@@ -23,6 +23,7 @@ namespace CIT.BusinessLogic.Services
         private readonly ILenderAddressService _lenderAddressService;
         private readonly ILenderRoleService _lenderRoleService;
         private readonly TokenCreator _tokenCreator;
+        private readonly AccountTools _accountTools;
 
         public LenderBusinessService(IEntitiesInfoService entitiesInfoService,
             IAddressService addressService, ILenderBusinessRepository lenderBusinessRepository, IOperationService operationService, 
@@ -30,7 +31,7 @@ namespace CIT.BusinessLogic.Services
             IRoleService roleService,
             ILenderAddressService lenderAddressService,
             ILenderRoleService lenderRoleService,
-            TokenCreator tokenCreator)
+            TokenCreator tokenCreator, AccountTools accountTools)
         {
             _entitiesInfoService = entitiesInfoService;
             _addressService = addressService;
@@ -41,6 +42,7 @@ namespace CIT.BusinessLogic.Services
             _lenderAddressService = lenderAddressService;
             _lenderRoleService = lenderRoleService;
             _tokenCreator = tokenCreator;
+            _accountTools = accountTools;
         }
         public async Task<AccountResponse> CreateLenderBusinessAsync(LenderBusinessDto lenderBusiness)
         {
@@ -57,18 +59,21 @@ namespace CIT.BusinessLogic.Services
                 throw new Exception("Las contraseñas no coinciden");
 
             var savedEntityInfo = await _entitiesInfoService.AddEntityInfoAsync();
-
+            savedEntityInfo.Status = 0;
+            await _entitiesInfoService.UpdateEntityInfo(savedEntityInfo);
+            
             lenderBusinessEntity.EntityInfoId = savedEntityInfo.Id;
-
             await _lenderBusinessRepository.AddAsync(lenderBusinessEntity);
 
             await _lenderBusinessRepository.SaveChangesAsync();
 
             if (!string.IsNullOrEmpty(lenderBusiness.Photo))
-                await UploadPhoto.UploadProfilePhotoAsync($"business_profile_photo_{lenderBusinessEntity.Id}", lenderBusiness.Photo);
+            {
+                await UploadPhoto.UploadProfilePhotoAsync($"business_profile_photo_{lenderBusinessEntity.Id}.jpg", lenderBusiness.Photo);
 
-            _lenderBusinessRepository.Update(lenderBusinessEntity);
-            await _lenderBusinessRepository.SaveChangesAsync();
+                _lenderBusinessRepository.Update(lenderBusinessEntity);
+                await _lenderBusinessRepository.SaveChangesAsync();
+            }
 
             var savedAddress = await _addressService.CreateAddressAsync(lenderBusiness.Address);
 
@@ -83,6 +88,8 @@ namespace CIT.BusinessLogic.Services
 
             var savedLenderRole = await _lenderRoleService.SaveLenderRoleAsync(lenderRole);
             lenderBusinessEntity.LenderRole = savedLenderRole;
+
+            await _accountTools.SendEmailConfirmationAsync(lenderBusinessEntity.Email);
 
             return new AccountResponse()
             {

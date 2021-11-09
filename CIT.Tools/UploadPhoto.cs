@@ -13,6 +13,10 @@ namespace CIT.Tools
         {
             string imagePath = $"{Environment.CurrentDirectory}/ProfilePhotos";
             string[] imageSplitted = photo.Split(',');
+
+            if (!imageSplitted[0].Contains("data:image"))
+                throw new Exception("Debes subir una imagen válida, este no es una archivo de imagen");
+
             byte[] imageInBytes = Convert.FromBase64String(imageSplitted[1]);
 
             string path = Path.Combine(imagePath, fileName);

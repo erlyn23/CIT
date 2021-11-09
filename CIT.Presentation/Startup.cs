@@ -72,7 +72,6 @@ namespace CIT.Presentation
             //Dependency Injections
             services.AddScoped<AuthFilter>();
             services.AddScoped<ExceptionFilter>();
-            services.AddTransient<TokenCreator>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IRoleRepository, RoleRepository>();
@@ -100,6 +99,9 @@ namespace CIT.Presentation
             services.AddScoped<ILenderRoleService, LenderRoleService>();
             services.AddScoped<ILenderAddressService, LenderAddressService>();
             services.AddScoped<ILoginRepository, LoginRepository>();
+            services.AddTransient<TokenCreator>();
+            services.AddTransient<EmailTools>();
+            services.AddTransient<AccountTools>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
