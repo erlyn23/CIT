@@ -15,15 +15,13 @@ namespace CIT.BusinessLogic.Services
         private readonly IRoleRepository _roleRepository;
         private readonly IEntitiesInfoService _entitiesInfoService;
         private readonly IRolePermissionService _rolePermissionService;
-        private readonly IUserRoleService _userRoleService;
 
         public RoleService(IRoleRepository roleRepository, IEntitiesInfoService entitiesInfoService,
-            IRolePermissionService rolePermissionService, IUserRoleService userRoleService)
+            IRolePermissionService rolePermissionService)
         {
             _roleRepository = roleRepository;
             _entitiesInfoService = entitiesInfoService;
             _rolePermissionService = rolePermissionService;
-            _userRoleService = userRoleService;
         }
 
         public async Task<RoleDto> CreateRoleAsync(RoleDto role, int lenderBusinessId)
@@ -51,40 +49,57 @@ namespace CIT.BusinessLogic.Services
 
         public async Task DeleteRoleAsync(int roleId)
         {
-            var role = await _roleRepository.FirstOrDefaultAsync(r => r.Id == roleId);
+            var role = await GetRoleByIdAsync(roleId);
             if(role != null)
             {
-                if (role.RoleName.Equals("Administrador"))
+                if (role.Role.Equals("Administrador"))
                     throw new Exception("El rol administrador no puede ser eliminado");
 
-                await _rolePermissionService.DeleteRolePermissionsByRoleIdAsync(roleId);
-                await _userRoleService.DeleteUserRoleByRoleIdAsync(roleId);
-                _roleRepository.Delete(role);
-                await _entitiesInfoService.DeleteEntityInfoAsync(role.EntityInfoId);
+                var entityInfo = await _entitiesInfoService.GetEntityInfoAsync(role.EntityInfo.Id);
+                entityInfo.UpdatedAt = DateTime.Now;
+                entityInfo.Status = 0;
+                await _entitiesInfoService.UpdateEntityInfo(entityInfo);
             }
-
-            await _roleRepository.SaveChangesAsync();
         }
 
         public async Task<RoleDto> GetRoleByIdAsync(int roleId)
         {
             var role = await _roleRepository.FirstOrDefaultAsync(r => r.Id == roleId);
-            var roleDto = await MapRoleAsync(role);
-            return roleDto;
+            
+            RoleDto roleDto = null;
+            if (role != null)
+                roleDto = await MapRoleAsync(role);
+
+            if(roleDto != null)
+            {
+                if (roleDto.EntityInfo.Status != 0)
+                    return roleDto;
+                else
+                    throw new Exception("Este rol no existe o fue eliminado");
+            }
+            throw new Exception("Este rol no existe o fue eliminado");
         }
 
         public async Task<RoleDto> GetRoleByNameAsync(string roleName)
         {
             var role = await _roleRepository.FirstOrDefaultAsync(r => r.RoleName.Equals(roleName));
             var roleDto = (role != null) ? await MapRoleAsync(role) : null;
-            return roleDto;
+            
+            if (roleDto != null)
+            {
+                if (roleDto.EntityInfo.Status != 0)
+                    return roleDto;
+                else
+                    throw new Exception("Este rol no existe o fue eliminado");
+            }
+            throw new Exception("Este rol no existe o fue eliminado");
         }
 
         public async Task<List<RoleDto>> GetRolesAsync(int lenderBusinessId)
         {
             var roles = await _roleRepository.GetAllWithFilterAsync(r => r.LenderBusinessId == lenderBusinessId && !r.RoleName.Equals("Administrador"));
             var rolesDto = roles.Select(r => MapRoleAsync(r).Result).ToList();
-            return rolesDto;
+            return rolesDto.Where(r => r.EntityInfo.Status != 0).ToList();
         }
 
         private async Task<RoleDto> MapRoleAsync(Role role)
@@ -116,13 +131,10 @@ namespace CIT.BusinessLogic.Services
                 _roleRepository.Update(roleEntity);
                 var entityInfo = await _entitiesInfoService.GetEntityInfoAsync(roleEntity.EntityInfoId);
 
-                //TODO: Hacer esto para el frontend primero
-                //entityInfo.UpdatedAt = DateTime.Now;
-                //entityInfo.Status = role.EntityInfo.Status;
+                entityInfo.UpdatedAt = DateTime.Now;
+                await _entitiesInfoService.UpdateEntityInfo(entityInfo);
 
-                //await _entitiesInfoService.UpdateEntityInfo(entityInfo);
-
-                if(role.ToDelete.Count() > 0)
+                if (role.ToDelete.Count() > 0)
                 {
                     foreach(var toDelete in role.ToDelete)
                     {
