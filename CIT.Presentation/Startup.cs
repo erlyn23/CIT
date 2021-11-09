@@ -98,6 +98,7 @@ namespace CIT.Presentation
             services.AddScoped<ILenderBusinessService, LenderBusinessService>();
             services.AddScoped<ILenderRoleService, LenderRoleService>();
             services.AddScoped<ILenderAddressService, LenderAddressService>();
+            services.AddScoped<IUserService, UserService>();
             services.AddScoped<ILoginRepository, LoginRepository>();
             services.AddTransient<TokenCreator>();
             services.AddTransient<EmailTools>();

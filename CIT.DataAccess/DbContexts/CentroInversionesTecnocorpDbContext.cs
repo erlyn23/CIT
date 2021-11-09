@@ -478,8 +478,8 @@ namespace CIT.DataAccess.DbContexts
                     .HasConstraintName("Fk_UserAddresses_Address");
 
                 entity.HasOne(d => d.User)
-                    .WithOne(p => p.UserAddress)
-                    .HasForeignKey<Useraddress>(d => d.AddressId)
+                    .WithOne(p => p.Useraddress)
+                    .HasForeignKey<Useraddress>(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("Fk_UserAddresses_Users");
             });

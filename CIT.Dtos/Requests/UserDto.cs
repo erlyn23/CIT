@@ -41,6 +41,8 @@ namespace CIT.Dtos.Requests
         public string Photo { get; set; }
         [Required(ErrorMessage = "Debes especificar el negocio al que pertence este usuario")]
         public int LenderBusinessId { get; set; }
+
+        public EntityInfoDto EntityInfo { get; set; }
         public UserRoleDto UserRole { get; set; }
         public AddressDto Address { get; set; }
 

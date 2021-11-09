@@ -29,7 +29,7 @@ namespace CIT.DataAccess.Models
         public virtual Userrole Userrole { get; set; }
         public virtual ICollection<Log> Logs { get; set; }
         public virtual ICollection<Payment> Payments { get; set; }
-        public virtual Useraddress UserAddress { get; set; }
+        public virtual Useraddress Useraddress { get; set; }
         public virtual VehicleAssignment VehicleAssignment { get; set; }
         public virtual LenderBusiness LenderBusiness { get; set; }
     }

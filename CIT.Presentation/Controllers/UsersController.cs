@@ -15,12 +15,12 @@ namespace CIT.Presentation.Controllers
     [ServiceFilter(typeof(ExceptionFilter))]
     public class UsersController : Controller
     {
-        private readonly IAccountService _accountService;
+        private readonly IUserService _userService;
         private readonly TokenCreator _tokenCreator;
 
-        public UsersController(IAccountService accountService, TokenCreator tokenCreator)
+        public UsersController(IUserService userService, TokenCreator tokenCreator)
         {
-            _accountService = accountService;
+            _userService = userService;
             _tokenCreator = tokenCreator;
         }
         public IActionResult Index()
@@ -38,7 +38,7 @@ namespace CIT.Presentation.Controllers
 
                 int lenderBusinessId = await _tokenCreator.GetLenderBusinessId(Request);
                 user.LenderBusinessId = lenderBusinessId;
-                return Json(await _accountService.RegisterUserAsync(user));
+                return Json(await _userService.RegisterUserAsync(user));
             }
             else
                 return Json(ModelState.Values.ToList());
@@ -50,8 +50,17 @@ namespace CIT.Presentation.Controllers
         public async Task<IActionResult> GetUsersAsync()
         {
             var lenderBusinessId = await _tokenCreator.GetLenderBusinessId(Request);
-            return Json(await _accountService.GetUsersAsync(lenderBusinessId));
+            return Json(await _userService.GetUsersAsync(lenderBusinessId));
 
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [ServiceFilter(typeof(AuthFilter))]
+        [HttpGet]
+        public async Task<IActionResult> DeleteUserAsync(int userId)
+        {
+            await _userService.DeleteUserAsync(userId);
+            return Json("Usuario eliminado correctamente");
         }
     }
 }

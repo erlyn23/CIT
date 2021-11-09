@@ -82,11 +82,9 @@ namespace CIT.BusinessLogic.Services
 
         public async Task<List<RoleDto>> GetRolesAsync(int lenderBusinessId)
         {
-            var adminRole = await GetRoleByNameAsync("Administrador");
-            var roles = await _roleRepository.GetAllWithFilterAsync(r => r.LenderBusinessId == lenderBusinessId);
+            var roles = await _roleRepository.GetAllWithFilterAsync(r => r.LenderBusinessId == lenderBusinessId && !r.RoleName.Equals("Administrador"));
             var rolesDto = roles.Select(r => MapRoleAsync(r).Result).ToList();
-            rolesDto.Add(adminRole);
-            return rolesDto.OrderByDescending(r => r.Role).ToList();
+            return rolesDto;
         }
 
         private async Task<RoleDto> MapRoleAsync(Role role)
