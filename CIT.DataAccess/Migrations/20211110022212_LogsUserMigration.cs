@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace CIT.DataAccess.Migrations
 {
-    public partial class LenderBusinessMigration : Migration
+    public partial class LogsUserMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -24,6 +24,24 @@ namespace CIT.DataAccess.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_entitiesinfo", x => x.Id);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "logins",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Email = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Password = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Status = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_logins", x => x.Id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -142,7 +160,7 @@ namespace CIT.DataAccess.Migrations
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "Fk_LenderAddresses_LenderBusinesses",
-                        column: x => x.AddressId,
+                        column: x => x.LenderBusinessId,
                         principalTable: "lenderbusinesses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -176,6 +194,31 @@ namespace CIT.DataAccess.Migrations
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "Fk_Loans_LenderBusiness",
+                        column: x => x.LenderBusinessId,
+                        principalTable: "lenderbusinesses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "logs",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Operation = table.Column<string>(type: "varchar(10)", maxLength: 10, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ResultMessageOrObject = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: true, defaultValueSql: "'NULL'")
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    LenderBusinessId = table.Column<int>(type: "int", nullable: false),
+                    LogDate = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_logs", x => x.Id);
+                    table.ForeignKey(
+                        name: "Fk_Logs_LenderBusiness",
                         column: x => x.LenderBusinessId,
                         principalTable: "lenderbusinesses",
                         principalColumn: "Id",
@@ -350,38 +393,6 @@ namespace CIT.DataAccess.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "logs",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Operation = table.Column<string>(type: "varchar(10)", maxLength: 10, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    UserId = table.Column<int>(type: "int(11)", nullable: false),
-                    ResultMessageOrObject = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: true, defaultValueSql: "'NULL'")
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    LenderBusinessId = table.Column<int>(type: "int", nullable: false),
-                    LogDate = table.Column<DateTime>(type: "datetime(6)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_logs", x => x.Id);
-                    table.ForeignKey(
-                        name: "Fk_Logs_LenderBusiness",
-                        column: x => x.LenderBusinessId,
-                        principalTable: "lenderbusinesses",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "Fk_Logs_Users",
-                        column: x => x.UserId,
-                        principalTable: "users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
                 name: "payments",
                 columns: table => new
                 {
@@ -444,7 +455,7 @@ namespace CIT.DataAccess.Migrations
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "Fk_UserAddresses_Users",
-                        column: x => x.AddressId,
+                        column: x => x.UserId,
                         principalTable: "users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -574,14 +585,15 @@ namespace CIT.DataAccess.Migrations
                 column: "LenderBusinessId");
 
             migrationBuilder.CreateIndex(
+                name: "Ix_LenderBusiness_Email1",
+                table: "logins",
+                column: "Email",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "Fk_Logs_LenderBusiness",
                 table: "logs",
                 column: "LenderBusinessId");
-
-            migrationBuilder.CreateIndex(
-                name: "Fk_Logs_Users",
-                table: "logs",
-                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "Fk_Payments_EntitiesInfo",
@@ -732,6 +744,9 @@ namespace CIT.DataAccess.Migrations
 
             migrationBuilder.DropTable(
                 name: "lenderroles");
+
+            migrationBuilder.DropTable(
+                name: "logins");
 
             migrationBuilder.DropTable(
                 name: "logs");

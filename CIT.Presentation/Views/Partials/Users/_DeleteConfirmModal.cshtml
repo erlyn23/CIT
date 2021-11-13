@@ -1,0 +1,32 @@
+﻿<div class="modal fade" id="DeleteConfirmUserModal" tabindex="-1" aria-labelledby="DeleteConfirmUserModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmar Eliminar</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">
+                    <span></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <p>¿Estás seguro/a de querer eliminar este usuario? Esto tiene implicaciones delicadas como las siguientes: </p>
+                        <ol type="1">
+                            <li>Los préstamos que tenga este usuario si es cliente se van a perder, igual que los pagos, generando pérdidas para este negocio.</li>
+                            <li>Si el usuario es empleado se perderán los datos asociados a él.</li>
+                        </ol>
+                        <p>Si estás de acuerdo presiona aceptar, si se trata de un error presiona cancelar.</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 offset-2">
+                        <button class="btn btn-danger" id="deleteUserBtn">Confirmar</button>
+                    </div>
+                    <div class="col-md-4">
+                        <button class="btn btn-success" data-dismiss="modal">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

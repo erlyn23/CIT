@@ -10,8 +10,8 @@ namespace CIT.Dtos.Requests
     {
         public int LogId { get; set; }
         public string Operation { get; set; }
-        public int UserId { get; set; }
         public string ResultMessageOrObject { get; set; }
+        public int LenderBusinessId { get; set; }
         public DateTime LogDate { get; set; }
 
     }

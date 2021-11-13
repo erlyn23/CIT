@@ -52,7 +52,7 @@ namespace CIT.DataAccess.Repositories
 
         public T Update(T entity)
         {
-            _dbContext.Entry(entity).State = EntityState.Modified;
+            _dbContext.Set<T>().Update(entity);
             return entity;
         }
 

@@ -9,9 +9,7 @@ namespace CIT.DataAccess.Models
     {
         public User()
         {
-            Logs = new HashSet<Log>();
             Payments = new HashSet<Payment>();
-
         }
 
         public int Id { get; set; }
@@ -27,7 +25,6 @@ namespace CIT.DataAccess.Models
 
         public virtual Entitiesinfo EntityInfo { get; set; }
         public virtual Userrole Userrole { get; set; }
-        public virtual ICollection<Log> Logs { get; set; }
         public virtual ICollection<Payment> Payments { get; set; }
         public virtual Useraddress Useraddress { get; set; }
         public virtual VehicleAssignment VehicleAssignment { get; set; }

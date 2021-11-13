@@ -1,7 +1,7 @@
 ﻿const linkColor = document.getElementById('usersLink')
 document.querySelectorAll('.nav_link').forEach(l => l.classList.remove('active'));
 linkColor.classList.add('active');
-
+let map;
 
 if (!localStorage.getItem('user')) window.href.location = '/Account/Index';
 
@@ -14,7 +14,7 @@ const appHeaders = {
 const loadMap = function () {
     mapboxgl.accessToken = 'pk.eyJ1IjoiZXJseW4yMyIsImEiOiJja2Q4NnFtYmkwMW5jMzRzZ3N0aTEwZWEzIn0.cO65NFyyEyHN8OSn-9uNYw';
 
-    const map = new mapboxgl.Map({
+    map = new mapboxgl.Map({
         container: 'userMap',
         style: 'mapbox://styles/mapbox/streets-v11',
         center: [-69.929611, 18.483402],
@@ -42,7 +42,7 @@ const loadMap = function () {
 
 loadMap();
 
-$("#openCreateUser").on('click', function () {
+const getModalData = function () {
     doRequest({
         url: '/Roles/GetRoles',
         method: 'GET',
@@ -54,7 +54,10 @@ $("#openCreateUser").on('click', function () {
             'Operation': 'Obtener'
         },
         successCallback: function (data) {
-            let htmlRole = `<option value="" disabled selected>Selecciona un rol</option>`;
+            let htmlRole = "";
+            if ($("#userId").val() === "" || $("#userId").val() === null)
+                htmlRole = `<option value="0" disabled selected>Selecciona un rol</option>`;
+            
             data.forEach(role => {
                 htmlRole += `<option value="${role.roleId}">${role.role}</option>`;
             });
@@ -74,7 +77,9 @@ $("#openCreateUser").on('click', function () {
             'content-type': 'application/json'
         },
         successCallback: function (data) {
-            let countriesHtml = `<option value="" disabled selected>Selecciona un país</option>`;
+            let countriesHtml = "";
+            if ($("#userId").val() === "" || $("#userId").val() === null)
+                countriesHtml = `<option value="0" disabled selected>Selecciona un rol</option>`;
             data.forEach(country => {
                 countriesHtml += `<option value="${country.translations.es}">${country.translations.es}</option>`;
             });
@@ -83,8 +88,116 @@ $("#openCreateUser").on('click', function () {
         errorCallback: function (error) {
 
         }
-    })
+    });
+}
+$("#openCreateUser").on('click', function () {
+    getModalData();
 });
+
+$("#userPhoto").on('change', function (e) {
+    getBase64File(e.target.files[0]);
+});
+
+function getBase64File(file) {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+
+    reader.onload = function () {
+        let base64 = reader.result;
+
+        $("#sendPhoto").val(base64);
+        $("#uploadedPhoto").prop('src', base64);
+    }
+
+    reader.onerror = function (error) {
+        console.log(error);
+    }
+}
+
+const getUsers = function () {
+    doRequest({
+        url: '/Users/GetUsers',
+        method: 'GET',
+        data: null,
+        headers: { ...appHeaders, 'Operation': 'Obtener' },
+        successCallback: function (data) { onGetUsers(data); },
+        errorCallback: function (err) { onErrorHandler(err) }
+    });
+}
+
+const onGetUsers = function (data) {
+    $("#paginator-container").pagination({
+        dataSource: data,
+        pageSize: 5,
+        callback: function (data, pagination) {
+            const html = templateUsersList(data);
+            $("#usersList").html(html);
+            setEditUserEvent(data);
+            $("#loadingUsers").css({ 'display': 'none' });
+            $("#usersTable").removeClass('d-none');
+        }
+    });
+}
+
+const templateUsersList = (users) => {
+
+    const tBody = $("#usersList");
+    tBody.html("");
+    let html = "";
+    users.forEach(user => {
+        html += `<tr>
+                    <td>${user.id}</td>
+                    <td>${user.name}</td>
+                    <td>${user.email}</td>
+                    <td>${user.userRole.role.role}</td>
+                    <td>
+                        <button type="button" id="setUserDetailBtn-${user.id}" class="btn btn-sm btn-success"><i class="fas fa-eye"></i></button>
+                        <button type="button" id="editUserBtn-${user.id}" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></button>
+                        <button type="button" class="btn btn-sm btn-danger" onclick="deleteUser(${user.id})"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>`;
+    });
+    return html;
+}
+
+const setEditUserEvent = function(users){
+    users.forEach(function (user) {
+        $("#editUserBtn-" + user.id).on('click', function () {
+            setUserData(user);
+        });
+    });
+}
+
+const setUserData = function (user) {
+    $("#createUserTitle").text("Editar usuario");
+    
+    $("#userId").val(user.id);
+    
+    if (user.photo != "NULL") {
+        $("#uploadedPhoto").prop('src', user.photo);    
+        $("#sendPhoto").val(user.Photo);
+    }
+    getModalData();
+    $("#firstName").val(user.name);
+    $("#lastName").val(user.lastName);
+    $("#identificationDocument").val(user.identificationDocument);
+    $("#email").val(user.email);
+    $("#phoneNumber").val(user.phone);
+    $("#addressId").val(user.address.id);
+    $(`#country option[value="${user.address.country}"]`).attr('selected', true);
+    $("#city").val(user.address.city);
+    $("#province").val(user.address.province);
+    $("#street1").val(user.address.street1);
+    $("#street2").val(user.address.street2);
+    $("#houseNumber").val(user.address.houseNumber);
+    $("#latitude").val(user.address.latitude);
+    $("#longitude").val(user.address.longitude);
+    const marker = new mapboxgl.Marker();
+
+    marker.setLngLat([user.address.longitude, user.address.latitude]).addTo(map);
+    $(`#userRole option[value="${user.userRole.roleId}"]`).attr('selected', true);
+    $("#CreteUserModal").modal('show');
+}
 
 $("#saveUserBtn").on('click', function () {
     if (!validateOnClick()) {
@@ -114,11 +227,18 @@ $("#saveUserBtn").on('click', function () {
             }
         };
 
+        if ($("#userId").val() !== "") {
+            newUser.id = $("#userId").val();
+            newUser.address.id = $("#addressId").val();
+        }
+
+        let url = ($("#userId").val() !== "") ? '/Users/UpdateUser' : '/Users/SaveUser';
+        let operation = ($("#userId").val() !== "") ? 'Modificar' : 'Agregar';
         doRequest({
-            url: '/Users/SaveUser',
+            url: url,
             method: 'POST',
             data: newUser,
-            headers: { ...appHeaders, 'Operation': 'Agregar' },
+            headers: { ...appHeaders, 'Operation': operation },
             successCallback: function (data) {
                 onSuccessSaveUser(data);
             },
@@ -126,7 +246,7 @@ $("#saveUserBtn").on('click', function () {
                 onError(err);
             }
         });
-    } 
+    }
 });
 
 
@@ -153,13 +273,14 @@ const onSuccessSaveUser = function (data) {
             formFields[field].removeClass('is-valid');
         }
         $("#errorMessages").html("");
-        let successMsg = `<p class="text-success"><i class="fas fa-check-circle"></i>&nbsp; Usuario registrado correctamente, ya puedes iniciar sesión</p>`;
+        let successMsg = `<p class="text-success"><i class="fas fa-check-circle"></i>&nbsp; Usuario guardado correctamente</p>`;
         $("#errorMessages").append(successMsg);
         $("#CreateUserModal").modal('hide');
 
         setTimeout(function () {
             $("#ErrorMessagesModal").modal('show');
         }, 1000);
+        getUsers();
     }
 }
 
@@ -176,71 +297,29 @@ const onError = function (err) {
     }, 1000);
 }
 
-$("#userPhoto").on('change', function (e) {
-    getBase64File(e.target.files[0]);
-});
+const deleteUser = function(userId){
+    $("#DeleteConfirmUserModal").modal('show');
 
-function getBase64File(file) {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-
-    reader.onload = function () {
-        let base64 = reader.result;
-
-        $("#sendPhoto").val(base64);
-        $("#uploadedPhoto").prop('src', base64);
-    }
-
-    reader.onerror = function (error) {
-        console.log(error);
-    }
-}
-
-const getUsers = function () {
-    doRequest({
-        url: '/Users/GetUsers',
-        method: 'GET',
-        data: null,
-        headers: { ...appHeaders, 'Operation': 'Obtener' },
-        successCallback: function (data) { onGetUsers(data); },
-        errorCallback: function (err) { onErrorGetUsers(err) }
+    $("#deleteUserBtn").on('click', function () {
+        doRequest(
+            {
+                url: '/Users/DeleteUser/' + userId,
+                method: 'GET',
+                data: null,
+                headers: { ...appHeaders, 'Operation': 'Eliminar' },
+                successCallback: function (data) {
+                    $("#DeleteConfirmUserModal").modal('hide');
+                    alert(data);
+                    getUsers();
+                },
+                errorCallback: function (error) { onErrorHandler(error) }
+            }
+        );
     });
 }
 
-const onGetUsers = function (data) {
-    $("#paginator-container").pagination({
-        dataSource: data,
-        pageSize: 5,
-        callback: function (data, pagination) {
-            const html = templateUsersList(data);
-            $("#usersList").html(html);
-            $("#loadingUsers").css({ 'display': 'none' });
-            $("#usersTable").removeClass('d-none');
-        }
-    });
-}
 
-const templateUsersList = (users) => {
-
-    const tBody = $("#usersList");
-    tBody.html("");
-    let html = "";
-    users.forEach(user => {
-        html += `<tr>
-                    <td>${user.id}</td>
-                    <td>${user.name}</td>
-                    <td>${user.email}</td>
-                    <td>${user.userRole.role.role}</td>
-                    <td>
-                        <button type="button" id="editUserBtn-${user.id}" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></button>
-                        <button type="button" class="btn btn-sm btn-danger" onclick="deleteRole(${user.id})"><i class="fas fa-trash"></i></button>
-                    </td>
-                </tr>`;
-    });
-    return html;
-}
-
-const onErrorGetUsers = function (err) {
+const onErrorHandler = function (err) {
 
 }
 

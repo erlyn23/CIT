@@ -11,6 +11,7 @@ namespace CIT.BusinessLogic.Contracts
     public interface IUserService
     {
         Task<AccountResponse> RegisterUserAsync(UserDto userDto);
+        Task<UserDto> UpdateUserAsync(UserDto user);
         Task<List<UserDto>> GetUsersAsync(int lenderBusinessId);
         Task<UserDto> GetUserAsync(int userId);
         Task DeleteUserAsync(int userId);

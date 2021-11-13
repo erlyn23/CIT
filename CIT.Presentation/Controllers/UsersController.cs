@@ -56,10 +56,18 @@ namespace CIT.Presentation.Controllers
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [ServiceFilter(typeof(AuthFilter))]
-        [HttpGet]
-        public async Task<IActionResult> DeleteUserAsync(int userId)
+        [HttpPost]
+        public async Task<IActionResult> UpdateUserAsync([FromBody] UserDto user)
         {
-            await _userService.DeleteUserAsync(userId);
+            return Json(await _userService.UpdateUserAsync(user));
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [ServiceFilter(typeof(AuthFilter))]
+        [HttpGet]
+        public async Task<IActionResult> DeleteUserAsync(int id)
+        {
+            await _userService.DeleteUserAsync(id);
             return Json("Usuario eliminado correctamente");
         }
     }

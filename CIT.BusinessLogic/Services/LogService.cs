@@ -20,10 +20,11 @@ namespace CIT.BusinessLogic.Services
         }
         public async Task<LogDto> SaveLogAsync(LogDto log)
         {
+
             var logEntity = new Log()
             {
-                UserId = log.UserId,
                 Operation = log.Operation,
+                LenderBusinessId = log.LenderBusinessId,
                 ResultMessageOrObject = log.ResultMessageOrObject,
                 LogDate = log.LogDate
             };

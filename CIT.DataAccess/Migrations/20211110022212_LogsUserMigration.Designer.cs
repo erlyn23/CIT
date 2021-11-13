@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CIT.DataAccess.Migrations
 {
     [DbContext(typeof(CentroInversionesTecnocorpDbContext))]
-    [Migration("20211106215555_LenderBusinessMigration")]
-    partial class LenderBusinessMigration
+    [Migration("20211110022212_LogsUserMigration")]
+    partial class LogsUserMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -96,6 +96,7 @@ namespace CIT.DataAccess.Migrations
             modelBuilder.Entity("CIT.DataAccess.Models.LenderAddress", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
 
@@ -261,16 +262,40 @@ namespace CIT.DataAccess.Migrations
                         .HasColumnType("varchar(255)")
                         .HasDefaultValueSql("'NULL'");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int(11)");
-
                     b.HasKey("Id");
 
                     b.HasIndex(new[] { "LenderBusinessId" }, "Fk_Logs_LenderBusiness");
 
-                    b.HasIndex(new[] { "UserId" }, "Fk_Logs_Users");
-
                     b.ToTable("logs");
+                });
+
+            modelBuilder.Entity("CIT.DataAccess.Models.Login", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex(new[] { "Email" }, "Ix_LenderBusiness_Email")
+                        .IsUnique()
+                        .HasDatabaseName("Ix_LenderBusiness_Email1");
+
+                    b.ToTable("logins");
                 });
 
             modelBuilder.Entity("CIT.DataAccess.Models.Operation", b =>
@@ -475,6 +500,7 @@ namespace CIT.DataAccess.Migrations
             modelBuilder.Entity("CIT.DataAccess.Models.Useraddress", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
 
@@ -627,7 +653,7 @@ namespace CIT.DataAccess.Migrations
 
                     b.HasOne("CIT.DataAccess.Models.LenderBusiness", "LenderBusiness")
                         .WithOne("LenderAddress")
-                        .HasForeignKey("CIT.DataAccess.Models.LenderAddress", "AddressId")
+                        .HasForeignKey("CIT.DataAccess.Models.LenderAddress", "LenderBusinessId")
                         .HasConstraintName("Fk_LenderAddresses_LenderBusinesses")
                         .IsRequired();
 
@@ -693,15 +719,7 @@ namespace CIT.DataAccess.Migrations
                         .HasConstraintName("Fk_Logs_LenderBusiness")
                         .IsRequired();
 
-                    b.HasOne("CIT.DataAccess.Models.User", "User")
-                        .WithMany("Logs")
-                        .HasForeignKey("UserId")
-                        .HasConstraintName("Fk_Logs_Users")
-                        .IsRequired();
-
                     b.Navigation("LenderBusiness");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("CIT.DataAccess.Models.Payment", b =>
@@ -816,8 +834,8 @@ namespace CIT.DataAccess.Migrations
                         .IsRequired();
 
                     b.HasOne("CIT.DataAccess.Models.User", "User")
-                        .WithOne("UserAddress")
-                        .HasForeignKey("CIT.DataAccess.Models.Useraddress", "AddressId")
+                        .WithOne("Useraddress")
+                        .HasForeignKey("CIT.DataAccess.Models.Useraddress", "UserId")
                         .HasConstraintName("Fk_UserAddresses_Users")
                         .IsRequired();
 
@@ -962,11 +980,9 @@ namespace CIT.DataAccess.Migrations
 
             modelBuilder.Entity("CIT.DataAccess.Models.User", b =>
                 {
-                    b.Navigation("Logs");
-
                     b.Navigation("Payments");
 
-                    b.Navigation("UserAddress");
+                    b.Navigation("Useraddress");
 
                     b.Navigation("Userrole");
 

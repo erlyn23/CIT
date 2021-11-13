@@ -211,8 +211,6 @@ namespace CIT.DataAccess.DbContexts
             modelBuilder.Entity<Log>(entity =>
             {
                 entity.ToTable("logs");
-
-                entity.HasIndex(e => e.UserId, "Fk_Logs_Users");
                 
                 entity.HasIndex(e => e.LenderBusinessId, "Fk_Logs_LenderBusiness");
 
@@ -223,16 +221,8 @@ namespace CIT.DataAccess.DbContexts
                     .HasMaxLength(10);
 
                 entity.Property(e => e.ResultMessageOrObject)
-                    .HasMaxLength(255)
+                    .HasMaxLength(1500)
                     .HasDefaultValueSql("'NULL'");
-
-                entity.Property(e => e.UserId).HasColumnType("int(11)");
-
-                entity.HasOne(d => d.User)
-                    .WithMany(p => p.Logs)
-                    .HasForeignKey(d => d.UserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("Fk_Logs_Users");
 
                 entity.HasOne(d => d.LenderBusiness)
                     .WithMany(p => p.Logs)

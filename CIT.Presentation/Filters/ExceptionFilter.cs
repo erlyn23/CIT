@@ -33,12 +33,12 @@ namespace CIT.Presentation.Filters
                 stringBuilder.AppendLine(context.Exception.InnerException.StackTrace);
             }
 
-            var userId = _tokenCreator.DecodeToken(context.HttpContext.Request).Claims.FirstOrDefault(c => c.Type.ToLower().Equals("nameid")).Value;
+            int lenderBusinessId = await _tokenCreator.GetLenderBusinessId(context.HttpContext.Request);
 
             var logDto = new LogDto()
             {
                 Operation = context.HttpContext.Request.Headers["Operation"],
-                UserId = int.Parse(userId),
+                LenderBusinessId = lenderBusinessId,
                 ResultMessageOrObject = stringBuilder.ToString(),
                 LogDate = DateTime.UtcNow
             };

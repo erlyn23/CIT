@@ -88,31 +88,31 @@ namespace CIT.BusinessLogic.Services
             };
         }
 
-        public async Task<List<UserDto>> GetUsersAsync(int lenderBusinessId)
+        public async Task<UserDto> UpdateUserAsync(UserDto user)
         {
-            var users = await _userRepository.GetAllWithFilterAndWithRelationsAsync(u => u.LenderBusinessId == lenderBusinessId);
+            var userInDb = await _userRepository.FirstOrDefaultWithRelationsAsync(u => u.Id == user.Id);
 
-            var usersDto = users.Select(u => MapUserAsync(u).Result).ToList();
-            return usersDto.Where(u => u.EntityInfo.Status != 0).ToList();
-        }
-
-        public async Task<UserDto> GetUserAsync(int userId)
-        {
-            var user = await _userRepository.FirstOrDefaultWithRelationsAsync(u => u.Id == userId);
-            
-            UserDto userDto = null;
-            if(user != null)
-                userDto = await MapUserAsync(user);
-
-            if (userDto != null)
+            if(userInDb != null)
             {
-                if (userDto.EntityInfo.Status != 0)
-                    return userDto;
-                else
-                    throw new Exception("Este usuario no existe en la base de datos");
+                userInDb.Name = user.Name;
+                userInDb.LastName = user.LastName;
+                userInDb.IdentificationDocument = user.IdentificationDocument;
+                if (!string.IsNullOrEmpty(user.Photo))
+                    userInDb.Photo = await UploadPhoto.UploadProfilePhotoAsync($"user_profile_photo_{userInDb.Id}.jpg", user.Photo);
+                userInDb.Phone = user.Phone;
+                userInDb.Password = Encryption.Encrypt(user.Password);
+                userInDb.Email = user.Email;
+
+                await _addressService.UpdateAddressAsync(user.Address);
+
+                var entityInfo = await _entitiesInfoService.GetEntityInfoAsync(userInDb.EntityInfo.Id);
+                entityInfo.UpdatedAt = DateTime.Now;
+                await _entitiesInfoService.UpdateEntityInfo(entityInfo);
+
+                _userRepository.Update(userInDb);
+                await _userRepository.SaveChangesAsync();
             }
-            else
-                throw new Exception("Este usuario no existe en la base de datos");
+            return user;
         }
 
         public async Task DeleteUserAsync(int userId)
@@ -129,6 +129,33 @@ namespace CIT.BusinessLogic.Services
             login.Status = 0;
             _loginRepository.Update(login);
             await _loginRepository.SaveChangesAsync();
+        }
+
+        public async Task<List<UserDto>> GetUsersAsync(int lenderBusinessId)
+        {
+            var users = await _userRepository.GetAllWithFilterAndWithRelationsAsync(u => u.LenderBusinessId == lenderBusinessId);
+
+            var usersDto = users.Select(u => MapUserAsync(u).Result).ToList();
+            return usersDto.Where(u => u.EntityInfo.Status != 0).ToList();
+        }
+
+        public async Task<UserDto> GetUserAsync(int userId)
+        {
+            var user = await _userRepository.FirstOrDefaultWithRelationsAsync(u => u.Id == userId);
+
+            UserDto userDto = null;
+            if (user != null)
+                userDto = await MapUserAsync(user);
+
+            if (userDto != null)
+            {
+                if (userDto.EntityInfo.Status != 0)
+                    return userDto;
+                else
+                    throw new Exception("Este usuario no existe en la base de datos");
+            }
+            else
+                throw new Exception("Este usuario no existe en la base de datos");
         }
 
         private async Task<UserDto> MapUserAsync(User user)
@@ -157,6 +184,7 @@ namespace CIT.BusinessLogic.Services
                 },
                 EntityInfo = new EntityInfoDto()
                 {
+                    Id = entityInfo.Id,
                     CreatedAt = entityInfo.CreatedAt,
                     UpdatedAt = entityInfo.UpdatedAt,
                     Status = entityInfo.Status
@@ -166,5 +194,6 @@ namespace CIT.BusinessLogic.Services
 
             return userDto;
         }
+
     }
 }

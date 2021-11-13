@@ -65,34 +65,15 @@ namespace CIT.BusinessLogic.Services
         public async Task<RoleDto> GetRoleByIdAsync(int roleId)
         {
             var role = await _roleRepository.FirstOrDefaultAsync(r => r.Id == roleId);
-            
-            RoleDto roleDto = null;
-            if (role != null)
-                roleDto = await MapRoleAsync(role);
-
-            if(roleDto != null)
-            {
-                if (roleDto.EntityInfo.Status != 0)
-                    return roleDto;
-                else
-                    throw new Exception("Este rol no existe o fue eliminado");
-            }
-            throw new Exception("Este rol no existe o fue eliminado");
+            var roleDto = await MapRoleAsync(role);
+            return roleDto;
         }
 
         public async Task<RoleDto> GetRoleByNameAsync(string roleName)
         {
             var role = await _roleRepository.FirstOrDefaultAsync(r => r.RoleName.Equals(roleName));
             var roleDto = (role != null) ? await MapRoleAsync(role) : null;
-            
-            if (roleDto != null)
-            {
-                if (roleDto.EntityInfo.Status != 0)
-                    return roleDto;
-                else
-                    throw new Exception("Este rol no existe o fue eliminado");
-            }
-            throw new Exception("Este rol no existe o fue eliminado");
+            return roleDto;
         }
 
         public async Task<List<RoleDto>> GetRolesAsync(int lenderBusinessId)

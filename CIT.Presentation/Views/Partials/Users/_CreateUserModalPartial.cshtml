@@ -2,13 +2,14 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Crear nuevo usuario</h5>
+                <h5 class="modal-title" id="createUserTitle">Crear nuevo usuario</h5>
                 <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">
                     <span></span>
                 </button>
             </div>
             <div class="modal-body">
                 <form>
+                    <input type="hidden" id="userId">
                     <div class="row mb-2">
                         <div class="col-md-4 offset-4">
                             <input type="hidden" id="sendPhoto">
@@ -52,6 +53,7 @@
                             </div>
                         </div>
                     </div>
+                    <input type="hidden" id="addressId">
                     <div class="row mb-2">
                         <div class="col-md-4">
                             <select id="country" class="form-control">
@@ -102,7 +104,7 @@
                             <div class="text-danger" id="latLngValidation">
 
                             </div>
-                        </div>  
+                        </div>
                     </div>
                     <div class="row mb-2">
                         <div class="col-md-4">
@@ -135,7 +137,7 @@
                         </div>
                     </div>
                     <div class="text-center text-danger" id="finalValidation">
-                        
+
                     </div>
                 </form>
 

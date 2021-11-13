@@ -54,26 +54,22 @@ namespace CIT.BusinessLogic.Services
 
         public async Task<AddressDto> UpdateAddressAsync(AddressDto address)
         {
-            var addressEntity = new Address()
-            {
-                Id = address.Id,
-                City = address.City,
-                Country = address.Country,
-                Province = address.Province,
-                Street1 = address.Street1,
-                Street2 = address.Street2,
-                HouseNumber = address.HouseNumber,
-                Latitude = address.Latitude,
-                Longitude = address.Longitude
-            };
+            var addressEntity = await _addressRepository.FirstOrDefaultAsync(a => a.Id == address.Id);
+            
+            addressEntity.Id = address.Id;
+            addressEntity.City = address.City;
+            addressEntity.Country = address.Country;
+            addressEntity.Province = address.Province;
+            addressEntity.Street1 = address.Street1;
+            addressEntity.Street2 = address.Street2;
+            addressEntity.HouseNumber = address.HouseNumber;
+            addressEntity.Latitude = address.Latitude;
+            addressEntity.Longitude = address.Longitude;
+            addressEntity.EntityInfoId = addressEntity.EntityInfoId;
+          
 
-            var entityInfo = new Entitiesinfo()
-            {
-                Id = address.EntityInfo.Id,
-                UpdatedAt = DateTime.Now,
-                Status = address.EntityInfo.Status
-            };
-
+            var entityInfo = await _entitiesInfoService.GetEntityInfoAsync(addressEntity.EntityInfoId);
+            entityInfo.UpdatedAt = DateTime.Now;
             await _entitiesInfoService.UpdateEntityInfo(entityInfo);
 
             _addressRepository.Update(addressEntity);
