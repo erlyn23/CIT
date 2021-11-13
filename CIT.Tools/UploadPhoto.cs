@@ -11,7 +11,7 @@ namespace CIT.Tools
     {
         public static async Task<string> UploadProfilePhotoAsync(string fileName, string photo)
         {
-            string imagePath = $"{Environment.CurrentDirectory}/ProfilePhotos";
+            string imagePath = $"wwwroot/ProfilePhotos";
             string[] imageSplitted = photo.Split(',');
 
             if (!imageSplitted[0].Contains("data:image"))
@@ -28,7 +28,7 @@ namespace CIT.Tools
                 await stream.FlushAsync();
             }
 
-            return path;
+            return fileName;
         }
     }
 }

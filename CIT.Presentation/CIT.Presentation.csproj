@@ -6,6 +6,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="wwwroot\ProfilePhotos\business_profile_photo_1.jpg" />
+    <None Include="wwwroot\ProfilePhotos\profile_photo_0.jpg" />
+    <None Include="wwwroot\ProfilePhotos\profile_photo_3.jpg" />
+    <None Include="wwwroot\ProfilePhotos\profile_photo_4.jpg" />
+    <None Include="wwwroot\ProfilePhotos\profile_photo_5.jpg" />
+    <None Include="wwwroot\ProfilePhotos\user_profile_photo_3.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Bootswatch" Version="4.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.10" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.10" />

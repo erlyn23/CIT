@@ -11,6 +11,30 @@ const appHeaders = {
     'Page': 'Usuarios'
 };
 
+
+const loadViewMap = function (lat, lng) {
+    mapboxgl.accessToken = 'pk.eyJ1IjoiZXJseW4yMyIsImEiOiJja2Q4NnFtYmkwMW5jMzRzZ3N0aTEwZWEzIn0.cO65NFyyEyHN8OSn-9uNYw';
+
+    const userViewMap = new mapboxgl.Map({
+        container: 'userViewMap',
+        style: 'mapbox://styles/mapbox/streets-v11',
+        center: [lng, lat],
+        zoom: 9
+    });
+
+    userViewMap.addControl(
+        new MapboxGeocoder({
+            accessToken: mapboxgl.accessToken,
+            mapboxgl: mapboxgl
+        })
+    );
+    userViewMap.addControl(new mapboxgl.NavigationControl());
+
+    const marker = new mapboxgl.Marker();
+    marker.setLngLat([lng, lat]).addTo(userViewMap);
+}
+
+
 const loadMap = function () {
     mapboxgl.accessToken = 'pk.eyJ1IjoiZXJseW4yMyIsImEiOiJja2Q4NnFtYmkwMW5jMzRzZ3N0aTEwZWEzIn0.cO65NFyyEyHN8OSn-9uNYw';
 
@@ -160,21 +184,13 @@ const templateUsersList = (users) => {
     return html;
 }
 
-const setEditUserEvent = function(users){
-    users.forEach(function (user) {
-        $("#editUserBtn-" + user.id).on('click', function () {
-            setUserData(user);
-        });
-    });
-}
-
 const setUserData = function (user) {
     $("#createUserTitle").text("Editar usuario");
-    
+
     $("#userId").val(user.id);
-    
+
     if (user.photo != "NULL") {
-        $("#uploadedPhoto").prop('src', user.photo);    
+        $("#uploadedPhoto").prop('src', user.photo);
         $("#sendPhoto").val(user.Photo);
     }
     getModalData();
@@ -199,11 +215,40 @@ const setUserData = function (user) {
     $("#CreteUserModal").modal('show');
 }
 
+const setUserDetailData = function (user) {
+    $("#userPhotoView").html(`<img src="/ProfilePhotos/user_profile_photo_${user.id}.jpg" alt="Foto del usuario" width="200" height="200" />`);
+    $("#userIdView").text(user.id);
+    $("#userNameView").text(`${user.name} ${user.lastName}`);
+    $("#identificationDocumentView").text(user.identificationDocument);
+    $("#emailView").text(user.email);
+    $("#phoneView").text(user.phone);
+    $("#countryView").text(user.address.country);
+    $("#cityView").text(user.address.city);
+    $("#street1View").text(user.address.street1);
+    $("#street2View").text(user.address.street2);
+    $("#provinceView").text(user.address.province);
+    loadViewMap(user.address.latitude, user.address.longitude);
+    $("#houseNumberView").text(user.address.houseNumber);
+    $("#roleView").text(user.userRole.role.role);
+    $("#UserModalDetail").modal('show');
+}
+
+const setEditUserEvent = function(users){
+    users.forEach(function (user) {
+        $("#editUserBtn-" + user.id).on('click', function () {
+            setUserData(user);
+        });
+        $("#setUserDetailBtn-" + user.id).on('click', function () {
+            setUserDetailData(user);
+        });
+    });
+}
+
 $("#saveUserBtn").on('click', function () {
     if (!validateOnClick()) {
         $("#saveUserBtn > span").text("Enviando datos, por favor espere...");
         $("#saveUserBtn").prop('disabled', true);
-        const newUser = {
+        const newUser = { 
             name: formFields.firstName.val(),
             lastName: formFields.lastName.val(),
             identificationDocument: formFields.identificationDocument.val(),
