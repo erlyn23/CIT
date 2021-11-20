@@ -57,6 +57,13 @@ namespace CIT.BusinessLogic.Services
             return userRoleDto;
         }
 
+        public async Task<UserRoleDto> GetUserRoleByUserAndRoleIdAsync(int userId, int roleId)
+        {
+            var userRoles = await GetUserRolesAsync();
+            var userRoleDto = userRoles.Where(ur => ur.UserId == userId && ur.RoleId == roleId).FirstOrDefault();
+            return userRoleDto;
+        }
+
         public async Task<List<UserRoleDto>> GetUserRolesAsync()
         {
             var userRoles = await _userRoleRepository.GetAllAsync();

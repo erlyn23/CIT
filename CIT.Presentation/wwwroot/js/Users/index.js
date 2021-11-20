@@ -365,7 +365,9 @@ const deleteUser = function(userId){
 
 
 const onErrorHandler = function (err) {
-
+    $("#loadingUsers").addClass("d-none");
+    $("#errorMessage").removeClass("d-none");
+    $("#errorMessage").html("<p>Ha ocurrido un error al obtener usuarios: "+ err.responseText +"</p>")
 }
 
 getUsers();

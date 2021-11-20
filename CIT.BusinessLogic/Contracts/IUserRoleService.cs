@@ -13,6 +13,7 @@ namespace CIT.BusinessLogic.Contracts
         Task<UserRoleDto> UpdateUserRoleAsync(UserRoleDto userRole);
         Task<List<UserRoleDto>> GetUserRolesAsync();
         Task<UserRoleDto> GetUserRoleAsync(int userRoleId);
+        Task<UserRoleDto> GetUserRoleByUserAndRoleIdAsync(int userId, int roleId);
         Task DeleteUserRoleByRoleIdAsync(int roleId);
         Task DeleteUserRoleAsync(int userRoleId);
     }
