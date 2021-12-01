@@ -135,5 +135,19 @@ namespace CIT.BusinessLogic.Services
             await _roleRepository.SaveChangesAsync();
             return role;
         }
+
+        public async Task<List<PageDto>> GetPagesByRoleAsync(int roleId)
+        {
+            var rolePermissions = await _rolePermissionService.GetRolePermissionsAsync(roleId);
+            var pages = rolePermissions.GroupBy(p => p.PageId).Select(p => new PageDto()
+            {
+                PageId = p.Key,
+                PageName = p.Where(rp => rp.PageId == p.Key).FirstOrDefault().PageName,
+                IconClass = p.Where(rp => rp.PageId == p.Key).FirstOrDefault().IconClass,
+                Route = p.Where(rp => rp.PageId == p.Key).FirstOrDefault().Route
+            }).ToList();
+
+            return pages;
+        }
     }
 }

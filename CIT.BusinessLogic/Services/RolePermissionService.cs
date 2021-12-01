@@ -98,6 +98,7 @@ namespace CIT.BusinessLogic.Services
         public async Task<RolePermissionDto> MapRolePermissionAsync(Rolepermission rolePermission)
         {
             var pages = await _pageRepository.GetAllAsync();
+            var currentPage = pages.Where(p => p.Id == rolePermission.PageId).FirstOrDefault();
             var operations = await _operationRepository.GetAllAsync();
             var rolePermissionDto = new RolePermissionDto()
             {
@@ -105,8 +106,10 @@ namespace CIT.BusinessLogic.Services
                 RoleId = rolePermission.RoleId,
                 OperationName = operations.Where(o => o.Id == rolePermission.OperationId).FirstOrDefault().OperationName,
                 OperationId = operations.Where(o => o.Id == rolePermission.OperationId).FirstOrDefault().Id,
-                PageId = pages.Where(p => p.Id == rolePermission.PageId).FirstOrDefault().Id,
-                PageName = pages.Where(p => p.Id == rolePermission.PageId).FirstOrDefault().PageName
+                PageId = currentPage.Id,
+                PageName = currentPage.PageName,
+                IconClass = currentPage.IconClass,
+                Route = currentPage.Route
             };
             return rolePermissionDto;
         }

@@ -31,7 +31,6 @@ namespace CIT.Presentation.Filters
                 var operation = context.HttpContext.Request.Headers["Operation"].ToString();
                 var page = context.HttpContext.Request.Headers["Page"].ToString();
 
-
                 var roleId = decodedToken.Claims.FirstOrDefault(c => c.Type.Equals("Role")).Value;
 
                 int roleIntId = 0;
@@ -39,7 +38,6 @@ namespace CIT.Presentation.Filters
                 var userRole = await _roleService.GetRoleByIdAsync(roleIntId);
 
                 var permission = userRole.RolePermissions.FirstOrDefault(r => r.OperationName.Equals(operation) && r.PageName.Equals(page));
-
                 if (permission != null)
                     await next();
                 else

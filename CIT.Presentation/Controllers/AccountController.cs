@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace CIT.Presentation.Controllers
@@ -29,7 +30,8 @@ namespace CIT.Presentation.Controllers
         {
             try
             {
-                return Json(await _accountService.SignInAsync(authModel.Email, authModel.Password));
+                var userResponse = await _accountService.SignInAsync(authModel.Email, authModel.Password);
+                return Json(userResponse);
             }
             catch(Exception ex)
             {

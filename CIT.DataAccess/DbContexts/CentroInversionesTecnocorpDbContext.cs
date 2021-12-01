@@ -251,6 +251,14 @@ namespace CIT.DataAccess.DbContexts
                 entity.Property(e => e.PageName)
                     .IsRequired()
                     .HasMaxLength(50);
+
+                entity.Property(e => e.IconClass)
+                    .IsRequired()
+                    .HasMaxLength(30);
+
+                entity.Property(e => e.Route)
+                      .IsRequired()
+                      .HasMaxLength(50);
             });
 
             modelBuilder.Entity<Payment>(entity =>

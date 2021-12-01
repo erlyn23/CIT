@@ -10,5 +10,7 @@ namespace CIT.Dtos.Requests
     {
         public int PageId { get; set; }
         public string PageName { get; set; }
+        public string IconClass { get; set; }
+        public string Route { get; set; }
     }
 }

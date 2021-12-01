@@ -29,7 +29,9 @@ namespace CIT.BusinessLogic.Services
             return new PageDto()
             {
                 PageId = page.Id,
-                PageName = page.PageName
+                PageName = page.PageName,
+                IconClass = page.IconClass,
+                Route = page.Route
             };
         }
     }

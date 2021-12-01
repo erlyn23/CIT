@@ -28,35 +28,8 @@
                 <a href="#" class="nav_logo">
                     <span class="nav_logo-name">Sistema Integral de <br /> Préstamos</span>
                 </a>
-                <div class="nav_list">
-                    <a class="nav_link" asp-controller="Dashboard" asp-action="Index" id="dashboardLink">
-                        <i class='bx bx-grid-alt nav_icon'></i>
-                        <span class="nav_name">Dashboard</span>
-                    </a>
-                    <a asp-controller="Users" asp-action="Index" class="nav_link" id="usersLink">
-                        <i class='bx bx-user nav_icon'></i>
-                        <span class="nav_name">Usuarios</span>
-                    </a>
-                    <a asp-controller="Roles" asp-action="Index" class="nav_link" id="rolesLink">
-                        <i class='bx bx-cog nav_icon'></i>
-                        <span class="nav_name">Roles y páginas</span>
-                    </a>
-                    <a href="#" class="nav_link">
-                        <i class='bx bx-car nav_icon'></i>
-                        <span class="nav_name">Vehículos</span>
-                    </a>
-                    <a href="#" class="nav_link">
-                        <i class='bx bx-bar-chart-alt-2 nav_icon'></i>
-                        <span class="nav_name">Informes</span>
-                    </a>
-                    <a href="#" class="nav_link">
-                        <i class='bx bx-money nav_icon'></i>
-                        <span class="nav_name">Amortizaciones</span>
-                    </a>
-                    <a href="#" class="nav_link">
-                        <i class='bx bx-coin nav_icon'></i>
-                        <span class="nav_name">Préstamos</span>
-                    </a>
+                <div class="nav_list" id="nav-list">
+
                 </div>
             </div>
             <a href="#" class="nav_link">
@@ -79,10 +52,14 @@
     <script src="~/paginationjs/pagination.js"></script>
     <script src="~/js/Common/request.js"></script>
     <script src="~/js/sidenav.js"></script>
+    <script src="~/js/Common/navDefiner.js"></script>
     @if (!string.IsNullOrEmpty(ViewData["Page"].ToString()))
     {
         @switch (ViewData["Page"].ToString())
         {
+            case "Dashboard":
+                <script src="~/js/Dashboard/index.js"></script>
+                break;
             case "Users":
                 <script src="~/js/Users/validations.js"></script>
                 <script src="~/js/Users/index.js"></script>

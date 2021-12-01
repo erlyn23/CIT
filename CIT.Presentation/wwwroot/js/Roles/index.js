@@ -2,11 +2,7 @@
 let pagesCounter = 0;
 let pagesIds = [];
 let operationsIds = [];
-
-
-const linkColor = document.getElementById('rolesLink')
-document.querySelectorAll('.nav_link').forEach(l => l.classList.remove('active'));
-linkColor.classList.add('active');
+getUserPages('rolesLink');
 
 
 if (!localStorage.getItem('user')) {

@@ -14,6 +14,8 @@ namespace CIT.DataAccess.Models
 
         public int Id { get; set; }
         public string PageName { get; set; }
+        public string IconClass { get; set; }
+        public string Route { get; set; }
 
         public virtual ICollection<Rolepermission> Rolepermissions { get; set; }
     }

@@ -1,6 +1,4 @@
-﻿const linkColor = document.getElementById('usersLink')
-document.querySelectorAll('.nav_link').forEach(l => l.classList.remove('active'));
-linkColor.classList.add('active');
+﻿getUserPages('usuariosLink');
 let map;
 
 if (!localStorage.getItem('user')) window.href.location = '/Account/Index';
