@@ -13,12 +13,12 @@ using System.Threading.Tasks;
 namespace CIT.Presentation.Controllers
 {
     [ServiceFilter(typeof(ExceptionFilter))]
-    public class UsersController : Controller
+    public class UsersController : BaseCITController
     {
         private readonly IUserService _userService;
         private readonly TokenCreator _tokenCreator;
 
-        public UsersController(IUserService userService, TokenCreator tokenCreator)
+        public UsersController(IUserService userService, TokenCreator tokenCreator, IRolePermissionService rolePermissionService) : base(rolePermissionService, tokenCreator)
         {
             _userService = userService;
             _tokenCreator = tokenCreator;

@@ -17,5 +17,6 @@ namespace CIT.BusinessLogic.Contracts
         Task DeleteRolePermissionsAsync(List<int> rolePermissionsId);
         Task DeleteRolePermissionsByRoleIdAsync(int roleId);
         Task<RolePermissionDto> GetRolePermissionByRolePageAndOperationId(int roleId, int operationId, int pageId);
+        Task<List<RolePermissionDto>> GetOperationByPageAndRoleAsync(int pageId, int roleId);
     }
 }

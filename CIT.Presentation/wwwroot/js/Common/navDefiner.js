@@ -22,6 +22,32 @@ const getUserPages = function (activeLink) {
     });
 };
 
+let hasGet = false;
+let hasAdd = false;
+let hasEdit = false;
+let hasDelete = false;
+const getUserPermissions = function (pageId) {
+    doRequest({
+        url: `/Dashboard/GetPermissionsByPageAndRole?pageId=${pageId}`,
+        method: 'GET',
+        data: null,
+        headers: { 'content-type': dashboardHeaders["content-type"], 'Authorization': dashboardHeaders["Authorization"] },
+        successCallback: function (data) {
+            hasGet = hasPermission(data, 'Obtener');
+            hasAdd = hasPermission(data, 'Agregar');
+            hasEdit = hasPermission(data, 'Modificar');
+            hasDelete = hasPermission(data, 'Eliminar');
+        },
+        errorCallback: function (error) {
+            onErrorGetPages(error);
+        }
+    });
+}
+
+const hasPermission = function (data, operationName) {
+    return data.findIndex(d => d.operationName === operationName) >= 0;
+}
+
 const onGetNavPages = function (data, activeLink) {
     let htmlNav = "";
     data.sort((a, b) => a.pageId - b.pageId);
@@ -37,4 +63,8 @@ const onGetNavPages = function (data, activeLink) {
     const linkColor = document.getElementById(activeLink)
     document.querySelectorAll('.nav_link').forEach(l => l.classList.remove('active'));
     linkColor.classList.add('active');
+}
+
+const onErrorGetPages = function (error) {
+    alert(error);
 }

@@ -1,4 +1,5 @@
 ﻿getUserPages('usuariosLink');
+getUserPermissions(2);
 let map;
 
 if (!localStorage.getItem('user')) window.href.location = '/Account/Index';
@@ -148,17 +149,23 @@ const getUsers = function () {
 }
 
 const onGetUsers = function (data) {
-    $("#paginator-container").pagination({
-        dataSource: data,
-        pageSize: 5,
-        callback: function (data, pagination) {
-            const html = templateUsersList(data);
-            $("#usersList").html(html);
-            setEditUserEvent(data);
-            $("#loadingUsers").css({ 'display': 'none' });
-            $("#usersTable").removeClass('d-none');
-        }
-    });
+    if (!hasAdd) {
+        $("#openCreateUser").remove();
+        $("#CreteUserModal").remove();
+    }
+    if (hasGet) {
+        $("#paginator-container").pagination({
+            dataSource: data,
+            pageSize: 5,
+            callback: function (data, pagination) {
+                const html = templateUsersList(data);
+                $("#usersList").html(html);
+                setEditUserEvent(data);
+                $("#loadingUsers").css({ 'display': 'none' });
+                $("#usersTable").removeClass('d-none');
+            }
+        });
+    }
 }
 
 const templateUsersList = (users) => {
@@ -175,7 +182,7 @@ const templateUsersList = (users) => {
                     <td>
                         <button type="button" id="setUserDetailBtn-${user.id}" class="btn btn-sm btn-success"><i class="fas fa-eye"></i></button>
                         <button type="button" id="editUserBtn-${user.id}" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></button>
-                        <button type="button" class="btn btn-sm btn-danger" onclick="deleteUser(${user.id})"><i class="fas fa-trash"></i></button>
+                        <button type="button" id="deleteUserBtn-${user.id}" class="btn btn-sm btn-danger" onclick="deleteUser(${user.id})"><i class="fas fa-trash"></i></button>
                     </td>
                 </tr>`;
     });
@@ -231,14 +238,27 @@ const setUserDetailData = function (user) {
     $("#UserModalDetail").modal('show');
 }
 
-const setEditUserEvent = function(users){
+const setEditUserEvent = function (users) {
     users.forEach(function (user) {
-        $("#editUserBtn-" + user.id).on('click', function () {
-            setUserData(user);
-        });
-        $("#setUserDetailBtn-" + user.id).on('click', function () {
-            setUserDetailData(user);
-        });
+
+        if (hasEdit) {
+            $("#editUserBtn-" + user.id).on('click', function () {
+                setUserData(user);
+            });
+        } else
+            $("#editUserBtn-" + user.id).remove();
+
+        if (hasGet) {
+
+            $("#setUserDetailBtn-" + user.id).on('click', function () {
+                setUserDetailData(user);
+            });
+
+        } else $("#setUserDetailBtn-" + user.id).remove();
+
+        if (!hasDelete)
+            $("#deleteUserBtn-" + user.id).remove();
+
     });
 }
 

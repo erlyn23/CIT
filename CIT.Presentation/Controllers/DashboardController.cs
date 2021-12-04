@@ -14,15 +14,13 @@ using CIT.Tools;
 namespace CIT.Presentation.Controllers
 {
     [ServiceFilter(typeof(ExceptionFilter))]
-    public class DashboardController : Controller
+    public class DashboardController : BaseCITController
     {
         private readonly IRoleService _roleService;
-        private readonly TokenCreator _tokenCreator;
 
-        public DashboardController(IRoleService roleService, TokenCreator tokenCreator)
+        public DashboardController(IRoleService roleService, TokenCreator tokenCreator, IRolePermissionService rolePermissionService) : base(rolePermissionService, tokenCreator)
         {
             _roleService = roleService;
-            _tokenCreator = tokenCreator;
         }
 
         public IActionResult Index()
@@ -34,9 +32,7 @@ namespace CIT.Presentation.Controllers
         [HttpGet]
         public async Task<IActionResult> GetPagesByRoleAsync()
         {
-            var roleClaim = _tokenCreator.DecodeToken(Request).Claims.Where(c => c.Type.Equals("Role")).FirstOrDefault();
-            var roleId = int.Parse(roleClaim.Value);
-            return Json(await _roleService.GetPagesByRoleAsync(roleId));
+            return Json(await _roleService.GetPagesByRoleAsync(GetRoleId()));
         }
         
     }

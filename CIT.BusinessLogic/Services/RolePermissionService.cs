@@ -76,6 +76,14 @@ namespace CIT.BusinessLogic.Services
                 await DeleteRolePermissionAsync(permission.Id);
         }
 
+        public async Task<List<RolePermissionDto>> GetOperationByPageAndRoleAsync(int pageId, int roleId)
+        {
+            var rolePermissions = await _rolePermissionRepository.GetAllWithFilterAsync(rp => rp.PageId == pageId && rp.RoleId == roleId);
+
+            var rolePermissionsDto = rolePermissions.Select(rp => MapRolePermissionAsync(rp).Result).ToList();
+            return rolePermissionsDto;
+        }
+
         public async Task<RolePermissionDto> GetRolePermissionByRolePageAndOperationId(int roleId, int operationId, int pageId)
         {
             var rolePermission = await _rolePermissionRepository.FirstOrDefaultAsync(rp => rp.RoleId == roleId && rp.OperationId == operationId && rp.PageId == pageId);

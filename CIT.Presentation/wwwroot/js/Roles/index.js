@@ -3,7 +3,7 @@ let pagesCounter = 0;
 let pagesIds = [];
 let operationsIds = [];
 getUserPages('rolesLink');
-
+getUserPermissions(3);
 
 if (!localStorage.getItem('user')) {
     window.location = '/Account/Index';
@@ -14,6 +14,10 @@ const appHeaders = {
     'Authorization': `Bearer ${JSON.parse(localStorage.getItem('user'))?.token}`,
     'Page': 'Roles'
 };
+
+const hideOrShowAddForm = function () {
+    if (!hasAdd) $("#roleFormContainer").remove();
+}
 
 const getRoles = () => {
     doRequest(
@@ -32,18 +36,21 @@ const getRoles = () => {
 }
 
 const onGetRoles = (data) => {
-    $("#paginator-container").pagination({
-        dataSource: data,
-        pageSize: 5,
-        callback: function (data, pagination) {
-            const html = templateRolesList(data);
-            $("#rolesList").html(html);
-            setRoleEditEvent(data);
-            $("#loadingRoles").css({ 'display': 'none' });
-            $("#rolesTable").removeClass('d-none');
-        }
+    hideOrShowAddForm();
+    if (hasGet) {
+        $("#paginator-container").pagination({
+            dataSource: data,
+            pageSize: 5,
+            callback: function (data, pagination) {
+                const html = templateRolesList(data);
+                $("#rolesList").html(html);
+                paintButtonsByRole(data);
+                $("#loadingRoles").css({ 'display': 'none' });
+                $("#rolesTable").removeClass('d-none');
+            }
 
-    });
+        });
+    }
 }
 
 const templateRolesList = (roles) => {
@@ -57,18 +64,25 @@ const templateRolesList = (roles) => {
                     <td>${role.role}</td>
                     <td>
                         <button type="button" id="editRoleBtn-${role.roleId}" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></button>
-                        <button type="button" class="btn btn-sm btn-danger" onclick="deleteRole(${role.roleId})"><i class="fas fa-trash"></i></button>
+                        <button type="button" id="deleteRoleBtn-${role.roleId}" class="btn btn-sm btn-danger" onclick="deleteRole(${role.roleId})"><i class="fas fa-trash"></i></button>
                     </td>
                 </tr>`;
     });
     return html;
 }
 
-const setRoleEditEvent = function (roles) {
+const paintButtonsByRole = function (roles) {
     roles.forEach(role => {
-        $("#editRoleBtn-" + role.roleId).on('click', function () {
-            setRoleData(role);
-        });
+        if (hasEdit) {
+            $("#editRoleBtn-" + role.roleId).on('click', function () {
+                setRoleData(role);
+            });
+        } else 
+            $("#editRoleBtn-" + role.roleId).remove();
+
+        if (!hasDelete)
+            $("#deleteRoleBtn-" + role.roleId).remove();
+        
     });
 }
 
