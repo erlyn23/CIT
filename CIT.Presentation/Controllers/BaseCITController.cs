@@ -23,7 +23,7 @@ namespace CIT.Presentation.Controllers
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet]
-        protected async Task<IActionResult> GetPermissionsByPageAndRoleAsync(int pageId)
+        public async Task<IActionResult> GetPermissionsByPageAndRoleAsync(int pageId)
         {
             return Json(await _rolePermissionService.GetOperationByPageAndRoleAsync(pageId, GetRoleId()));
         }
