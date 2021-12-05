@@ -1,9 +1,14 @@
 ﻿const rolePages = [];
 
+if (!localStorage.getItem('user')) window.location = '/Account/Index';
+
+const appHeaders = {
+    'content-type': 'application/json',
+    'Authorization': `Bearer ${JSON.parse(localStorage.getItem('user'))?.token}`
+}
 
 const dashboardHeaders = {
-    'content-type': 'application/json',
-    'Authorization': `Bearer ${JSON.parse(localStorage.getItem('user'))?.token}`,
+    ...appHeaders,
     'Page': 'Dashboard'
 };
 
@@ -31,7 +36,7 @@ const getUserPermissions = function (pageId) {
         url: `/Dashboard/GetPermissionsByPageAndRole?pageId=${pageId}`,
         method: 'GET',
         data: null,
-        headers: { 'content-type': dashboardHeaders["content-type"], 'Authorization': dashboardHeaders["Authorization"] },
+        headers: { ...appHeaders },
         successCallback: function (data) {
             hasGet = hasPermission(data, 'Obtener');
             hasAdd = hasPermission(data, 'Agregar');

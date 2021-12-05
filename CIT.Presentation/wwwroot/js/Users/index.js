@@ -2,11 +2,8 @@
 getUserPermissions(2);
 let map;
 
-if (!localStorage.getItem('user')) window.href.location = '/Account/Index';
-
-const appHeaders = {
-    'content-type': 'application/json',
-    'Authorization': `Bearer ${JSON.parse(localStorage.getItem('user'))?.token}`,
+const userHeaders = {
+    ...appHeaders,
     'Page': 'Usuarios'
 };
 
@@ -71,8 +68,7 @@ const getModalData = function () {
         method: 'GET',
         data: null,
         headers: {
-            'content-type': 'application/json',
-            'Authorization': `Bearer ${JSON.parse(localStorage.getItem('user'))?.token}`,
+            ...appHeaders,
             'Page': 'Roles',
             'Operation': 'Obtener'
         },
@@ -142,7 +138,7 @@ const getUsers = function () {
         url: '/Users/GetUsers',
         method: 'GET',
         data: null,
-        headers: { ...appHeaders, 'Operation': 'Obtener' },
+        headers: { ...userHeaders, 'Operation': 'Obtener' },
         successCallback: function (data) { onGetUsers(data); },
         errorCallback: function (err) { onErrorHandler(err) }
     });
@@ -301,7 +297,7 @@ $("#saveUserBtn").on('click', function () {
             url: url,
             method: 'POST',
             data: newUser,
-            headers: { ...appHeaders, 'Operation': operation },
+            headers: { ...userHeaders, 'Operation': operation },
             successCallback: function (data) {
                 onSuccessSaveUser(data);
             },
@@ -369,7 +365,7 @@ const deleteUser = function(userId){
                 url: '/Users/DeleteUser/' + userId,
                 method: 'GET',
                 data: null,
-                headers: { ...appHeaders, 'Operation': 'Eliminar' },
+                headers: { ...userHeaders, 'Operation': 'Eliminar' },
                 successCallback: function (data) {
                     $("#DeleteConfirmUserModal").modal('hide');
                     alert(data);

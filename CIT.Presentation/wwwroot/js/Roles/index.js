@@ -5,13 +5,8 @@ let operationsIds = [];
 getUserPages('rolesLink');
 getUserPermissions(3);
 
-if (!localStorage.getItem('user')) {
-    window.location = '/Account/Index';
-}
-
-const appHeaders = {
-    'content-type': 'application/json',
-    'Authorization': `Bearer ${JSON.parse(localStorage.getItem('user'))?.token}`,
+const roleHeaders = {
+    ...appHeaders,
     'Page': 'Roles'
 };
 
@@ -26,7 +21,7 @@ const getRoles = () => {
             method: 'GET',
             data: null,
             headers: {
-                ...appHeaders,
+                ...roleHeaders,
                 'Operation': 'Obtener'
             },
             successCallback: function (data) { onGetRoles(data) },
@@ -113,7 +108,7 @@ const deleteRole = function (roleId) {
                 url: '/Roles/DeleteRole/' + roleId,
                 method: 'GET',
                 data: null,
-                headers: { ...appHeaders, 'Operation': 'Eliminar' },
+                headers: { ...roleHeaders, 'Operation': 'Eliminar' },
                 successCallback: function (data) {
                     $("#DeleteConfirmRoleModal").modal('hide');
                     alert(data);
@@ -134,7 +129,7 @@ const getPages = () => {
         method: 'GET',
         data: null,
         headers: {
-            ...appHeaders,
+            ...roleHeaders,
             'Operation': 'Obtener'
         },
         successCallback: function (data) { onGetPages(data); },
@@ -189,7 +184,7 @@ const getOperations = () => {
         method: 'GET',
         data: null,
         headers: {
-            ...appHeaders,
+            ...roleHeaders,
             'Operation': 'Obtener'
         },
         successCallback: function (data) { onGetOperations(data); },
@@ -252,7 +247,7 @@ $("#addOrUpdateRoleBtn").on('click', function () {
             method: 'POST',
             data: newRole,
             headers: {
-                ...appHeaders,
+                ...roleHeaders,
                 'Operation': (roleId.length != 0) ? 'Modificar' : 'Agregar'
             },
             successCallback: function (data) { onSaveRole(data) },
