@@ -11,8 +11,8 @@ namespace CIT.DataAccess.DbContexts
     {
         public CentroInversionesTecnocorpDbContext()
         {
-        }
 
+        }
         public CentroInversionesTecnocorpDbContext(DbContextOptions<CentroInversionesTecnocorpDbContext> options)
             : base(options)
         {

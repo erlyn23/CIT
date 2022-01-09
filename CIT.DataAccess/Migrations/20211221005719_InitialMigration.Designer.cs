@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CIT.DataAccess.Migrations
 {
     [DbContext(typeof(CentroInversionesTecnocorpDbContext))]
-    [Migration("20211110022212_LogsUserMigration")]
-    partial class LogsUserMigration
+    [Migration("20211221005719_InitialMigration")]
+    partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -258,8 +258,8 @@ namespace CIT.DataAccess.Migrations
 
                     b.Property<string>("ResultMessageOrObject")
                         .ValueGeneratedOnAdd()
-                        .HasMaxLength(255)
-                        .HasColumnType("varchar(255)")
+                        .HasMaxLength(1500)
+                        .HasColumnType("varchar(1500)")
                         .HasDefaultValueSql("'NULL'");
 
                     b.HasKey("Id");
@@ -322,7 +322,17 @@ namespace CIT.DataAccess.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("IconClass")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("varchar(30)");
+
                     b.Property<string>("PageName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("Route")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
