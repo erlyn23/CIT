@@ -22,8 +22,7 @@ namespace CIT.BusinessLogic.Services
         }
         public async Task<VehicleDto> AddVehicleAsync(VehicleDto vehicle, int lenderBusinessId)
         {
-            var entityInfo = await _entitiesInfoService.AddEntityInfoAsync();
-
+            
             var vehicleEntity = new Vehicle()
             {
                 Brand = vehicle.Brand,

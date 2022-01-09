@@ -10,7 +10,7 @@ namespace CIT.DataAccess.Contracts
 {
     public interface IVehicleRepository : IGenericRepository<Vehicle>
     {
-        Task<List<Vehicle>> GetAllWithFilterAndWithRelationsAsync(Expression<Func<User, bool>> expression);
+        Task<List<Vehicle>> GetAllWithFilterAndWithRelationsAsync(Expression<Func<Vehicle, bool>> expression);
 
     }
 }
