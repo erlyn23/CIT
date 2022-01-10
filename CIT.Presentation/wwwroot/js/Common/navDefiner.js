@@ -71,5 +71,10 @@ const onGetNavPages = function (data, activeLink) {
 }
 
 const onErrorGetPages = function (error) {
-    alert(error);
+    if (error.status === 401) {
+        alert("No tienes autorización, por favor vuelve a iniciar sesión");
+        localStorage.removeItem('user');
+        window.location = '/Account/Index';
+    } else
+        alert(error.statusText);
 }

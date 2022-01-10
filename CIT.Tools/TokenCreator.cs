@@ -98,14 +98,36 @@ namespace CIT.Tools
             return decodedToken.Claims.Where(c => c.Type.Equals("UserType")).FirstOrDefault().Value;
         }
 
+        public bool HasTokenExpired(HttpRequest request)
+        {
+            var stringToken = GetStringToken(request);
+            var tokenHandler = new JwtSecurityTokenHandler();
+            tokenHandler.ValidateToken(stringToken, new TokenValidationParameters()
+            {
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_configuration["SecretKey"])),
+                ValidateIssuer = false,
+                ValidateAudience = false
+            }, out SecurityToken validatedToken);
+
+            if (DateTime.Now == validatedToken.ValidTo)
+                return true;
+            else
+                return false;
+        }
+
         public JwtSecurityToken DecodeToken(HttpRequest request)
         {
-            var bearerHeader = request.Headers["Authorization"];
-            var stringToken = bearerHeader.ToString().Replace("Bearer ", "");
-
+            var stringToken = GetStringToken(request);
             var handler = new JwtSecurityTokenHandler();
             var jsonToken = handler.ReadJwtToken(stringToken);
             return jsonToken;
+        }
+
+        private string GetStringToken(HttpRequest request) 
+        {
+            var bearerHeader = request.Headers["Authorization"];
+            var stringToken = bearerHeader.ToString().Replace("Bearer ", "");
+            return stringToken;
         }
     }
 }
