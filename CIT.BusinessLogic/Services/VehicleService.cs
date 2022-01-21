@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace CIT.BusinessLogic.Services
 {
-    public class VehicleService : IVehicleService
+    class VehicleService : IVehicleService
     {
         private readonly IVehicleRepository _vehicleRepository;
         private readonly IEntitiesInfoService _entitiesInfoService;
