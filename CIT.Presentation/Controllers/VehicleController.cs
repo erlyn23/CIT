@@ -21,6 +21,8 @@ namespace CIT.Presentation.Controllers
         {
             _vehicleService = vehicleService;
             _tokenCreator = tokenCreator;
+
+            Page = "Vehiculos";
         }
         public IActionResult Index()
         {

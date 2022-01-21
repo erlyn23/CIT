@@ -1,4 +1,5 @@
 ﻿using CIT.BusinessLogic.Contracts;
+using CIT.Presentation.Controllers;
 using CIT.Tools;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -22,26 +23,32 @@ namespace CIT.Presentation.Filters
             _tokenCreator = tokenCreator;
         }
 
-
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
             try
             {
                 if (!_tokenCreator.HasTokenExpired(context.HttpContext.Request))
                 {
+                    var controller = (BaseCITController)context.Controller;
+                    var pageProperty = controller.Page;
+
                     var decodedToken = _tokenCreator.DecodeToken(context.HttpContext.Request);
                     var operation = context.HttpContext.Request.Headers["Operation"].ToString();
                     var page = context.HttpContext.Request.Headers["Page"].ToString();
 
-                    var roleId = decodedToken.Claims.FirstOrDefault(c => c.Type.Equals("Role")).Value;
+                    if (pageProperty.Equals(page))
+                    {
+                        var roleId = decodedToken.Claims.FirstOrDefault(c => c.Type.Equals("Role")).Value;
 
-                    int roleIntId = 0;
-                    int.TryParse(roleId, out roleIntId);
-                    var userRole = await _roleService.GetRoleByIdAsync(roleIntId);
+                        int.TryParse(roleId, out int roleIntId);
+                        var userRole = await _roleService.GetRoleByIdAsync(roleIntId);
 
-                    var permission = userRole.RolePermissions.FirstOrDefault(r => r.OperationName.Equals(operation) && r.PageName.Equals(page));
-                    if (permission != null)
-                        await next();
+                        var permission = userRole.RolePermissions.FirstOrDefault(r => r.OperationName.Equals(operation) && r.PageName.Equals(page));
+                        if (permission != null)
+                            await next();
+                        else
+                            context.Result = new BadRequestObjectResult("No tienes permisos para esta operación");
+                    }
                     else
                         context.Result = new BadRequestObjectResult("No tienes permisos para esta operación");
                 }

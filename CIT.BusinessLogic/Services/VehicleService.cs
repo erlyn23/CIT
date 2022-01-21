@@ -113,7 +113,7 @@ namespace CIT.BusinessLogic.Services
                 Brand = vehicle.Brand,
                 Model = vehicle.Enrollment,
                 Enrollment = int.Parse(vehicle.Enrollment),
-                LicensePlate = int.Parse(vehicle.LicensePlate),
+                LicensePlate = vehicle.LicensePlate,
                 Color = vehicle.Color,
                 Year = vehicle.Year,
                 LenderBusinessId=vehicle.LenderBusinessId,

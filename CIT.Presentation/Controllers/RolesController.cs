@@ -22,6 +22,8 @@ namespace CIT.Presentation.Controllers
         {
             _roleService = roleService;
             _tokenCreator = tokenCreator;
+
+            Page = "Roles";
         }
         public IActionResult Index()
         {
