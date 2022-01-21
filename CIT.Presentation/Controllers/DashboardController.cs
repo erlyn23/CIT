@@ -21,6 +21,8 @@ namespace CIT.Presentation.Controllers
         public DashboardController(IRoleService roleService, TokenCreator tokenCreator, IRolePermissionService rolePermissionService) : base(rolePermissionService, tokenCreator)
         {
             _roleService = roleService;
+
+            Page = "Dashboard";
         }
 
         public IActionResult Index()

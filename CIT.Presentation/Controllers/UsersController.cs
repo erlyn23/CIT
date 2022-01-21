@@ -22,6 +22,8 @@ namespace CIT.Presentation.Controllers
         {
             _userService = userService;
             _tokenCreator = tokenCreator;
+
+            Page = "Usuarios";
         }
         public IActionResult Index()
         {
