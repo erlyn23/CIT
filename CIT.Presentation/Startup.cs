@@ -100,6 +100,8 @@ namespace CIT.Presentation
             services.AddScoped<ILenderAddressService, LenderAddressService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ILoginRepository, LoginRepository>();
+            services.AddScoped<IVehicleService, VehicleService>();
+            services.AddScoped<IVehicleRepository, VehicleRepository>();
             services.AddTransient<TokenCreator>();
             services.AddTransient<EmailTools>();
             services.AddTransient<AccountTools>();

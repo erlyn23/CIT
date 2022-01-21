@@ -17,8 +17,7 @@ namespace CIT.Presentation.Controllers
     {
         private readonly IVehicleService _vehicleService;
         private readonly TokenCreator _tokenCreator;
-
-        public VehicleController(IVehicleService vehicleService, TokenCreator tokenCreator, IRolePermissionService rolePermissionService) : base(rolePermissionService, tokenCreator)
+        public VehicleController(TokenCreator tokenCreator, IRolePermissionService rolePermissionService, IVehicleService vehicleService) : base(rolePermissionService, tokenCreator)
         {
             _vehicleService = vehicleService;
             _tokenCreator = tokenCreator;
@@ -29,31 +28,39 @@ namespace CIT.Presentation.Controllers
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [ServiceFilter(typeof(AuthFilter))]
         [HttpGet]
+        [ServiceFilter(typeof(AuthFilter))]
         public async Task<IActionResult> GetVehiclesAsync()
         {
-            int lenderBusinessId = await _tokenCreator.GetLenderBusinessId(Request);
-            return Json(await _vehicleService.GetVehiclesAsync(lenderBusinessId));
+            var lenderBusinessId = await _tokenCreator.GetLenderBusinessId(Request);
+            var vehicles = await _vehicleService.GetVehiclesAsync(lenderBusinessId);
+            return Json(vehicles);
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpPost]
+        [ServiceFilter(typeof(AuthFilter))]
+        public async Task<IActionResult> SaveVehicleAsync(VehicleDto vehicle)
+        {
+            var lenderBusinessId = await _tokenCreator.GetLenderBusinessId(Request);
+            return Json(await _vehicleService.AddVehicleAsync(vehicle, lenderBusinessId));
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpPost]
+        [ServiceFilter(typeof(AuthFilter))]
+        public async Task<IActionResult> UpdateVehicleAsync(VehicleDto vehicle)
+        {
+            return Json(await _vehicleService.UpdateVehicleAsync(vehicle));
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpGet]
         [ServiceFilter(typeof(AuthFilter))]
         public async Task<IActionResult> DeleteVehicleAsync(int id)
         {
             await _vehicleService.DeleteVehicleAsync(id);
-            return Json("Vehiculo eliminado correctamente");
-        }
-
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [ServiceFilter(typeof(AuthFilter))]
-        [HttpPost]
-        public async Task<IActionResult> UpdateVehicleAsync([FromBody] VehicleDto vehicle)
-        {
-            if (ModelState.IsValid)
-                return Json(await _vehicleService.UpdateVehicleAsync(vehicle));
-
-            return BadRequest(ModelState.Values.ToList());
+            return Json("Vehículo eliminado correctamente");
         }
     }
 }
