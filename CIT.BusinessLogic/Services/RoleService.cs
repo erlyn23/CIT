@@ -59,6 +59,7 @@ namespace CIT.BusinessLogic.Services
                 entityInfo.UpdatedAt = DateTime.Now;
                 entityInfo.Status = 0;
                 await _entitiesInfoService.UpdateEntityInfo(entityInfo);
+                await _rolePermissionService.DeleteRolePermissionsByRoleIdAsync(role.RoleId);
             }
         }
 
@@ -94,6 +95,7 @@ namespace CIT.BusinessLogic.Services
                 RolePermissions = rolePermissions,
                 EntityInfo = new EntityInfoDto()
                 {
+                    Id = entityinfo.Id,
                     CreatedAt = entityinfo.CreatedAt,
                     UpdatedAt = entityinfo.UpdatedAt,
                     Status = entityinfo.Status
