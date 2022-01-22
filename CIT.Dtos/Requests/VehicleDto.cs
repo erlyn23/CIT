@@ -19,16 +19,17 @@ namespace CIT.Dtos.Requests
         [Required(ErrorMessage = "Debes escribir la matrícula del vehículo")]
         public int Enrollment { get; set; }
         [Required(ErrorMessage = "Debes escribir la placa del vehículo")]
-        [MinLength(7, ErrorMessage = "La placa solo debe contener 7 carácteres")]
+        //[MinLength(7, ErrorMessage = "La placa solo debe contener 7 carácteres")]
         [MaxLength(7, ErrorMessage = "La placa solo debe contener 7 carácteres")]
         public string LicensePlate { get; set; }
         [Required(ErrorMessage = "Debes escribir el color del vehículo")]
-        [MinLength(15, ErrorMessage = "El color solo debe contener 15 carácteres")]
+       //[MinLength(15, ErrorMessage = "El color solo debe contener 15 carácteres")]
         [MaxLength(15, ErrorMessage = "El color solo debe contener 15 carácteres")]
         public string Color { get; set; }
         [Required(ErrorMessage = "Debes escribir el año del vehículo")]
         public int Year { get; set; }
 
+        public int EntityInfoId { get; set; }
         public EntityInfoDto EntityInfo { get; set; }
 
     }

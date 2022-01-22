@@ -28,8 +28,8 @@ namespace CIT.Presentation.Controllers
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpGet]
         [ServiceFilter(typeof(AuthFilter))]
+        [HttpGet]
         public async Task<IActionResult> GetVehiclesAsync()
         {
             var lenderBusinessId = await _tokenCreator.GetLenderBusinessId(Request);
@@ -38,25 +38,34 @@ namespace CIT.Presentation.Controllers
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpPost]
         [ServiceFilter(typeof(AuthFilter))]
-        public async Task<IActionResult> SaveVehicleAsync(VehicleDto vehicle)
+        [HttpPost]
+        public async Task<IActionResult> SaveVehicleAsync([FromBody] VehicleDto vehicle)
         {
             var lenderBusinessId = await _tokenCreator.GetLenderBusinessId(Request);
-            return Json(await _vehicleService.AddVehicleAsync(vehicle, lenderBusinessId));
+            if (ModelState.IsValid)
+            {
+                return Json(await _vehicleService.AddVehicleAsync(vehicle, lenderBusinessId));
+
+
+            }
+            return BadRequest(ModelState.Values.ToList());
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [ServiceFilter(typeof(AuthFilter))]
         [HttpPost]
-        [ServiceFilter(typeof(AuthFilter))]
-        public async Task<IActionResult> UpdateVehicleAsync(VehicleDto vehicle)
+        public async Task<IActionResult> UpdateVehicleAsync([FromBody] VehicleDto vehicle)
         {
-            return Json(await _vehicleService.UpdateVehicleAsync(vehicle));
+            if (ModelState.IsValid)
+                return Json(await _vehicleService.UpdateVehicleAsync(vehicle));
+
+            return BadRequest(ModelState.Values.ToList());
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpGet]
         [ServiceFilter(typeof(AuthFilter))]
+        [HttpGet]
         public async Task<IActionResult> DeleteVehicleAsync(int id)
         {
             await _vehicleService.DeleteVehicleAsync(id);
