@@ -116,9 +116,11 @@ namespace CIT.BusinessLogic.Services
                 LicensePlate = vehicle.LicensePlate,
                 Color = vehicle.Color,
                 Year = vehicle.Year,
-                LenderBusinessId=vehicle.LenderBusinessId,
+                LenderBusinessId = vehicle.LenderBusinessId,
+                EntityInfoId=entityinfo.Id,
                 EntityInfo = new EntityInfoDto()
                 {
+                    Id = entityinfo.Id,
                     CreatedAt = entityinfo.CreatedAt,
                     UpdatedAt = entityinfo.UpdatedAt,
                     Status = entityinfo.Status
