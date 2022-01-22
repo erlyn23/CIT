@@ -22,7 +22,8 @@ namespace CIT.BusinessLogic.Services
         }
         public async Task<VehicleDto> AddVehicleAsync(VehicleDto vehicle, int lenderBusinessId)
         {
-            
+            var entityInfo = await _entitiesInfoService.AddEntityInfoAsync();
+
             var vehicleEntity = new Vehicle()
             {
                 Brand = vehicle.Brand,
@@ -31,11 +32,9 @@ namespace CIT.BusinessLogic.Services
                 LicensePlate = vehicle.LicensePlate.ToString(),
                 Color = vehicle.Color,
                 Year = vehicle.Year,
-                LenderBusinessId = lenderBusinessId
+                LenderBusinessId = lenderBusinessId,
+                EntityInfoId = entityInfo.Id
             };
-
-            var savedEntityInfo = await _entitiesInfoService.AddEntityInfoAsync();
-            vehicle.EntityInfo.Id = savedEntityInfo.Id;
 
             var savedVehicle = await _vehicleRepository.AddAsync(vehicleEntity);
             await _vehicleRepository.SaveChangesAsync();
@@ -95,7 +94,7 @@ namespace CIT.BusinessLogic.Services
                 vehicleInDb.Year = vehicle.Year;
                 vehicleInDb.LenderBusinessId = vehicle.LenderBusinessId;
 
-                var entityInfo = await _entitiesInfoService.GetEntityInfoAsync(vehicleInDb.EntityInfo.Id);
+                var entityInfo = await _entitiesInfoService.GetEntityInfoAsync(vehicleInDb.EntityInfoId);
                 entityInfo.UpdatedAt = DateTime.Now;
                 await _entitiesInfoService.UpdateEntityInfo(entityInfo);
 
@@ -105,13 +104,14 @@ namespace CIT.BusinessLogic.Services
             return vehicle;
         }
         private async Task<VehicleDto> MapVehicleAsync(Vehicle vehicle)
+
         {
             var entityinfo = await _entitiesInfoService.GetEntityInfoAsync(vehicle.EntityInfoId);
             var vehicleDto = new VehicleDto()
             {
                 VehicleId = vehicle.Id,
                 Brand = vehicle.Brand,
-                Model = vehicle.Enrollment,
+                Model = vehicle.Model,
                 Enrollment = int.Parse(vehicle.Enrollment),
                 LicensePlate = vehicle.LicensePlate,
                 Color = vehicle.Color,
