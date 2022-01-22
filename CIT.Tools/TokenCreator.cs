@@ -109,10 +109,7 @@ namespace CIT.Tools
                 ValidateAudience = false
             }, out SecurityToken validatedToken);
 
-            if (DateTime.Now == validatedToken.ValidTo)
-                return true;
-            else
-                return false;
+            return DateTime.Now == validatedToken.ValidTo;
         }
 
         public JwtSecurityToken DecodeToken(HttpRequest request)
