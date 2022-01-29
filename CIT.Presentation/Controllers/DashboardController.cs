@@ -14,6 +14,7 @@ using CIT.Tools;
 namespace CIT.Presentation.Controllers
 {
     [ServiceFilter(typeof(ExceptionFilter))]
+    [PageFilter("Dashboard")]
     public class DashboardController : BaseCITController
     {
         private readonly IRoleService _roleService;
@@ -21,8 +22,6 @@ namespace CIT.Presentation.Controllers
         public DashboardController(IRoleService roleService, TokenCreator tokenCreator, IRolePermissionService rolePermissionService) : base(rolePermissionService, tokenCreator)
         {
             _roleService = roleService;
-
-            Page = "Dashboard";
         }
 
         public IActionResult Index()
@@ -31,6 +30,7 @@ namespace CIT.Presentation.Controllers
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [OperationFilter("Obtener")]
         [HttpGet]
         public async Task<IActionResult> GetPagesByRoleAsync()
         {

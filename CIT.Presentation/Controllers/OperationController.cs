@@ -26,7 +26,6 @@ namespace CIT.Presentation.Controllers
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [ServiceFilter(typeof(AuthFilter))]
         [HttpGet]
         public async Task<IActionResult> GetOperationsAsync()
         {

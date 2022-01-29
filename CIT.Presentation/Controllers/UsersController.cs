@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 namespace CIT.Presentation.Controllers
 {
     [ServiceFilter(typeof(ExceptionFilter))]
+    [PageFilter("Usuarios")]
     public class UsersController : BaseCITController
     {
         private readonly IUserService _userService;
@@ -22,8 +23,6 @@ namespace CIT.Presentation.Controllers
         {
             _userService = userService;
             _tokenCreator = tokenCreator;
-
-            Page = "Usuarios";
         }
         public IActionResult Index()
         {
@@ -31,6 +30,7 @@ namespace CIT.Presentation.Controllers
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [OperationFilter("Agregar")]
         [ServiceFilter(typeof(AuthFilter))]
         [HttpPost]
         public async Task<IActionResult> SaveUserAsync([FromBody] UserDto user)
@@ -47,6 +47,7 @@ namespace CIT.Presentation.Controllers
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [OperationFilter("Obtener")]
         [ServiceFilter(typeof(AuthFilter))]
         [HttpGet]
         public async Task<IActionResult> GetUsersAsync()
@@ -57,6 +58,7 @@ namespace CIT.Presentation.Controllers
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [OperationFilter("Modificar")]
         [ServiceFilter(typeof(AuthFilter))]
         [HttpPost]
         public async Task<IActionResult> UpdateUserAsync([FromBody] UserDto user)
@@ -65,6 +67,7 @@ namespace CIT.Presentation.Controllers
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [OperationFilter("Eliminar")]
         [ServiceFilter(typeof(AuthFilter))]
         [HttpGet]
         public async Task<IActionResult> DeleteUserAsync(int id)

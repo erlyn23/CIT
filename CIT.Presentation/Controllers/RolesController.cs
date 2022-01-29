@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 namespace CIT.Presentation.Controllers
 {
     [ServiceFilter(typeof(ExceptionFilter))]
+    [PageFilter("Roles")]
     public class RolesController : BaseCITController
     {
         private readonly IRoleService _roleService;
@@ -22,8 +23,6 @@ namespace CIT.Presentation.Controllers
         {
             _roleService = roleService;
             _tokenCreator = tokenCreator;
-
-            Page = "Roles";
         }
         public IActionResult Index()
         {
@@ -31,6 +30,7 @@ namespace CIT.Presentation.Controllers
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [OperationFilter("Obtener")]
         [ServiceFilter(typeof(AuthFilter))]
         [HttpGet]
         public async Task<IActionResult> GetRolesAsync()
@@ -41,6 +41,7 @@ namespace CIT.Presentation.Controllers
 
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [OperationFilter("Agregar")]
         [ServiceFilter(typeof(AuthFilter))]
         [HttpPost]
         public async Task<IActionResult> CreateRoleAsync([FromBody] RoleDto roleDto)
@@ -53,6 +54,7 @@ namespace CIT.Presentation.Controllers
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [OperationFilter("Eliminar")]
         [ServiceFilter(typeof(AuthFilter))]
         public async Task<IActionResult> DeleteRoleAsync(int id)
         {
@@ -61,6 +63,7 @@ namespace CIT.Presentation.Controllers
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [OperationFilter("Modificar")]
         [ServiceFilter(typeof(AuthFilter))]
         [HttpPost]
         public async Task<IActionResult> UpdateRoleAsync([FromBody] RoleDto role)

@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 namespace CIT.Presentation.Controllers
 {
     [ServiceFilter(typeof(ExceptionFilter))]
+    [PageFilter("Vehiculos")]
     public class VehicleController : BaseCITController
     {
         private readonly IVehicleService _vehicleService;
@@ -21,8 +22,6 @@ namespace CIT.Presentation.Controllers
         {
             _vehicleService = vehicleService;
             _tokenCreator = tokenCreator;
-
-            Page = "Vehiculos";
         }
         public IActionResult Index()
         {
@@ -30,6 +29,7 @@ namespace CIT.Presentation.Controllers
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [OperationFilter("Obtener")]
         [ServiceFilter(typeof(AuthFilter))]
         [HttpGet]
         public async Task<IActionResult> GetVehiclesAsync()
@@ -40,6 +40,7 @@ namespace CIT.Presentation.Controllers
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [OperationFilter("Agregar")]
         [ServiceFilter(typeof(AuthFilter))]
         [HttpPost]
         public async Task<IActionResult> SaveVehicleAsync([FromBody] VehicleDto vehicle)
@@ -55,6 +56,7 @@ namespace CIT.Presentation.Controllers
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [OperationFilter("Modificar")]
         [ServiceFilter(typeof(AuthFilter))]
         [HttpPost]
         public async Task<IActionResult> UpdateVehicleAsync([FromBody] VehicleDto vehicle)
@@ -66,6 +68,7 @@ namespace CIT.Presentation.Controllers
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [OperationFilter("Eliminar")]
         [ServiceFilter(typeof(AuthFilter))]
         [HttpGet]
         public async Task<IActionResult> DeleteVehicleAsync(int id)

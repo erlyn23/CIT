@@ -29,14 +29,15 @@ namespace CIT.Presentation.Filters
             {
                 if (!_tokenCreator.HasTokenExpired(context.HttpContext.Request))
                 {
-                    var controller = (BaseCITController)context.Controller;
-                    var pageProperty = controller.Page;
+                    var pageProperty = context.HttpContext.Request.Headers.Where(h => h.Key.Equals("PageController")).FirstOrDefault().Value.FirstOrDefault();
+
+                    var operationProperty = context.HttpContext.Request.Headers.Where(h => h.Key.Equals("MethodOperation")).FirstOrDefault().Value.FirstOrDefault();
 
                     var decodedToken = _tokenCreator.DecodeToken(context.HttpContext.Request);
                     var operation = context.HttpContext.Request.Headers["Operation"].ToString();
                     var page = context.HttpContext.Request.Headers["Page"].ToString();
 
-                    if (pageProperty.Equals(page))
+                    if (pageProperty.Equals(page) && operationProperty.Equals(operation))
                     {
                         var roleId = decodedToken.Claims.FirstOrDefault(c => c.Type.Equals("Role")).Value;
 

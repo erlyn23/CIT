@@ -15,8 +15,6 @@ namespace CIT.Presentation.Controllers
     {
         private readonly IRolePermissionService _rolePermissionService;
         private readonly TokenCreator _tokenCreator;
-
-        public string Page { get; set; }
         public BaseCITController(IRolePermissionService rolePermissionService, TokenCreator tokenCreator)
         {
             _rolePermissionService = rolePermissionService;
