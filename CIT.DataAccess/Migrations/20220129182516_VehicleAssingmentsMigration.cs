@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace CIT.DataAccess.Migrations
 {
-    public partial class InitialMigration : Migration
+    public partial class VehicleAssingmentsMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -501,25 +501,28 @@ namespace CIT.DataAccess.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "VehicleAssignment",
+                name: "vehicleassignments",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     UserId = table.Column<int>(type: "int", nullable: false),
-                    VehicleId = table.Column<int>(type: "int", nullable: false)
+                    VehicleId = table.Column<int>(type: "int", nullable: false),
+                    AssignmentDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    Comment = table.Column<string>(type: "varchar(150)", maxLength: 150, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_VehicleAssignment", x => x.Id);
+                    table.PrimaryKey("PK_vehicleassignments", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_VehicleAssignment_users_UserId",
+                        name: "Fk_VehicleAssignments_Users",
                         column: x => x.UserId,
                         principalTable: "users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_VehicleAssignment_vehicles_VehicleId",
+                        name: "Fk_VehicleAssignments_Vehicles",
                         column: x => x.VehicleId,
                         principalTable: "vehicles",
                         principalColumn: "Id",
@@ -707,14 +710,24 @@ namespace CIT.DataAccess.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_VehicleAssignment_UserId",
-                table: "VehicleAssignment",
+                name: "Fk_VehicleAssignments_Users",
+                table: "vehicleassignments",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "Fk_VehicleAssignments_Vehicles",
+                table: "vehicleassignments",
+                column: "VehicleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_vehicleassignments_UserId",
+                table: "vehicleassignments",
                 column: "UserId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_VehicleAssignment_VehicleId",
-                table: "VehicleAssignment",
+                name: "IX_vehicleassignments_VehicleId",
+                table: "vehicleassignments",
                 column: "VehicleId",
                 unique: true);
 
@@ -768,7 +781,7 @@ namespace CIT.DataAccess.Migrations
                 name: "userroles");
 
             migrationBuilder.DropTable(
-                name: "VehicleAssignment");
+                name: "vehicleassignments");
 
             migrationBuilder.DropTable(
                 name: "loans");

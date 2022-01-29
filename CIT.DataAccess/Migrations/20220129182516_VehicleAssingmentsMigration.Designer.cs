@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CIT.DataAccess.Migrations
 {
     [DbContext(typeof(CentroInversionesTecnocorpDbContext))]
-    [Migration("20211221005719_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20220129182516_VehicleAssingmentsMigration")]
+    partial class VehicleAssingmentsMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -623,7 +623,16 @@ namespace CIT.DataAccess.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("AssignmentDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("varchar(150)");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
@@ -639,7 +648,11 @@ namespace CIT.DataAccess.Migrations
                     b.HasIndex("VehicleId")
                         .IsUnique();
 
-                    b.ToTable("VehicleAssignment");
+                    b.HasIndex(new[] { "UserId" }, "Fk_VehicleAssignments_Users");
+
+                    b.HasIndex(new[] { "VehicleId" }, "Fk_VehicleAssignments_Vehicles");
+
+                    b.ToTable("vehicleassignments");
                 });
 
             modelBuilder.Entity("CIT.DataAccess.Models.Address", b =>
@@ -905,12 +918,14 @@ namespace CIT.DataAccess.Migrations
                     b.HasOne("CIT.DataAccess.Models.User", "User")
                         .WithOne("VehicleAssignment")
                         .HasForeignKey("CIT.DataAccess.Models.VehicleAssignment", "UserId")
+                        .HasConstraintName("Fk_VehicleAssignments_Users")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("CIT.DataAccess.Models.Vehicle", "Vehicle")
                         .WithOne("VehicleAssignment")
                         .HasForeignKey("CIT.DataAccess.Models.VehicleAssignment", "VehicleId")
+                        .HasConstraintName("Fk_VehicleAssignments_Vehicles")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

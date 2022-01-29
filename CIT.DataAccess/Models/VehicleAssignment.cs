@@ -11,6 +11,8 @@ namespace CIT.DataAccess.Models
         public int Id { get; set; } 
         public int UserId { get; set; }
         public int VehicleId { get; set; }
+        public DateTime AssignmentDate { get; set; }
+        public string Comment { get; set; }
         
         public User User { get; set; }
         public Vehicle Vehicle { get; set; }

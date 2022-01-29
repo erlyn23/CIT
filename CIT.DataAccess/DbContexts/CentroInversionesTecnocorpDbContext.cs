@@ -31,6 +31,7 @@ namespace CIT.DataAccess.DbContexts
         public virtual DbSet<Useraddress> Useraddresses { get; set; }
         public virtual DbSet<Userrole> Userroles { get; set; }
         public virtual DbSet<Vehicle> Vehicles { get; set; }
+        public virtual DbSet<VehicleAssignment> VehicleAssignments { get; set; }
         public virtual DbSet<LenderBusiness> LenderBusinesses { get; set; }
         public virtual DbSet<LenderAddress> LenderAddresses { get; set; }
         public virtual DbSet<LenderRole> LenderRoles { get; set; }
@@ -610,6 +611,29 @@ namespace CIT.DataAccess.DbContexts
                       .HasForeignKey(d => d.LenderBusinessId)
                       .OnDelete(DeleteBehavior.ClientSetNull)
                       .HasConstraintName("Fk_Vehicles_LenderBusiness");
+            });
+
+            modelBuilder.Entity<VehicleAssignment>(entity => 
+            {
+                entity.ToTable("vehicleassignments");
+
+                entity.Property(e => e.Id).HasColumnType("int").UseMySqlIdentityColumn();
+
+                entity.HasIndex(e => e.UserId, "Fk_VehicleAssignments_Users");
+
+                entity.HasIndex(e => e.VehicleId, "Fk_VehicleAssignments_Vehicles");
+
+                entity.Property(e => e.Comment).IsRequired().HasMaxLength(150);
+
+                entity.HasOne(d => d.User)
+                .WithOne(d => d.VehicleAssignment)
+                .HasForeignKey<VehicleAssignment>(d => d.UserId)
+                .HasConstraintName("Fk_VehicleAssignments_Users");
+
+                entity.HasOne(d => d.Vehicle)
+                .WithOne(d => d.VehicleAssignment)
+                .HasForeignKey<VehicleAssignment>(d => d.VehicleId)
+                .HasConstraintName("Fk_VehicleAssignments_Vehicles");
             });
 
             OnModelCreatingPartial(modelBuilder);
