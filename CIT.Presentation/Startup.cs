@@ -3,6 +3,7 @@ using CIT.BusinessLogic.Services;
 using CIT.DataAccess.Contracts;
 using CIT.DataAccess.DbContexts;
 using CIT.DataAccess.Repositories;
+using CIT.Dtos.Profiles;
 using CIT.Presentation.Filters;
 using CIT.Tools;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -43,6 +44,7 @@ namespace CIT.Presentation
                 builder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
             });
 
+            services.AddAutoMapper(typeof(DtosProfiles));
 
             var secretKey = Encoding.ASCII.GetBytes(Configuration["SecretKey"]);
             services.AddAuthentication(options =>
