@@ -134,16 +134,14 @@ $("#registerBtn").on('click', function () {
             successCallback: function (data) {
                 if (Array.isArray(data)) {
                     $("#errorMessages").html("");
-                    for (let validationObject of data) {
-                        for (let errorValidation of validationObject.errors) {
-                            let errorMsg = `<p class="text-danger"><i class="fas fa-exclamation-circle"></i>&nbsp; ${errorValidation.errorMessage}</p>`;
-                            $("#errorMessages").append(errorMsg);
-                            $("#LoadingModal").modal('hide');
+                    for (let error of data) {
+                        let errorMsg = `<p class="text-danger"><i class="fas fa-exclamation-circle"></i>&nbsp; ${error}</p>`;
+                        $("#errorMessages").append(errorMsg);
+                        $("#LoadingModal").modal('hide');
 
-                            setTimeout(function () {
-                                $("#ErrorMessagesModal").modal('show');
-                            }, 1000);
-                        }
+                        setTimeout(function () {
+                            $("#ErrorMessagesModal").modal('show');
+                        }, 1000);
                     }
                 } else {
                     $("form").eq(0).trigger('reset');

@@ -6,3 +6,59 @@
 }
 
 
+<div class="row mt-5 text-center">
+    <div class="col-md-12">
+        <h3>Configuración de Vehículos</h3>
+    </div>
+</div>
+<div class="row mt-3">
+    <div class="col-md-12">
+        <div class="card box-shadow shadow-sm">
+            <div class="card-body">
+                <div class="text-center">
+                    <h3>Vehículos registrados</h3>
+                </div>
+                <div class="row">
+                    <div class="col-md-5" id="loadingVehicles">
+                        <div class="spinner-grow text-dark" role="status">
+                            <span class="sr-only"></span>
+                        </div>
+                        &nbsp;<span>Obteniendo datos, por favor espere</span>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="alert alert-danger d-none" role="alert" id="errorMessage">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-3">
+                        <button type="button" id="openCreateVehicle" class="btn btn-success" data-toggle="modal" data-target="#CreateVehicleModal">
+                            Registrar nuevo vehículo
+                        </button>
+                    </div>
+                </div>
+                <table class="table table-striped table-responsive" id="vehiclesTable">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Código</th>
+                            <th>Marca</th>
+                            <th>Modelo</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="vehiclesList">
+                    </tbody>
+                </table>
+                <div id="paginator-container">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@await Html.PartialAsync("~/Views/Partials/_ResultMessagesModalPartial.cshtml")
+@await Html.PartialAsync("~/Views/Partials/Vehicles/_CreateVehicleModalPartial.cshtml")
+@await Html.PartialAsync("~/Views/Partials/Vehicles/_DeleteConfirmModal.cshtml")
+@await Html.PartialAsync("~/Views/Partials/Vehicles/_VehicleDetailModalPartial.cshtml") 

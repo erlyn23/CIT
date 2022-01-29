@@ -1,0 +1,32 @@
+﻿<div class="modal fade" id="DeleteConfirmVehicleModal" tabindex="-1" aria-labelledby="DeleteConfirmVehicleModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmar Eliminar</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">
+                    <span></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <p>¿Estás seguro/a de querer eliminar este vehículo? Esto tiene implicaciones delicadas como las siguientes: </p>
+                        <ol type="1">
+                            <li>Si un usuario tiene este vehículo asignado, este dejará de tenerlo.</li>
+                            <li>Ya no podrás acceder al vehículo y en caso de necesitarlo, tendrás que crearlo otra vez.</li>
+                        </ol>
+                        <p>Si estás de acuerdo presiona aceptar, si se trata de un error presiona cancelar.</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 offset-2">
+                        <button class="btn btn-danger" id="deleteVehicleBtn">Confirmar</button>
+                    </div>
+                    <div class="col-md-4">
+                        <button class="btn btn-success" data-dismiss="modal">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

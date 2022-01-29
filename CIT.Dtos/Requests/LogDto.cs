@@ -8,7 +8,7 @@ namespace CIT.Dtos.Requests
 {
     public class LogDto
     {
-        public int LogId { get; set; }
+        public int Id { get; set; }
         public string Operation { get; set; }
         public string ResultMessageOrObject { get; set; }
         public int LenderBusinessId { get; set; }

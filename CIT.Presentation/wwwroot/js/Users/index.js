@@ -78,7 +78,7 @@ const getModalData = function () {
                 htmlRole = `<option value="0" disabled selected>Selecciona un rol</option>`;
             
             data.forEach(role => {
-                htmlRole += `<option value="${role.roleId}">${role.role}</option>`;
+                htmlRole += `<option value="${role.id}">${role.role}</option>`;
             });
 
             $("#userRole").html(htmlRole);
@@ -202,6 +202,7 @@ const setUserData = function (user) {
     $("#phoneNumber").val(user.phone);
     $("#addressId").val(user.address.id);
     $(`#country option[value="${user.address.country}"]`).attr('selected', true);
+    $("#country").val(user.address.country);
     $("#city").val(user.address.city);
     $("#province").val(user.address.province);
     $("#street1").val(user.address.street1);
@@ -209,6 +210,7 @@ const setUserData = function (user) {
     $("#houseNumber").val(user.address.houseNumber);
     $("#latitude").val(user.address.latitude);
     $("#longitude").val(user.address.longitude);
+    $("#userRole").val(user.userRole.roleId);
     const marker = new mapboxgl.Marker();
 
     marker.setLngLat([user.address.longitude, user.address.latitude]).addTo(map);
@@ -314,16 +316,14 @@ const onSuccessSaveUser = function (data) {
     $("#saveUserBtn").prop('disabled', false);
     if (Array.isArray(data)) {
         $("#errorMessages").html("");
-        for (let validationObject of data) {
-            for (let errorValidation of validationObject.errors) {
-                let errorMsg = `<p class="text-danger"><i class="fas fa-exclamation-circle"></i>&nbsp; ${errorValidation.errorMessage}</p>`;
-                $("#errorMessages").append(errorMsg);
-                $("#CreateUserModal").modal('hide');
+        for (let error of data) {
+            let errorMsg = `<p class="text-danger"><i class="fas fa-exclamation-circle"></i>&nbsp; ${error}</p>`;
+            $("#errorMessages").append(errorMsg);
+            $("#CreateUserModal").modal('hide');
 
-                setTimeout(function () {
-                    $("#ErrorMessagesModal").modal('show');
-                }, 1000);
-            }
+            setTimeout(function () {
+                $("#ErrorMessagesModal").modal('show');
+            }, 1000);
         }
     } else {
         $("form").eq(0).trigger('reset');
@@ -383,5 +383,9 @@ const onErrorHandler = function (err) {
     $("#errorMessage").removeClass("d-none");
     $("#errorMessage").html("<p>Ha ocurrido un error al obtener usuarios: "+ err.responseText +"</p>")
 }
+
+$("#closeUserFormBtn").on('click', function () {
+    $("form").eq(0).trigger('reset');
+});
 
 getUsers();

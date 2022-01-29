@@ -31,7 +31,7 @@ namespace CIT.BusinessLogic.Services
 
             await _logRepository.AddAsync(logEntity);
             await _logRepository.SaveChangesAsync();
-            log.LogId = logEntity.Id;
+            log.Id = logEntity.Id;
             return log;
         }
     }

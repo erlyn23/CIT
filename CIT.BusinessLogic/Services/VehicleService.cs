@@ -15,6 +15,8 @@ namespace CIT.BusinessLogic.Services
         private readonly IVehicleRepository _vehicleRepository;
         private readonly IEntitiesInfoService _entitiesInfoService;
 
+        private const string VEHICLE_EXISTS_ERROR_MESSAGE = "Ya existe un vehículo con esta matrícula o esta placa, por favor, valida los datos";
+
         public VehicleService(IVehicleRepository vehicleRepository, IEntitiesInfoService entitiesInfoService)
         {
             _vehicleRepository = vehicleRepository;
@@ -23,25 +25,80 @@ namespace CIT.BusinessLogic.Services
         public async Task<VehicleDto> AddVehicleAsync(VehicleDto vehicle, int lenderBusinessId)
         {
             var entityInfo = await _entitiesInfoService.AddEntityInfoAsync();
+            var isVehicleExists = await ValidateVehicleExists(vehicle.Enrollment.ToString(), vehicle.LicensePlate);
 
-            var vehicleEntity = new Vehicle()
+            if (!isVehicleExists)
             {
-                Brand = vehicle.Brand,
-                Model = vehicle.Model,
-                Enrollment = vehicle.Enrollment.ToString(),
-                LicensePlate = vehicle.LicensePlate.ToString(),
-                Color = vehicle.Color,
-                Year = vehicle.Year,
-                LenderBusinessId = lenderBusinessId,
-                EntityInfoId = entityInfo.Id
-            };
+                var vehicleEntity = new Vehicle()
+                {
+                    Brand = vehicle.Brand,
+                    Model = vehicle.Model,
+                    Enrollment = vehicle.Enrollment.ToString(),
+                    LicensePlate = vehicle.LicensePlate.ToString(),
+                    Color = vehicle.Color,
+                    Year = vehicle.Year,
+                    LenderBusinessId = lenderBusinessId,
+                    EntityInfoId = entityInfo.Id
+                };
 
-            var savedVehicle = await _vehicleRepository.AddAsync(vehicleEntity);
-            await _vehicleRepository.SaveChangesAsync();
+                var savedVehicle = await _vehicleRepository.AddAsync(vehicleEntity);
+                await _vehicleRepository.SaveChangesAsync();
 
-            vehicle.VehicleId = savedVehicle.Id;
-            return vehicle;
+                vehicle.Id = savedVehicle.Id;
+                return vehicle;
+            }
+
+            throw new Exception(VEHICLE_EXISTS_ERROR_MESSAGE);
         }
+
+        public async Task<VehicleDto> UpdateVehicleAsync(VehicleDto vehicle)
+        {
+            var isVehicleExists = await ValidateVehicleExists(vehicle.Enrollment.ToString(), vehicle.LicensePlate, vehicle.Id);
+
+            if (!isVehicleExists)
+            {
+                var vehicleInDb = await _vehicleRepository.FirstOrDefaultAsync(v => v.Id == vehicle.Id);
+                if (vehicleInDb != null)
+                {
+                    vehicleInDb.Brand = vehicle.Brand;
+                    vehicleInDb.Model = vehicle.Model;
+                    vehicleInDb.Enrollment = vehicle.Enrollment.ToString();
+                    vehicleInDb.LicensePlate = vehicle.LicensePlate.ToString();
+                    vehicleInDb.Color = vehicle.Color;
+                    vehicleInDb.Year = vehicle.Year;
+
+                    var entityInfo = await _entitiesInfoService.GetEntityInfoAsync(vehicleInDb.EntityInfoId);
+                    entityInfo.UpdatedAt = DateTime.Now;
+                    await _entitiesInfoService.UpdateEntityInfo(entityInfo);
+
+                    _vehicleRepository.Update(vehicleInDb);
+                    await _vehicleRepository.SaveChangesAsync();
+                }
+                return vehicle;
+            }
+
+            throw new Exception(VEHICLE_EXISTS_ERROR_MESSAGE);
+        }
+
+        private async Task<bool> ValidateVehicleExists(string enrollment, string licensePlate, int vehicleId = 0)
+        {
+            var vehicleInDb = await _vehicleRepository.FirstOrDefaultAsync(v => v.Enrollment.Equals(enrollment) || v.LicensePlate.Equals(licensePlate));
+
+            if (vehicleId != 0)
+            {
+                vehicleInDb = null;
+                vehicleInDb = await _vehicleRepository.FirstOrDefaultAsync(v => v.Enrollment.Equals(enrollment) || v.LicensePlate.Equals(licensePlate));
+
+                if (vehicleInDb.Id == vehicleId)
+                    vehicleInDb = null;
+            }
+
+            if (vehicleInDb != null)
+                return true;
+
+            return false;
+        }
+
         public async Task DeleteVehicleAsync(int vehicleId)
         {
             var vehicle = await GetVehicleByIdAsync(vehicleId);
@@ -81,35 +138,14 @@ namespace CIT.BusinessLogic.Services
             var vehiclesDtos = vehicles.Select(u => MapVehicleAsync(u).Result).ToList();
             return vehiclesDtos.Where(u => u.EntityInfo.Status != 0).ToList();
         }
-        public async Task<VehicleDto> UpdateVehicleAsync(VehicleDto vehicle)
-        {
-            var vehicleInDb = await _vehicleRepository.FirstOrDefaultAsync(v=>v.Id==vehicle.VehicleId);
-            if (vehicleInDb != null)
-            {
-                vehicleInDb.Brand = vehicle.Brand;
-                vehicleInDb.Model = vehicle.Model;
-                vehicleInDb.Enrollment = vehicle.Enrollment.ToString();
-                vehicleInDb.LicensePlate = vehicle.LicensePlate.ToString();
-                vehicleInDb.Color = vehicle.Color;
-                vehicleInDb.Year = vehicle.Year;
-                vehicleInDb.LenderBusinessId = vehicle.LenderBusinessId;
-
-                var entityInfo = await _entitiesInfoService.GetEntityInfoAsync(vehicleInDb.EntityInfoId);
-                entityInfo.UpdatedAt = DateTime.Now;
-                await _entitiesInfoService.UpdateEntityInfo(entityInfo);
-
-                _vehicleRepository.Update(vehicleInDb);
-                await _vehicleRepository.SaveChangesAsync();
-            }
-            return vehicle;
-        }
+        
         private async Task<VehicleDto> MapVehicleAsync(Vehicle vehicle)
 
         {
             var entityinfo = await _entitiesInfoService.GetEntityInfoAsync(vehicle.EntityInfoId);
             var vehicleDto = new VehicleDto()
             {
-                VehicleId = vehicle.Id,
+                Id = vehicle.Id,
                 Brand = vehicle.Brand,
                 Model = vehicle.Model,
                 Enrollment = int.Parse(vehicle.Enrollment),

@@ -28,7 +28,7 @@ namespace CIT.BusinessLogic.Services
         {
             return new OperationDto()
             {
-                OperationId = operation.Id,
+                Id = operation.Id,
                 OperationName = operation.OperationName
             };
         }

@@ -22,7 +22,7 @@ namespace CIT.Dtos.Requests
         public string Street1 { get; set; }
         public string Street2 { get; set; }
         [Required(ErrorMessage = "Debes escribir una calle")]
-        [RegularExpression("[0-9]*", ErrorMessage = "Solo puedes escribir números")]
+        [RegularExpression("^[0-9]+$", ErrorMessage = "Solo puedes escribir números")]
         public int HouseNumber { get; set; }
         public decimal Latitude { get; set; }
         public decimal Longitude { get; set; }

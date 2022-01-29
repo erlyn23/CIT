@@ -1,0 +1,71 @@
+﻿<div class="modal fade" id="CreateVehicleModal" tabindex="-1" aria-labelledby="CreteUserModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createVehicleTitle">Registrar nuevo vehículo</h5>
+                <button type="button" id="closeVehicleFormBtn" class="btn-close" data-dismiss="modal" aria-label="Close">
+                    <span></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <input type="hidden" id="vehicleId">
+                    <div class="row mb-2">
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" id="brand" placeholder="Marca">
+                            <div class="invalid-feedback" id="brandValidation">
+
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" id="model" placeholder="Modelo">
+                            <div class="invalid-feedback" id="modelValidation">
+
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="number" class="form-control" id="enrollment" placeholder="Matrícula">
+                            <div class="invalid-feedback" id="enrollmentValidation">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-6">
+                            <input type="text" id="licensePlate" class="form-control" placeholder="Placa">
+                            <div class="invalid-feedback" id="licensePlateValidation">
+
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <input type="text" id="color" class="form-control" placeholder="Color">
+                            <div class="invalid-feedback" id="colorValidation">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-4">
+                            <input type="number" id="year" class="form-control" placeholder="Año">
+                            <div class="invalid-feedback" id="yearValidation">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-6 offset-md-3">
+                            <button type="button" id="saveVehicleBtn" class="btn btn-success">
+                                <i class="fas fa-check"></i>
+                                <span>Guardar vehículo</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="text-center text-danger" id="finalValidation">
+
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>

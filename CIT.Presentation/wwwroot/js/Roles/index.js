@@ -55,11 +55,11 @@ const templateRolesList = (roles) => {
     let html = "";
     roles.forEach(role => {
         html += `<tr>
-                    <td>${role.roleId}</td>
+                    <td>${role.id}</td>
                     <td>${role.role}</td>
                     <td>
-                        <button type="button" id="editRoleBtn-${role.roleId}" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></button>
-                        <button type="button" id="deleteRoleBtn-${role.roleId}" class="btn btn-sm btn-danger" onclick="deleteRole(${role.roleId})"><i class="fas fa-trash"></i></button>
+                        <button type="button" id="editRoleBtn-${role.id}" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></button>
+                        <button type="button" id="deleteRoleBtn-${role.id}" class="btn btn-sm btn-danger" onclick="deleteRole(${role.id})"><i class="fas fa-trash"></i></button>
                     </td>
                 </tr>`;
     });
@@ -69,14 +69,14 @@ const templateRolesList = (roles) => {
 const paintButtonsByRole = function (roles) {
     roles.forEach(role => {
         if (hasEdit) {
-            $("#editRoleBtn-" + role.roleId).on('click', function () {
+            $("#editRoleBtn-" + role.id).on('click', function () {
                 setRoleData(role);
             });
         } else 
-            $("#editRoleBtn-" + role.roleId).remove();
+            $("#editRoleBtn-" + role.id).remove();
 
         if (!hasDelete)
-            $("#deleteRoleBtn-" + role.roleId).remove();
+            $("#deleteRoleBtn-" + role.id).remove();
         
     });
 }
@@ -85,7 +85,7 @@ const setRoleData = function (role) {
     resetSelection();
     $("#action-title").text("Guardar cambios");
     $("#form-title").text("Modificar rol");
-    $("#roleId").val(role.roleId);
+    $("#roleId").val(role.id);
     $("#roleName").val(role.role);
 
     const uniquePagesIds = [... new Set(role.rolePermissions.map(rolePermission => rolePermission.pageId))];
@@ -145,14 +145,14 @@ const onGetPages = function (pages) {
                     <div class="col-md-3">
                         <div class="card mb-2">
                             <div class="card-header">
-                                <input type="checkbox" class="form-check-input mx-2" id="page-${page.pageId}" onchange="selectPage('${page.pageId}')" /><label class="form-check-label" for="page-${page.pageId}">${page.pageName}</label>
+                                <input type="checkbox" class="form-check-input mx-2" id="page-${page.id}" onchange="selectPage('${page.id}')" /><label class="form-check-label" for="page-${page.id}">${page.pageName}</label>
                             </div>
-                            <div class="card-body" id="roleOperations-${page.pageId}">
+                            <div class="card-body" id="roleOperations-${page.id}">
                                
                             </div>
                         </div>
                     </div>`;
-        pagesIds.push(page.pageId);
+        pagesIds.push(page.id);
     });
     $("#pages").html(html);
 
@@ -198,10 +198,10 @@ const onGetOperations = function (operations) {
     operations.forEach(operation => {
         html += `
                     <div class="form-group">
-                        <input type="checkbox" class="form-check-input mx-2" id="operation-%s-${operation.operationId}" /><label class="form-check-label" for="operation-%s-${operation.operationId}">${operation.operationName}</label>
+                        <input type="checkbox" class="form-check-input mx-2" id="operation-%s-${operation.id}" /><label class="form-check-label" for="operation-%s-${operation.id}">${operation.operationName}</label>
                     </div>
                     `;
-        operationsIds.push(operation.operationId);
+        operationsIds.push(operation.id);
     });
     for (let i = 0; i < pagesIds.length; i++) {
         $("#roleOperations-" + pagesIds[i]).html(html.replaceAll("%s", pagesIds[i]));

@@ -52,7 +52,7 @@ namespace CIT.Presentation.Controllers
                 if (ModelState.IsValid)
                     return Json(await _lenderBusinessService.CreateLenderBusinessAsync(lenderBusiness));
                 else
-                    return Json(ModelState.Values.ToList());
+                    return Json(ModelState.Values.Select(v => v.Errors.Select(e => e.ErrorMessage)).ToList());
             }
             catch(Exception ex)
             {

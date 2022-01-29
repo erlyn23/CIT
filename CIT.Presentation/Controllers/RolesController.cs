@@ -50,7 +50,7 @@ namespace CIT.Presentation.Controllers
             if (ModelState.IsValid)
                 return Json(await _roleService.CreateRoleAsync(roleDto, lenderBusinessId));
 
-            return BadRequest(ModelState.Values.ToList());
+            return BadRequest(ModelState.Values.Select(v => v.Errors.Select(e => e.ErrorMessage)).ToList());
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]

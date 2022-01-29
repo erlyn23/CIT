@@ -43,7 +43,7 @@ namespace CIT.Presentation.Controllers
                 return Json(await _userService.RegisterUserAsync(user));
             }
             else
-                return Json(ModelState.Values.ToList());
+                return Json(ModelState.Values.Select(v => v.Errors.Select(e => e.ErrorMessage)).ToList());
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]

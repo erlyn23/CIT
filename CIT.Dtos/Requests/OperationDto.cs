@@ -8,7 +8,7 @@ namespace CIT.Dtos.Requests
 {
     public class OperationDto
     {
-        public int OperationId { get; set; }
+        public int Id { get; set; }
         public string OperationName { get; set; }
     }
 }

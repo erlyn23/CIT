@@ -73,7 +73,7 @@ namespace CIT.BusinessLogic.Services
 
         public async Task<UserRoleDto> UpdateUserRoleAsync(UserRoleDto userRole)
         {
-            var userRoleInDb = await _userRoleRepository.FirstOrDefaultAsync(ur => ur.Id == userRole.UserRoleId);
+            var userRoleInDb = await _userRoleRepository.FirstOrDefaultAsync(ur => ur.Id == userRole.Id);
             userRoleInDb.UserId = userRole.UserId;
             userRoleInDb.RoleId = userRole.RoleId;
 
@@ -90,7 +90,7 @@ namespace CIT.BusinessLogic.Services
         {
             var userRoleDto = new UserRoleDto()
             {
-                UserRoleId = userRole.Id,
+                Id = userRole.Id,
                 RoleId = userRole.RoleId,
                 UserId = userRole.UserId
             };

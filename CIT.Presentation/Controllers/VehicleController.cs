@@ -52,7 +52,7 @@ namespace CIT.Presentation.Controllers
 
 
             }
-            return BadRequest(ModelState.Values.ToList());
+            return Json(ModelState.Values.Select(v => v.Errors.Select(e => e.ErrorMessage)).ToList());
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -64,7 +64,7 @@ namespace CIT.Presentation.Controllers
             if (ModelState.IsValid)
                 return Json(await _vehicleService.UpdateVehicleAsync(vehicle));
 
-            return BadRequest(ModelState.Values.ToList());
+            return Json(ModelState.Values.Select(v => v.Errors.Select(e => e.ErrorMessage)).ToList());
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]

@@ -23,6 +23,8 @@ namespace CIT.BusinessLogic.Services
         private readonly ILoginRepository _loginRepository;
         private readonly IRoleService _roleService;
 
+        private const string USER_EXISTS_ERROR_MESSAGE = "Ya existe un usuario con este correo, cédula o teléfono, por favor, valida los datos";
+
         public UserService(IUserRepository userRepository, IRoleService roleService, IUserRoleRepository userRoleRepository, IEntitiesInfoService entitiesInfoService, IAddressService addressService, IUserAddressService userAddressService, TokenCreator tokenCreator, ILoginRepository loginRepository)
         {
             _userRepository = userRepository;
@@ -36,83 +38,116 @@ namespace CIT.BusinessLogic.Services
         }
         public async Task<AccountResponse> RegisterUserAsync(UserDto userDto)
         {
-            var userEntity = new User()
+            var isUserExists = await ValidateUserExistsAsync(userDto.Email, userDto.IdentificationDocument, userDto.Phone);
+
+            if (!isUserExists)
             {
-                Name = userDto.Name,
-                LastName = userDto.LastName,
-                IdentificationDocument = userDto.IdentificationDocument,
-                Phone = userDto.Phone,
-                Email = userDto.Email,
-                Password = Encryption.Encrypt(userDto.Password),
-                LenderBusinessId = userDto.LenderBusinessId
-            };
+                var userEntity = new User()
+                {
+                    Name = userDto.Name,
+                    LastName = userDto.LastName,
+                    IdentificationDocument = userDto.IdentificationDocument,
+                    Phone = userDto.Phone,
+                    Email = userDto.Email,
+                    Password = Encryption.Encrypt(userDto.Password),
+                    LenderBusinessId = userDto.LenderBusinessId
+                };
 
-            if (!userDto.Password.Equals(userDto.ConfirmPassword))
-                throw new Exception("Las contraseñas no coinciden");
-
-
-            var savedEntityInfo = await _entitiesInfoService.AddEntityInfoAsync();
-            userEntity.EntityInfoId = savedEntityInfo.Id;
+                if (!userDto.Password.Equals(userDto.ConfirmPassword))
+                    throw new Exception("Las contraseñas no coinciden");
 
 
-            await _userRepository.AddAsync(userEntity);
-            await _userRepository.SaveChangesAsync();
+                var savedEntityInfo = await _entitiesInfoService.AddEntityInfoAsync();
+                userEntity.EntityInfoId = savedEntityInfo.Id;
 
-            if (!string.IsNullOrEmpty(userDto.Photo))
-            {
-                userEntity.Photo = await UploadPhoto.UploadProfilePhotoAsync($"user_profile_photo_{userEntity.Id}.jpg", userDto.Photo);
 
-                _userRepository.Update(userEntity);
+                await _userRepository.AddAsync(userEntity);
                 await _userRepository.SaveChangesAsync();
+
+                if (!string.IsNullOrEmpty(userDto.Photo))
+                {
+                    userEntity.Photo = await UploadPhoto.UploadProfilePhotoAsync($"user_profile_photo_{userEntity.Id}.jpg", userDto.Photo);
+
+                    _userRepository.Update(userEntity);
+                    await _userRepository.SaveChangesAsync();
+                }
+
+                var savedAddress = await _addressService.CreateAddressAsync(userDto.Address);
+                await _userAddressService.CreateUserAddress(userEntity.Id, savedAddress.Id);
+
+                int roleId = userDto.UserRole.RoleId;
+
+                var userRole = new Userrole()
+                {
+                    RoleId = roleId,
+                    UserId = userEntity.Id,
+                    EntityInfoId = savedEntityInfo.Id
+                };
+                await _userRoleRepository.AddAsync(userRole);
+                await _userRoleRepository.SaveChangesAsync();
+
+
+                return new AccountResponse()
+                {
+                    Email = userDto.Email,
+                    Token = _tokenCreator.BuildToken(userEntity)
+                };
             }
-
-            var savedAddress = await _addressService.CreateAddressAsync(userDto.Address);
-            await _userAddressService.CreateUserAddress(userEntity.Id, savedAddress.Id);
-
-            int roleId = userDto.UserRole.RoleId;
-
-            var userRole = new Userrole()
-            {
-                RoleId = roleId,
-                UserId = userEntity.Id,
-                EntityInfoId = savedEntityInfo.Id
-            };
-            await _userRoleRepository.AddAsync(userRole);
-            await _userRoleRepository.SaveChangesAsync();
-
-
-            return new AccountResponse()
-            {
-                Email = userDto.Email,
-                Token = _tokenCreator.BuildToken(userEntity)
-            };
+            throw new Exception(USER_EXISTS_ERROR_MESSAGE);
         }
 
         public async Task<UserDto> UpdateUserAsync(UserDto user)
         {
-            var userInDb = await _userRepository.FirstOrDefaultWithRelationsAsync(u => u.Id == user.Id);
+            var isUserExists = await ValidateUserExistsAsync(user.Email, user.IdentificationDocument, user.Phone, user.Id);
 
-            if(userInDb != null)
+            if (!isUserExists)
             {
-                userInDb.Name = user.Name;
-                userInDb.LastName = user.LastName;
-                userInDb.IdentificationDocument = user.IdentificationDocument;
-                if (!string.IsNullOrEmpty(user.Photo))
-                    userInDb.Photo = await UploadPhoto.UploadProfilePhotoAsync($"user_profile_photo_{userInDb.Id}.jpg", user.Photo);
-                userInDb.Phone = user.Phone;
-                userInDb.Password = Encryption.Encrypt(user.Password);
-                userInDb.Email = user.Email;
+                var userInDb = await _userRepository.FirstOrDefaultWithRelationsAsync(u => u.Id == user.Id);
 
-                await _addressService.UpdateAddressAsync(user.Address);
+                if (userInDb != null)
+                {
+                    userInDb.Name = user.Name;
+                    userInDb.LastName = user.LastName;
+                    userInDb.IdentificationDocument = user.IdentificationDocument;
+                    if (!string.IsNullOrEmpty(user.Photo))
+                        userInDb.Photo = await UploadPhoto.UploadProfilePhotoAsync($"user_profile_photo_{userInDb.Id}.jpg", user.Photo);
+                    userInDb.Phone = user.Phone;
+                    userInDb.Password = Encryption.Encrypt(user.Password);
+                    userInDb.Email = user.Email;
 
-                var entityInfo = await _entitiesInfoService.GetEntityInfoAsync(userInDb.EntityInfo.Id);
-                entityInfo.UpdatedAt = DateTime.Now;
-                await _entitiesInfoService.UpdateEntityInfo(entityInfo);
+                    await _addressService.UpdateAddressAsync(user.Address);
 
-                _userRepository.Update(userInDb);
-                await _userRepository.SaveChangesAsync();
+                    var entityInfo = await _entitiesInfoService.GetEntityInfoAsync(userInDb.EntityInfo.Id);
+                    entityInfo.UpdatedAt = DateTime.Now;
+                    await _entitiesInfoService.UpdateEntityInfo(entityInfo);
+
+                    _userRepository.Update(userInDb);
+                    await _userRepository.SaveChangesAsync();
+                }
+                return user;
             }
-            return user;
+
+            throw new Exception(USER_EXISTS_ERROR_MESSAGE);
+        }
+
+        private async Task<bool> ValidateUserExistsAsync(string email, string identificationDocument, string phone, int userId = 0)
+        {
+            var userInDb = await _userRepository.FirstOrDefaultAsync(u => u.Email.Equals(email) || u.IdentificationDocument.Equals(identificationDocument) || u.Phone.Equals(phone));
+
+            if (userId != 0)
+            {
+                userInDb = null;
+                userInDb = await _userRepository.FirstOrDefaultAsync(u => u.Email.Equals(email) || u.IdentificationDocument.Equals(identificationDocument) || u.Phone.Equals(phone));
+
+                if (userInDb.Id == userId)
+                    userInDb = null;
+            }
+               
+
+            if (userInDb != null)
+                return true;
+
+            return false;
         }
 
         public async Task DeleteUserAsync(int userId)
@@ -177,9 +212,9 @@ namespace CIT.BusinessLogic.Services
                 Address = address,
                 UserRole = new UserRoleDto()
                 {
-                    UserRoleId = userRole.Id,
+                    Id = userRole.Id,
                     UserId = user.Id,
-                    RoleId = role.RoleId,
+                    RoleId = role.Id,
                     Role = role
                 },
                 EntityInfo = new EntityInfoDto()

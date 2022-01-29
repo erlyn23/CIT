@@ -43,7 +43,7 @@ namespace CIT.BusinessLogic.Services
                 await _rolePermissionService.AddRolePermissionsAsync(role.RolePermissions, roleEntity.Id);
 
 
-            role.RoleId = savedRole.Id;
+            role.Id = savedRole.Id;
             return role;
         }
 
@@ -59,7 +59,7 @@ namespace CIT.BusinessLogic.Services
                 entityInfo.UpdatedAt = DateTime.Now;
                 entityInfo.Status = 0;
                 await _entitiesInfoService.UpdateEntityInfo(entityInfo);
-                await _rolePermissionService.DeleteRolePermissionsByRoleIdAsync(role.RoleId);
+                await _rolePermissionService.DeleteRolePermissionsByRoleIdAsync(role.Id);
             }
         }
 
@@ -90,7 +90,7 @@ namespace CIT.BusinessLogic.Services
             var entityinfo = await _entitiesInfoService.GetEntityInfoAsync(role.EntityInfoId);
             var roleDto = new RoleDto()
             {
-                RoleId = role.Id,
+                Id = role.Id,
                 Role = role.RoleName,
                 RolePermissions = rolePermissions,
                 EntityInfo = new EntityInfoDto()
@@ -106,7 +106,7 @@ namespace CIT.BusinessLogic.Services
 
         public async Task<RoleDto> UpdateRoleAsync(RoleDto role)
         {
-            var roleEntity = await _roleRepository.FirstOrDefaultAsync(r => r.Id == role.RoleId);
+            var roleEntity = await _roleRepository.FirstOrDefaultAsync(r => r.Id == role.Id);
 
             if (roleEntity != null)
             {
@@ -143,7 +143,7 @@ namespace CIT.BusinessLogic.Services
             var rolePermissions = await _rolePermissionService.GetRolePermissionsAsync(roleId);
             var pages = rolePermissions.GroupBy(p => p.PageId).Select(p => new PageDto()
             {
-                PageId = p.Key,
+                Id = p.Key,
                 PageName = p.Where(rp => rp.PageId == p.Key).FirstOrDefault().PageName,
                 IconClass = p.Where(rp => rp.PageId == p.Key).FirstOrDefault().IconClass,
                 Route = p.Where(rp => rp.PageId == p.Key).FirstOrDefault().Route

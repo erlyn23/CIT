@@ -25,6 +25,8 @@ namespace CIT.BusinessLogic.Services
         private readonly TokenCreator _tokenCreator;
         private readonly AccountTools _accountTools;
 
+        private const string LENDERBUSINESS_EXISTS_ERROR = "Ya existe un negocio con este RNC, teléfono o correo, por favor, valida los datos";
+
         public LenderBusinessService(IEntitiesInfoService entitiesInfoService,
             IAddressService addressService, ILenderBusinessRepository lenderBusinessRepository, IOperationService operationService, 
             IPageService pageService,
@@ -46,63 +48,69 @@ namespace CIT.BusinessLogic.Services
         }
         public async Task<AccountResponse> CreateLenderBusinessAsync(LenderBusinessDto lenderBusiness)
         {
-            var lenderBusinessEntity = new LenderBusiness()
+            var isLenderBusinessExists = await ValidateLenderBusinessExists(lenderBusiness.Rnc, lenderBusiness.Email, lenderBusiness.Phone);
+
+            if (!isLenderBusinessExists)
             {
-                BusinessName = lenderBusiness.BusinessName,
-                Email = lenderBusiness.Email,
-                Phone = lenderBusiness.Phone,
-                Rnc = lenderBusiness.Rnc,
-                Password = Encryption.Encrypt(lenderBusiness.Password)
-            };
+                var lenderBusinessEntity = new LenderBusiness()
+                {
+                    BusinessName = lenderBusiness.BusinessName,
+                    Email = lenderBusiness.Email,
+                    Phone = lenderBusiness.Phone,
+                    Rnc = lenderBusiness.Rnc,
+                    Password = Encryption.Encrypt(lenderBusiness.Password)
+                };
 
-            if (!lenderBusiness.Password.Equals(lenderBusiness.ConfirmPassword))
-                throw new Exception("Las contraseñas no coinciden");
+                if (!lenderBusiness.Password.Equals(lenderBusiness.ConfirmPassword))
+                    throw new Exception("Las contraseñas no coinciden");
 
-            var savedEntityInfo = await _entitiesInfoService.AddEntityInfoAsync();
-            savedEntityInfo.Status = 0;
-            await _entitiesInfoService.UpdateEntityInfo(savedEntityInfo);
-            
-            lenderBusinessEntity.EntityInfoId = savedEntityInfo.Id;
-            await _lenderBusinessRepository.AddAsync(lenderBusinessEntity);
+                var savedEntityInfo = await _entitiesInfoService.AddEntityInfoAsync();
+                savedEntityInfo.Status = 0;
+                await _entitiesInfoService.UpdateEntityInfo(savedEntityInfo);
 
-            await _lenderBusinessRepository.SaveChangesAsync();
+                lenderBusinessEntity.EntityInfoId = savedEntityInfo.Id;
+                await _lenderBusinessRepository.AddAsync(lenderBusinessEntity);
 
-            if (!string.IsNullOrEmpty(lenderBusiness.Photo))
-            {
-                await UploadPhoto.UploadProfilePhotoAsync($"business_profile_photo_{lenderBusinessEntity.Id}.jpg", lenderBusiness.Photo);
-
-                _lenderBusinessRepository.Update(lenderBusinessEntity);
                 await _lenderBusinessRepository.SaveChangesAsync();
+
+                if (!string.IsNullOrEmpty(lenderBusiness.Photo))
+                {
+                    await UploadPhoto.UploadProfilePhotoAsync($"business_profile_photo_{lenderBusinessEntity.Id}.jpg", lenderBusiness.Photo);
+
+                    _lenderBusinessRepository.Update(lenderBusinessEntity);
+                    await _lenderBusinessRepository.SaveChangesAsync();
+                }
+
+                var savedAddress = await _addressService.CreateAddressAsync(lenderBusiness.Address);
+
+                await _lenderAddressService.SaveLenderAddressAsync(lenderBusinessEntity.Id, savedAddress.Id);
+
+                int roleId = await SaveAdminRole(lenderBusinessEntity.Id);
+                var lenderRole = new LenderRole()
+                {
+                    RoleId = roleId,
+                    LenderBusinessId = lenderBusinessEntity.Id
+                };
+
+                var savedLenderRole = await _lenderRoleService.SaveLenderRoleAsync(lenderRole);
+                lenderBusinessEntity.LenderRole = savedLenderRole;
+
+                await _accountTools.SendEmailConfirmationAsync(lenderBusinessEntity.Email);
+
+                return new AccountResponse()
+                {
+                    Email = lenderBusinessEntity.Email,
+                    Token = _tokenCreator.BuildToken(lenderBusinessEntity)
+                };
             }
-
-            var savedAddress = await _addressService.CreateAddressAsync(lenderBusiness.Address);
-
-            await _lenderAddressService.SaveLenderAddressAsync(lenderBusinessEntity.Id, savedAddress.Id);
-
-            int roleId = await SaveAdminRole(lenderBusinessEntity.Id);
-            var lenderRole = new LenderRole()
-            {
-                RoleId = roleId,
-                LenderBusinessId = lenderBusinessEntity.Id
-            };
-
-            var savedLenderRole = await _lenderRoleService.SaveLenderRoleAsync(lenderRole);
-            lenderBusinessEntity.LenderRole = savedLenderRole;
-
-            await _accountTools.SendEmailConfirmationAsync(lenderBusinessEntity.Email);
-
-            return new AccountResponse()
-            {
-                Email = lenderBusinessEntity.Email,
-                Token = _tokenCreator.BuildToken(lenderBusinessEntity)
-            };
+            throw new Exception(LENDERBUSINESS_EXISTS_ERROR);
         }
 
         private async Task<int> SaveAdminRole(int lenderBusinessId)
         {
             var rolePermissions = await SetAdminRolePermissions();
             var administratorRole = await _roleService.GetRoleByNameAsync("Administrador");
-            var savedRoleId = (administratorRole != null) ? administratorRole.RoleId : 0;
+            var savedRoleId = (administratorRole != null) ? administratorRole.Id : 0;
             if (administratorRole == null)
             {
                 administratorRole = new RoleDto()
@@ -111,7 +119,7 @@ namespace CIT.BusinessLogic.Services
                     RolePermissions = rolePermissions
                 };
                 var savedRole = await _roleService.CreateRoleAsync(administratorRole, lenderBusinessId);
-                savedRoleId = savedRole.RoleId;
+                savedRoleId = savedRole.Id;
             }
             return savedRoleId;
         }
@@ -129,13 +137,23 @@ namespace CIT.BusinessLogic.Services
                 {
                     rolePermissions.Add(new RolePermissionDto()
                     {
-                        PageId = page.PageId,
-                        OperationId = operation.OperationId
+                        PageId = page.Id,
+                        OperationId = operation.Id
                     });
                 }
             }
 
             return rolePermissions;
+        }
+
+        private async Task<bool> ValidateLenderBusinessExists(string rnc, string email, string phone)
+        {
+            var lenderBusinessInDb = await _lenderBusinessRepository.FirstOrDefaultAsync(l => l.Rnc.Equals(rnc) || l.Email.Equals(email) || l.Phone.Equals(phone));
+
+            if (lenderBusinessInDb != null)
+                return true;
+
+            return false;
         }
 
         public async Task<LenderBusinessDto> GetLenderBusinessAsync(int lenderBusinessId)
