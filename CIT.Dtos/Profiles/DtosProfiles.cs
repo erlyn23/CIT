@@ -23,6 +23,7 @@ namespace CIT.Dtos.Profiles
             CreateMap<RolePermissionDto, Rolepermission>().ReverseMap();
             CreateMap<UserDto, User>().ReverseMap();
             CreateMap<UserRoleDto, Userrole>().ReverseMap();
+            CreateMap<VehicleAssignmentDto, VehicleAssignment>().ReverseMap();
             CreateMap<VehicleDto, Vehicle>().ReverseMap();
         }
     }

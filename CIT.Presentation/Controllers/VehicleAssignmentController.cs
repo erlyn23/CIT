@@ -1,7 +1,6 @@
 ﻿using CIT.BusinessLogic.Contracts;
 using CIT.Dtos.Requests;
 using CIT.Presentation.Filters;
-using CIT.Presentation.Models;
 using CIT.Tools;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -15,45 +14,36 @@ namespace CIT.Presentation.Controllers
 {
     [ServiceFilter(typeof(ExceptionFilter))]
     [PageFilter("Vehiculos")]
-    public class VehicleController : BaseCITController
+    public class VehicleAssignmentController : BaseCITController
     {
         private readonly TokenCreator _tokenCreator;
-        private readonly IVehicleService _vehicleService;
+        private readonly IVehicleAssignmentService _vehicleAssignmentService;
 
-        public VehicleController(TokenCreator tokenCreator, IRolePermissionService rolePermissionService, IVehicleService vehicleService) : base(rolePermissionService, tokenCreator)
+        public VehicleAssignmentController(TokenCreator tokenCreator, IRolePermissionService rolePermissionService, IVehicleAssignmentService vehicleAssignmentService) : base(rolePermissionService, tokenCreator)
         {
             _tokenCreator = tokenCreator;
-            _vehicleService = vehicleService;
-        }
-        public IActionResult Index()
-        {
-            return View();
+            _vehicleAssignmentService = vehicleAssignmentService;
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [OperationFilter("Obtener")]
         [ServiceFilter(typeof(AuthFilter))]
         [HttpGet]
-        public async Task<IActionResult> GetVehiclesAsync()
+        public async Task<IActionResult> GetVehicleAssignmentsAsync()
         {
             var lenderBusinessId = await _tokenCreator.GetLenderBusinessId(Request);
-            var vehicles = await _vehicleService.GetVehiclesAsync(lenderBusinessId);
-            return Json(vehicles);
+            return Json(await _vehicleAssignmentService.GetVehiclesAssignmentsAsync(lenderBusinessId));
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [OperationFilter("Agregar")]
         [ServiceFilter(typeof(AuthFilter))]
         [HttpPost]
-        public async Task<IActionResult> SaveVehicleAsync([FromBody] VehicleDto vehicle)
+        public async Task<IActionResult> AssignVehicleAsync([FromBody] VehicleAssignmentDto vehicleAssignment)
         {
-            var lenderBusinessId = await _tokenCreator.GetLenderBusinessId(Request);
             if (ModelState.IsValid)
-            {
-                return Json(await _vehicleService.AddVehicleAsync(vehicle, lenderBusinessId));
+                return Json(await _vehicleAssignmentService.AssignVehicleAsync(vehicleAssignment));
 
-
-            }
             return Json(ModelState.Values.Select(v => v.Errors.Select(e => e.ErrorMessage)).ToList());
         }
 
@@ -61,22 +51,24 @@ namespace CIT.Presentation.Controllers
         [OperationFilter("Modificar")]
         [ServiceFilter(typeof(AuthFilter))]
         [HttpPost]
-        public async Task<IActionResult> UpdateVehicleAsync([FromBody] VehicleDto vehicle)
+        public async Task<IActionResult> UpdateAssignmentAsync([FromBody] VehicleAssignmentDto vehicleAssignment)
         {
             if (ModelState.IsValid)
-                return Json(await _vehicleService.UpdateVehicleAsync(vehicle));
+                return Json(await _vehicleAssignmentService.UpdateAssignmentAsync(vehicleAssignment));
 
             return Json(ModelState.Values.Select(v => v.Errors.Select(e => e.ErrorMessage)).ToList());
         }
+
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [OperationFilter("Eliminar")]
         [ServiceFilter(typeof(AuthFilter))]
         [HttpGet]
-        public async Task<IActionResult> DeleteVehicleAsync(int id)
+        public async Task<IActionResult> DeleteAssignmentAsync(int id)
         {
-            await _vehicleService.DeleteVehicleAsync(id);
-            return Json("Vehículo eliminado correctamente");
+            await _vehicleAssignmentService.DeleteAssignmentAsync(id);
+            return Json("Asignación eliminada correctamente");
         }
+
     }
 }

@@ -65,7 +65,7 @@ const onGetNavPages = function (data, activeLink) {
 
     $("#nav-list").html(htmlNav);
 
-    const linkColor = document.getElementById(activeLink)
+    const linkColor = document.getElementById(activeLink);
     document.querySelectorAll('.nav_link').forEach(l => l.classList.remove('active'));
     linkColor.classList.add('active');
 }

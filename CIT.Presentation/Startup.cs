@@ -104,6 +104,8 @@ namespace CIT.Presentation
             services.AddScoped<ILoginRepository, LoginRepository>();
             services.AddScoped<IVehicleService, VehicleService>();
             services.AddScoped<IVehicleRepository, VehicleRepository>();
+            services.AddScoped<IVehicleAssignmentRepository, VehicleAssignmentRepository>();
+            services.AddScoped<IVehicleAssignmentService, VehicleAssignmentService>();
             services.AddTransient<TokenCreator>();
             services.AddTransient<EmailTools>();
             services.AddTransient<AccountTools>();

@@ -1,0 +1,57 @@
+﻿<div class="modal fade" id="CreateAssignmentModal" tabindex="-1" aria-labelledby="CreateAssignmentModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createAssignmentTitle">Hacer nueva asignación</h5>
+                <button type="button" id="closeAssignmentForm" class="btn-close" data-dismiss="modal" aria-label="Close">
+                    <span></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <input type="hidden" id="assignmentId">
+                    <div class="row mb-2">
+                        <div class="col-md-6">
+                            <label for="usersSelect">Usuario:</label>
+                            <select id="usersSelect" class="form-control">
+                                <option value="" selected disabled>Selecciona un usuario</option>
+                            </select>
+                            <div class="invalid-feedback" id="userValidation">
+
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="vehiclesSelect">Vehículo:</label>
+                            <select class="form-control" id="vehiclesSelect">
+                                <option value="" selected disabled>Selecciona un vehículo</option>
+                            </select>
+                            <div class="invalid-feedback" id="vehicleValidation">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-12">
+                            <textarea id="comment" cols="30" rows="10" class="form-control" style="resize: none;"></textarea>
+                            <div class="invalid-feedback" id="commentValidation">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-6 offset-md-3">
+                            <button type="button" id="saveAssignmentBtn" class="btn btn-success">
+                                <i class="fas fa-check"></i>
+                                <span>Guardar asignación</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="text-center text-danger" id="finalValidation">
+
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>

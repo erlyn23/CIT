@@ -134,7 +134,7 @@ $("#saveVehicleBtn").on('click', function () {
             data: newVehicle,
             headers: { ...vehicleHeaders, 'Operation': operation },
             successCallback: function (data) {
-                onSuccessSaveUser(data);
+                onSuccessSaveVehicle(data);
             },
             errorCallback: function (err) {
                 onError(err);
@@ -144,8 +144,8 @@ $("#saveVehicleBtn").on('click', function () {
 });
 
 
-const onSuccessSaveUser = function (data) {
-    $("#saveVehicleBtn > span").text("Guardar usuario");
+const onSuccessSaveVehicle = function (data) {
+    $("#saveVehicleBtn > span").text("Guardar vehículo");
     $("#saveVehicleBtn").prop('disabled', false);
     if (Array.isArray(data)) {
         $("#errorMessages").html("");
@@ -179,7 +179,7 @@ const onSuccessSaveUser = function (data) {
 const onError = function (err) {
 
     $("#CreateVehicleModal").modal('hide');
-    $("#saveVehicleBtn > span").text("Guardar usuario");
+    $("#saveVehicleBtn > span").text("Guardar vehículo");
     $("#saveVehicleBtn").prop('disabled', false);
     $("#errorMessages").html("");
     let errorMsg = `<p class="text-danger"><i class="fas fa-exclamation-circle"></i>${err.responseText}</p>`;
@@ -213,7 +213,7 @@ const deleteVehicle = function (vehicleId) {
 
 
 const onErrorHandler = function (err) {
-    $("#loadingUsers").addClass("d-none");
+    $("#loadingVehicles").addClass("d-none");
     $("#errorMessage").removeClass("d-none");
     $("#errorMessage").html("<p>Ha ocurrido un error al obtener vehículos: " + err.responseText + "</p>")
 }
