@@ -26,8 +26,6 @@ namespace CIT.BusinessLogic.Services
         public async Task<LoanDto> AddLoanAsync(LoanDto loanDto, int lenderBusinessId)
         {
             var entityInfo = await _entitiesInfoService.AddEntityInfoAsync();
-
-            loanDto.StartDate = DateTime.Now;
             loanDto.EntityInfoId = entityInfo.Id;
             loanDto.LenderBusinessId = lenderBusinessId;
             var loanEntity = _mapper.Map<Loan>(loanDto);
@@ -69,6 +67,7 @@ namespace CIT.BusinessLogic.Services
                 
                 loanEntity.DuesQuantity = _loan.DuesQauntity;
                 loanEntity.TotalLoan = _loan.TotalLoan;
+                loanEntity.StartDate = _loan.StartDate;
                 loanEntity.EndDate = _loan.EndDate;
                 loanEntity.PayDay = _loan.PayDay;
                 loanEntity.InterestRate = _loan.InterestRate;
