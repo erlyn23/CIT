@@ -59,22 +59,22 @@ namespace CIT.BusinessLogic.Services
             return loan;
         }
 
-        public async Task<LoanDto> UpdateLoanAsync(LoanDto _loan)
+        public async Task<LoanDto> UpdateLoanAsync(LoanDto loan)
         {
-            var loanEntity =  await _loanRepository.FirstOrDefaultAsync(v => v.Id == _loan.Id);
+            var loanEntity =  await _loanRepository.FirstOrDefaultAsync(v => v.Id == loan.Id);
             if (loanEntity != null)
             {
                 
-                loanEntity.DuesQuantity = _loan.DuesQauntity;
-                loanEntity.TotalLoan = _loan.TotalLoan;
-                loanEntity.StartDate = _loan.StartDate;
-                loanEntity.EndDate = _loan.EndDate;
-                loanEntity.PayDay = _loan.PayDay;
-                loanEntity.InterestRate = _loan.InterestRate;
-                loanEntity.MensualPay = _loan.MensualPay;
+                loanEntity.DuesQuantity = loan.DuesQauntity;
+                loanEntity.TotalLoan = loan.TotalLoan;
+                loanEntity.StartDate = loan.StartDate;
+                loanEntity.EndDate = loan.EndDate;
+                loanEntity.PayDay = loan.PayDay;
+                loanEntity.InterestRate = loan.InterestRate;
+                loanEntity.MensualPay = loan.MensualPay;
                 _loanRepository.Update(loanEntity);
                 await _loanRepository.SaveChangesAsync();
-                return _loan;
+                return loan;
             }
             throw new Exception("Error, este prestamo no se encuentra registrado o activo..");
         }
