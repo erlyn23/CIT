@@ -2,14 +2,14 @@
 getUserPermissions(2);
 let map;
 let marker = new mapboxgl.Marker();
+let countries = [];
+let allUsers = [];
 mapboxgl.accessToken = 'pk.eyJ1IjoiZXJseW4yMyIsImEiOiJja2Q4NnFtYmkwMW5jMzRzZ3N0aTEwZWEzIn0.cO65NFyyEyHN8OSn-9uNYw';
 
 const userHeaders = {
     ...appHeaders,
     'Page': 'Usuarios'
 };
-
-let countries = [];
 
 const loadViewMap = function (lat, lng) {
     const userViewMap = new mapboxgl.Map({
@@ -58,7 +58,7 @@ const loadMap = function () {
 
 loadMap();
 
-const getModalData = function () {
+const getModalData = function (roleId = 0) {
     doRequest({
         url: '/Roles/GetRoles',
         method: 'GET',
@@ -69,18 +69,23 @@ const getModalData = function () {
             'Operation': 'Obtener'
         },
         successCallback: function (data) {
+
             let htmlRole = "";
             if ($("#userId").val() === "" || $("#userId").val() === null)
                 htmlRole = `<option value="0" disabled selected>Selecciona un rol</option>`;
-            
+
             data.forEach(role => {
                 htmlRole += `<option value="${role.id}">${role.role}</option>`;
             });
 
             $("#userRole").html(htmlRole);
+
+            if (roleId !== 0)
+                $("#userRole").val(roleId.toString());
+
         },
         errorCallback: function (error) {
-
+            alert(error.responseText);
         }
     });
 
@@ -95,12 +100,10 @@ const getModalData = function () {
             countries = data;
         },
         errorCallback: function (error) {
-
+            alert(error.responseText);
         }
     });
 }
-
-getModalData();
 
 $("#country").on('keyup', function () {
     const typedCountry = $("#country").val();
@@ -176,28 +179,68 @@ const onGetUsers = function (data) {
         $("#openCreateUser").remove();
         $("#CreteUserModal").remove();
     }
-    if (hasGet) {
-        $("#paginator-container").pagination({
-            dataSource: data,
-            pageSize: 5,
-            callback: function (data, pagination) {
-                const html = templateUsersList(data);
-                $("#usersList").html(html);
-                setEditUserEvent(data);
-                $("#loadingUsers").css({ 'display': 'none' });
-                $("#usersTable").removeClass('d-none');
-            }
-        });
-    }
+    if (hasGet)
+        setPagination(data, false);
 }
 
-const templateUsersList = (users) => {
+$(document).ready(function () {
+    if ($("#filterField").val() === null)
+        $("#filterValue").attr('disabled', true);
+});
+
+$("#filterField").on('change', function () {
+    if ($("#filterField").val() === null)
+        $("#filterValue").attr('disabled', true);
+    else {
+        $("#filterValue").removeAttr('disabled', false);
+    }
+});
+
+$("#filterValue").on('keyup', function (e) {
+    let filteredUsers = [];
+    if (e.target.value.length > 0) {
+        if ($("#filterField").val().includes('address')) {
+            const splittedFields = $("#filterField").val().split('.');
+            filteredUsers = allUsers.filter(u => u[splittedFields[0]][splittedFields[1]]?.toLowerCase().includes(e.target.value.toLowerCase()));
+        } else if ($("#filterField").val() === 'role') {
+            filteredUsers = allUsers.filter(u => u.userRole.role.role?.toLowerCase().includes(e.target.value.toLowerCase()));
+        } else {
+            filteredUsers = allUsers.filter(u => u[$("#filterField").val()]?.toString().toLowerCase().includes(e.target.value.toLowerCase()));
+        }
+        setPagination(filteredUsers, true);
+    } else 
+        setPagination(allUsers);
+    
+});
+
+const setPagination = (data, isSearch) => {
+    $("#paginator-container").pagination({
+        dataSource: data,
+        pageSize: 5,
+        callback: function (data, pagination) {
+            const html = templateUsersList(data, isSearch);
+            $("#usersList").html(html);
+            setEditUserEvent(data);
+            $("#loadingUsers").css({ 'display': 'none' });
+            $("#usersTable").removeClass('d-none');
+        }
+    });
+}
+
+const templateUsersList = (users, isSearch) => {
 
     const tBody = $("#usersList");
     tBody.html("");
     let html = "";
-    users.forEach(user => {
-        html += `<tr>
+
+    if (!isSearch)
+        allUsers = users;
+
+    if (users.length === 0)
+        html = "<p><i>No hay resultados para mostrar :(</i></p>";
+    else {
+        users.forEach(user => {
+            html += `<tr>
                     <td>${user.id}</td>
                     <td>${user.name}</td>
                     <td>${user.email}</td>
@@ -208,7 +251,8 @@ const templateUsersList = (users) => {
                         <button type="button" id="deleteUserBtn-${user.id}" class="btn btn-sm btn-danger" onclick="deleteUser(${user.id})"><i class="fas fa-trash"></i></button>
                     </td>
                 </tr>`;
-    });
+        });
+    }
     return html;
 }
 
@@ -221,7 +265,7 @@ const setUserData = function (user) {
         $("#uploadedPhoto").prop('src', `/ProfilePhotos/user_profile_photo_${user.id}.jpg`);
         $("#sendPhoto").val(user.Photo);
     }
-    getModalData();
+    getModalData(user.userRole.roleId);
     $("#firstName").val(user.name);
     $("#lastName").val(user.lastName);
     $("#identificationDocument").val(user.identificationDocument);
@@ -236,11 +280,6 @@ const setUserData = function (user) {
     $("#houseNumber").val(user.address.houseNumber);
     $("#latitude").val(user.address.latitude);
     $("#longitude").val(user.address.longitude);
-    
-
-    const userRoleOptionsCollection = document.getElementById('userRole').options;
-    const userRoleOption = Array.from(userRoleOptionsCollection).filter(op => op.value == user.userRole.roleId);
-    userRoleOption[0].setAttribute('selected', true);
 
     marker.setLngLat([user.address.longitude, user.address.latitude]).addTo(map);
     $("#CreteUserModal").modal('show');
@@ -354,7 +393,7 @@ const onSuccessSaveUser = function (data) {
             }, 1000);
         }
     } else {
-        $("form").eq(1).trigger('reset');
+        $("form").eq(0).trigger('reset');
         $("#uploadedPhoto").removeAttr("src");
         for (let field in formFields) {
             formFields[field].removeClass('is-valid');
@@ -413,7 +452,7 @@ const onErrorHandler = function (err) {
 }
 
 $("#closeUserFormBtn").on('click', function () {
-    $("form").eq(1).trigger('reset');
+    $("form").eq(0).trigger('reset');
     for (let field in formFields) {
         formFields[field].removeClass('is-valid');
         formFields[field].removeClass('is-invalid');
@@ -425,3 +464,4 @@ $("#closeUserFormBtn").on('click', function () {
 });
 
 getUsers();
+
