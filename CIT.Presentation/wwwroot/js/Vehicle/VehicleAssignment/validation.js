@@ -89,11 +89,13 @@ const validateAssignmentOnClick = function () {
         }
     }
 
+    let somethingIsInvalid = false;
     for (let field in assignmentValidationsStatus) {
-        if (assignmentValidationsStatus[field]) 
-            return true;
-        else 
-            return false;
+        if (assignmentValidationsStatus[field]) {
+            somethingIsInvalid = true;
+            break;
+        }
     }
+    return somethingIsInvalid;
 
 }

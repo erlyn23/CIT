@@ -1,11 +1,43 @@
 ﻿getUserPages('vehiculosLink');
 getUserPermissions(7);
-let map;
+let allVehicles = [];
 
 const vehicleHeaders = {
     ...appHeaders,
     'Page': 'Vehiculos'
 };
+
+$(document).ready(function () {
+    if ($("#filterField").val() === null)
+        $("#filterValue").attr('disabled', true);
+
+    $("#filterField").html(`
+<option value="" disabled selected>Selecciona una opción...</option>
+ <option value="id">Id</option>
+ <option value="brand">Marca</option>
+ <option value="model">Modelo</option>
+ <option value="year">Año</option>
+ <option value="enrollment">Matrícula</option>
+ <option value="licensePlate">Placa</option>`);
+});
+
+$("#filterField").on('change', function () {
+    if ($("#filterField").val() === null)
+        $("#filterValue").attr('disabled', true);
+    else {
+        $("#filterValue").removeAttr('disabled', false);
+    }
+});
+
+$("#filterValue").on('keyup', function (e) {
+    let filteredVehicles = [];
+    if (e.target.value.length > 0) {
+        filteredVehicles = allVehicles.filter(v => v[$("#filterField").val()]?.toString().toLowerCase().includes(e.target.value.toLowerCase()));
+        setPagination(filteredVehicles, true);
+    } else
+        setPagination(allVehicles, false);
+
+});
 
 const getVehicles = function () {
     doRequest({
@@ -13,29 +45,35 @@ const getVehicles = function () {
         method: 'GET',
         data: null,
         headers: { ...vehicleHeaders, 'Operation': 'Obtener' },
-        successCallback: function (data) { onGetVehicles(data); },
+        successCallback: function (data) { onGetVehicles(data, false); },
         errorCallback: function (err) { onErrorHandler(err) }
     });
 }
 
-const onGetVehicles = function (data) {
+const onGetVehicles = function (data, isSearch) {
     if (!hasAdd) {
         $("#openCreateVehicle").remove();
         $("#CreteVehicleModal").remove();
     }
     if (hasGet) {
-        $("#paginator-container").pagination({
-            dataSource: data,
-            pageSize: 5,
-            callback: function (data, pagination) {
-                const html = templateVehiclesList(data);
-                $("#vehiclesList").html(html);
-                setEditVehicleEvent(data);
-                $("#loadingVehicles").css({ 'display': 'none' });
-                $("#vehiclesTable").removeClass('d-none');
-            }
-        });
+        setPagination(data, isSearch);
     }
+}
+
+const setPagination = (data, isSearch) => {
+    if (!isSearch)
+        allVehicles = data;
+    $("#paginator-container").pagination({
+        dataSource: data,
+        pageSize: 5,
+        callback: function (data, pagination) {
+            const html = templateVehiclesList(data);
+            $("#vehiclesList").html(html);
+            setEditVehicleEvent(data);
+            $("#loadingVehicles").css({ 'display': 'none' });
+            $("#vehiclesTable").removeClass('d-none');
+        }
+    });
 }
 
 const templateVehiclesList = (vehicles) => {
@@ -43,8 +81,12 @@ const templateVehiclesList = (vehicles) => {
     const tBody = $("#vehiclesList");
     tBody.html("");
     let html = "";
-    vehicles.forEach(vehicle => {
-        html += `<tr>
+
+    if (vehicles.length === 0)
+        html = "<p><i>No hay resultados para mostrar :(</i></p>";
+    else {
+        vehicles.forEach(vehicle => {
+            html += `<tr>
                     <td>${vehicle.id}</td>
                     <td>${vehicle.brand}</td>
                     <td>${vehicle.model}</td>
@@ -54,7 +96,8 @@ const templateVehiclesList = (vehicles) => {
                         <button type="button" id="deleteVehicleBtn-${vehicle.id}" class="btn btn-sm btn-danger" onclick="deleteVehicle(${vehicle.id})"><i class="fas fa-trash"></i></button>
                     </td>
                 </tr>`;
-    });
+        });
+    }
     return html;
 }
 
@@ -221,5 +264,13 @@ const onErrorHandler = function (err) {
 
 $("#closeVehicleFormBtn").on('click', function () {
     $("form").eq(0).trigger('reset');
+    for (let field in formFields) {
+        formFields[field].removeClass('is-valid');
+        formFields[field].removeClass('is-invalid');
+
+        validationsStatus[field] = false;
+    }
+    $("#uploadedPhoto").removeAttr("src");
+    $("#createVehicleTitle").text('Crear nuevo vehículo');
 });
 getVehicles();

@@ -186,6 +186,17 @@ const onGetUsers = function (data) {
 $(document).ready(function () {
     if ($("#filterField").val() === null)
         $("#filterValue").attr('disabled', true);
+
+    $("#filterField").html(`
+<option value="" disabled selected>Selecciona una opción...</option>
+ <option value="id">Id</option>
+ <option value="name">Nombre</option>
+ <option value="email">Correo</option>
+ <option value="identificationDocument">Documento de identificación</option>
+ <option value="role">Rol</option>
+ <option value="address.country">País</option>
+ <option value="address.city">Ciudad</option>
+ <option value="address.province">Provincia</option>`);
 });
 
 $("#filterField").on('change', function () {
@@ -209,16 +220,18 @@ $("#filterValue").on('keyup', function (e) {
         }
         setPagination(filteredUsers, true);
     } else 
-        setPagination(allUsers);
+        setPagination(allUsers, false);
     
 });
 
 const setPagination = (data, isSearch) => {
+    if(!isSearch)
+        allUsers = data;
     $("#paginator-container").pagination({
         dataSource: data,
         pageSize: 5,
         callback: function (data, pagination) {
-            const html = templateUsersList(data, isSearch);
+            const html = templateUsersList(data);
             $("#usersList").html(html);
             setEditUserEvent(data);
             $("#loadingUsers").css({ 'display': 'none' });
@@ -227,14 +240,11 @@ const setPagination = (data, isSearch) => {
     });
 }
 
-const templateUsersList = (users, isSearch) => {
+const templateUsersList = (users) => {
 
     const tBody = $("#usersList");
     tBody.html("");
     let html = "";
-
-    if (!isSearch)
-        allUsers = users;
 
     if (users.length === 0)
         html = "<p><i>No hay resultados para mostrar :(</i></p>";
@@ -398,10 +408,11 @@ const onSuccessSaveUser = function (data) {
         for (let field in formFields) {
             formFields[field].removeClass('is-valid');
         }
+
+        $("#CreteUserModal").modal('hide');
         $("#errorMessages").html("");
         let successMsg = `<p class="text-success"><i class="fas fa-check-circle"></i>&nbsp; Usuario guardado correctamente</p>`;
         $("#errorMessages").append(successMsg);
-        $("#CreateUserModal").modal('hide');
 
         setTimeout(function () {
             $("#ErrorMessagesModal").modal('show');
@@ -413,10 +424,10 @@ const onSuccessSaveUser = function (data) {
 const onError = function (err) {
     $("#saveUserBtn > span").text("Guardar usuario");
     $("#saveUserBtn").prop('disabled', false);
+    $("#CreteUserModal").modal('hide');
     $("#errorMessages").html("");
     let errorMsg = `<p class="text-danger"><i class="fas fa-exclamation-circle"></i>${err.responseText}</p>`;
     $("#errorMessages").append(errorMsg);
-    $("#CreateUserModal").modal('hide');
 
     setTimeout(function () {
         $("#ErrorMessagesModal").modal('show');

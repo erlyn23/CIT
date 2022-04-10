@@ -160,11 +160,13 @@ const validateOnClick = function () {
         }
     }
 
+    let somethingIsInvalid = false;
     for (let field in validationsStatus) {
-        if (validationsStatus[field]) 
-            return true;
-        else 
-            return false;
+        if (validationsStatus[field]) {
+            somethingIsInvalid = true;
+            break;
+        }
     }
+    return somethingIsInvalid;
 
 }
