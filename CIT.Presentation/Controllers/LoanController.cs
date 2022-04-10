@@ -26,6 +26,11 @@ namespace CIT.Presentation.Controllers
             _loanService = loanService;
         }
 
+        public IActionResult Index()
+        {
+            return View();
+        }
+
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [OperationFilter("Obtener")]
         [ServiceFilter(typeof(AuthFilter))]
@@ -61,16 +66,5 @@ namespace CIT.Presentation.Controllers
 
             return Json(ModelState.Values.Select(v => v.Errors.Select(e => e.ErrorMessage)).ToList());
         }
-
-        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        //[OperationFilter("Eliminar")]
-        //[ServiceFilter(typeof(AuthFilter))]
-        //[HttpGet]
-        //public async Task<IActionResult> DeleteAssignmentAsync(int id)
-        //{
-        //    await _loanService.DeleteLoanAsync(id);
-        //    return Json("Asignación eliminada correctamente");
-        //}
-
     }
 }

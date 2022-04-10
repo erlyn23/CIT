@@ -1,4 +1,5 @@
-﻿using CIT.BusinessLogic.Contracts;
+﻿using AutoMapper;
+using CIT.BusinessLogic.Contracts;
 using CIT.DataAccess.Contracts;
 using CIT.DataAccess.Models;
 using CIT.Dtos.Requests;
@@ -15,22 +16,24 @@ namespace CIT.BusinessLogic.Services
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
-        private readonly IUserRoleRepository _userRoleRepository;
+        private readonly IUserRoleService _userRoleService;
         private readonly IEntitiesInfoService _entitiesInfoService;
         private readonly IAddressService _addressService;
         private readonly IUserAddressService _userAddressService;
         private readonly TokenCreator _tokenCreator;
         private readonly ILoginRepository _loginRepository;
+        private readonly IMapper _mapper;
         private readonly IRoleService _roleService;
 
         private const string USER_EXISTS_ERROR_MESSAGE = "Ya existe un usuario con este correo, cédula o teléfono, por favor, valida los datos";
 
-        public UserService(IUserRepository userRepository, IRoleService roleService, IUserRoleRepository userRoleRepository, IEntitiesInfoService entitiesInfoService, IAddressService addressService, IUserAddressService userAddressService, TokenCreator tokenCreator, ILoginRepository loginRepository)
+        public UserService(IUserRepository userRepository, IRoleService roleService, IUserRoleService userRoleService, IEntitiesInfoService entitiesInfoService, IAddressService addressService, IUserAddressService userAddressService, TokenCreator tokenCreator, ILoginRepository loginRepository, IMapper mapper)
         {
             _userRepository = userRepository;
             _tokenCreator = tokenCreator;
             _loginRepository = loginRepository;
-            _userRoleRepository = userRoleRepository;
+            _mapper = mapper;
+            _userRoleService = userRoleService;
             _entitiesInfoService = entitiesInfoService;
             _addressService = addressService;
             _userAddressService = userAddressService;
@@ -77,15 +80,11 @@ namespace CIT.BusinessLogic.Services
 
                 int roleId = userDto.UserRole.RoleId;
 
-                var userRole = new Userrole()
+                await _userRoleService.AddUserRoleAsync(new UserRoleDto
                 {
                     RoleId = roleId,
-                    UserId = userEntity.Id,
-                    EntityInfoId = savedEntityInfo.Id
-                };
-                await _userRoleRepository.AddAsync(userRole);
-                await _userRoleRepository.SaveChangesAsync();
-
+                    UserId = userEntity.Id
+                });
 
                 return new AccountResponse()
                 {
@@ -117,9 +116,15 @@ namespace CIT.BusinessLogic.Services
 
                     await _addressService.UpdateAddressAsync(user.Address);
 
-                    var entityInfo = await _entitiesInfoService.GetEntityInfoAsync(userInDb.EntityInfo.Id);
-                    entityInfo.UpdatedAt = DateTime.Now;
-                    await _entitiesInfoService.UpdateEntityInfo(entityInfo);
+                    await _entitiesInfoService.UpdateEntityInfo(userInDb.EntityInfo.Id, 1);
+
+                    var userRole = await _userRoleService.UpdateUserRoleAsync(new UserRoleDto
+                    {
+                        Id = userInDb.Userrole.Id,
+                        UserId = userInDb.Id,
+                        RoleId = user.UserRole.RoleId
+                    });
+                        
 
                     _userRepository.Update(userInDb);
                     await _userRepository.SaveChangesAsync();
@@ -153,11 +158,7 @@ namespace CIT.BusinessLogic.Services
         public async Task DeleteUserAsync(int userId)
         {
             var user = await GetUserAsync(userId);
-
-            var entityInfo = await _entitiesInfoService.GetEntityInfoAsync(user.EntityInfo.Id);
-            entityInfo.UpdatedAt = DateTime.Now;
-            entityInfo.Status = 0;
-            await _entitiesInfoService.UpdateEntityInfo(entityInfo);
+            await _entitiesInfoService.UpdateEntityInfo(user.EntityInfo.Id, 0);
             
             
             var login = await _loginRepository.FirstOrDefaultAsync(l => l.Email.Equals(user.Email));
@@ -176,6 +177,7 @@ namespace CIT.BusinessLogic.Services
 
         public async Task<UserDto> GetUserAsync(int userId)
         {
+            string errorMessage = "Este usuario no existe en la base de datos";
             var user = await _userRepository.FirstOrDefaultWithRelationsAsync(u => u.Id == userId);
 
             UserDto userDto = null;
@@ -187,10 +189,10 @@ namespace CIT.BusinessLogic.Services
                 if (userDto.EntityInfo.Status != 0)
                     return userDto;
                 else
-                    throw new Exception("Este usuario no existe en la base de datos");
+                    throw new Exception(errorMessage);
             }
             else
-                throw new Exception("Este usuario no existe en la base de datos");
+                throw new Exception(errorMessage);
         }
 
         private async Task<UserDto> MapUserAsync(User user)
@@ -198,7 +200,8 @@ namespace CIT.BusinessLogic.Services
             var entityInfo = await _entitiesInfoService.GetEntityInfoAsync(user.EntityInfoId);
             var address = await _addressService.GetAddressAsync(user.Useraddress.AddressId);
             var role = await _roleService.GetRoleByIdAsync(user.Userrole.RoleId);
-            var userRole = await _userRoleRepository.FirstOrDefaultAsync(ur => ur.UserId == user.Id);
+            var userRoles = await _userRoleService.GetUserRolesAsync();
+            var userRole = userRoles.FirstOrDefault(u => u.UserId == user.Id);
 
             var userDto = new UserDto()
             {

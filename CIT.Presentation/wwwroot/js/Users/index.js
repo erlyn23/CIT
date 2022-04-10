@@ -1,16 +1,17 @@
 ﻿getUserPages('usuariosLink');
 getUserPermissions(2);
 let map;
+let marker = new mapboxgl.Marker();
+mapboxgl.accessToken = 'pk.eyJ1IjoiZXJseW4yMyIsImEiOiJja2Q4NnFtYmkwMW5jMzRzZ3N0aTEwZWEzIn0.cO65NFyyEyHN8OSn-9uNYw';
 
 const userHeaders = {
     ...appHeaders,
     'Page': 'Usuarios'
 };
 
+let countries = [];
 
 const loadViewMap = function (lat, lng) {
-    mapboxgl.accessToken = 'pk.eyJ1IjoiZXJseW4yMyIsImEiOiJja2Q4NnFtYmkwMW5jMzRzZ3N0aTEwZWEzIn0.cO65NFyyEyHN8OSn-9uNYw';
-
     const userViewMap = new mapboxgl.Map({
         container: 'userViewMap',
         style: 'mapbox://styles/mapbox/streets-v11',
@@ -26,14 +27,11 @@ const loadViewMap = function (lat, lng) {
     );
     userViewMap.addControl(new mapboxgl.NavigationControl());
 
-    const marker = new mapboxgl.Marker();
     marker.setLngLat([lng, lat]).addTo(userViewMap);
 }
 
 
 const loadMap = function () {
-    mapboxgl.accessToken = 'pk.eyJ1IjoiZXJseW4yMyIsImEiOiJja2Q4NnFtYmkwMW5jMzRzZ3N0aTEwZWEzIn0.cO65NFyyEyHN8OSn-9uNYw';
-
     map = new mapboxgl.Map({
         container: 'userMap',
         style: 'mapbox://styles/mapbox/streets-v11',
@@ -48,8 +46,6 @@ const loadMap = function () {
         })
     );
     map.addControl(new mapboxgl.NavigationControl());
-
-    const marker = new mapboxgl.Marker();
 
     map.on('click', function (event) {
         const coordinates = event.lngLat;
@@ -96,19 +92,50 @@ const getModalData = function () {
             'content-type': 'application/json'
         },
         successCallback: function (data) {
-            let countriesHtml = "";
-            if ($("#userId").val() === "" || $("#userId").val() === null)
-                countriesHtml = `<option value="0" disabled selected>Selecciona un rol</option>`;
-            data.forEach(country => {
-                countriesHtml += `<option value="${country.translations.es}">${country.translations.es}</option>`;
-            });
-            $("#country").html(countriesHtml);
+            countries = data;
         },
         errorCallback: function (error) {
 
         }
     });
 }
+
+getModalData();
+
+$("#country").on('keyup', function () {
+    const typedCountry = $("#country").val();
+    if (typedCountry.length > 0) {
+        $("#countrySourceContainer").removeClass('d-none');
+        if (countries.length > 0) {
+            let filteredCountries =
+                countries.filter(country => country.translations.es.toLowerCase().includes($("#country").val().toLowerCase()))
+                    .map(country => {
+                        return {
+                            name: country.translations.es,
+                            flag: country.flag
+                        };
+                    });
+            $("#countrySource").html("");
+            filteredCountries.forEach(country => {
+                const liCountry = document.createElement('li');
+                liCountry.addEventListener('click', function () { selectCountry(country.name); });
+                const flagStyle = `background: url('${country.flag}'); background-size: 100% 100%; background-position: center;`;
+                liCountry.innerHTML = `<span style="${flagStyle}" class="icon"></span> ${country.name}`;
+                $("#countrySource").append(liCountry);
+            });
+        }
+    } else $("#countrySourceContainer").addClass('d-none');
+});
+
+function selectCountry(countryName) {
+    $("#country").val(countryName);
+    $("#countrySourceContainer").addClass('d-none');
+    setValid(formFields.country, "#countryValidation");
+    validationsStatus.country = false;
+}
+
+
+
 $("#openCreateUser").on('click', function () {
     getModalData();
 });
@@ -191,7 +218,7 @@ const setUserData = function (user) {
     $("#userId").val(user.id);
 
     if (user.photo != "NULL") {
-        $("#uploadedPhoto").prop('src', user.photo);
+        $("#uploadedPhoto").prop('src', `/ProfilePhotos/user_profile_photo_${user.id}.jpg`);
         $("#sendPhoto").val(user.Photo);
     }
     getModalData();
@@ -201,7 +228,6 @@ const setUserData = function (user) {
     $("#email").val(user.email);
     $("#phoneNumber").val(user.phone);
     $("#addressId").val(user.address.id);
-    $(`#country option[value="${user.address.country}"]`).attr('selected', true);
     $("#country").val(user.address.country);
     $("#city").val(user.address.city);
     $("#province").val(user.address.province);
@@ -210,11 +236,13 @@ const setUserData = function (user) {
     $("#houseNumber").val(user.address.houseNumber);
     $("#latitude").val(user.address.latitude);
     $("#longitude").val(user.address.longitude);
-    $("#userRole").val(user.userRole.roleId);
-    const marker = new mapboxgl.Marker();
+    
+
+    const userRoleOptionsCollection = document.getElementById('userRole').options;
+    const userRoleOption = Array.from(userRoleOptionsCollection).filter(op => op.value == user.userRole.roleId);
+    userRoleOption[0].setAttribute('selected', true);
 
     marker.setLngLat([user.address.longitude, user.address.latitude]).addTo(map);
-    $(`#userRole option[value="${user.userRole.roleId}"]`).attr('selected', true);
     $("#CreteUserModal").modal('show');
 }
 
@@ -326,8 +354,8 @@ const onSuccessSaveUser = function (data) {
             }, 1000);
         }
     } else {
-        $("form").eq(0).trigger('reset');
-        $("#uploadedPhoto").prop('src', '');
+        $("form").eq(1).trigger('reset');
+        $("#uploadedPhoto").removeAttr("src");
         for (let field in formFields) {
             formFields[field].removeClass('is-valid');
         }
@@ -385,7 +413,15 @@ const onErrorHandler = function (err) {
 }
 
 $("#closeUserFormBtn").on('click', function () {
-    $("form").eq(0).trigger('reset');
+    $("form").eq(1).trigger('reset');
+    for (let field in formFields) {
+        formFields[field].removeClass('is-valid');
+        formFields[field].removeClass('is-invalid');
+
+        validationsStatus[field] = false;
+    }
+    $("#uploadedPhoto").removeAttr("src");
+    $("#createUserTitle").text('Crear nuevo usuario');
 });
 
 getUsers();

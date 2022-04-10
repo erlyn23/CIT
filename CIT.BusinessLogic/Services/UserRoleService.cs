@@ -1,4 +1,5 @@
-﻿using CIT.BusinessLogic.Contracts;
+﻿using AutoMapper;
+using CIT.BusinessLogic.Contracts;
 using CIT.DataAccess.Contracts;
 using CIT.DataAccess.Models;
 using CIT.Dtos.Requests;
@@ -14,15 +15,22 @@ namespace CIT.BusinessLogic.Services
     {
         private readonly IUserRoleRepository _userRoleRepository;
         private readonly IEntitiesInfoService _entityInfoService;
+        private readonly IMapper _mapper;
 
-        public UserRoleService(IUserRoleRepository userRoleRepository, IEntitiesInfoService entityInfoService)
+        public UserRoleService(IUserRoleRepository userRoleRepository, IEntitiesInfoService entityInfoService, IMapper mapper)
         {
             _userRoleRepository = userRoleRepository;
             _entityInfoService = entityInfoService;
+            _mapper = mapper;
         }
-        public Task<UserRoleDto> AddUserRoleAsync(UserRoleDto userRole)
+
+        public async Task<UserRoleDto> AddUserRoleAsync(UserRoleDto userRole)
         {
-            throw new NotImplementedException();
+            var userRoleEntity = _mapper.Map<Userrole>(userRole);
+            await _userRoleRepository.AddAsync(userRoleEntity);
+            await _userRoleRepository.SaveChangesAsync();
+            userRole.Id = userRoleEntity.Id;
+            return userRole;
         }
 
         public async Task DeleteUserRoleAsync(int userRoleId)
@@ -74,14 +82,20 @@ namespace CIT.BusinessLogic.Services
         public async Task<UserRoleDto> UpdateUserRoleAsync(UserRoleDto userRole)
         {
             var userRoleInDb = await _userRoleRepository.FirstOrDefaultAsync(ur => ur.Id == userRole.Id);
-            userRoleInDb.UserId = userRole.UserId;
-            userRoleInDb.RoleId = userRole.RoleId;
+            int entityInfoId = userRoleInDb.EntityInfoId;
 
-            var entityInfo = await _entityInfoService.GetEntityInfoAsync(userRoleInDb.EntityInfoId);
-            entityInfo.UpdatedAt = DateTime.Now;
-            await _entityInfoService.UpdateEntityInfo(entityInfo);
+            if (userRoleInDb != null)
+                await DeleteUserRoleAsync(userRole.Id);
 
-            _userRoleRepository.Update(userRoleInDb);
+            var userRoleEntity = new Userrole
+            {
+                UserId = userRole.UserId,
+                RoleId = userRole.RoleId,
+                EntityInfoId = entityInfoId
+            };
+            await _entityInfoService.UpdateEntityInfo(entityInfoId, 1);
+
+            await _userRoleRepository.AddAsync(userRoleEntity);
             await _userRoleRepository.SaveChangesAsync();
             return userRole;
         }

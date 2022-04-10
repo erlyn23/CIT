@@ -142,7 +142,7 @@ const FOCUSOUT_EVENT = 'focusout';
 
 //Validación país
     const validateCountry = function () {
-        if (formFields.country.val() == null) {
+        if (formFields.country.val().length === 0 || !$("#countrySourceContainer").hasClass("d-none")) {
             setInvalid(formFields.country, "#countryValidation", "<p>Debes escoger un país</p>");
             validationsStatus.country = true;
         } else {
@@ -330,12 +330,15 @@ const validateOnClick = function () {
         }
     }
 
+
+    let somethingIsInvalid = false;
     for (let field in validationsStatus) {
         if (validationsStatus[field]) {
-            return true;
-        } else {
-            return false;
-        }
+            somethingIsInvalid = true;
+            break;
+        }   
     }
+
+    return somethingIsInvalid;
     
 }

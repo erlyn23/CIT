@@ -37,7 +37,7 @@ input[type=number] {
 .color-title {
     font-weight: bolder;
     background: -webkit-linear-gradient(#FAC827, #F8A523);
-    -webkit-background-clip: text;
+    -webkit-background-clip: border-box;
     -webkit-text-fill-color: transparent;
 }
 
@@ -100,4 +100,40 @@ body {
     border-style: dashed;
     border-color: lightgray;
 
+}
+
+/*Selectable source*/
+
+.selectable {
+    height: 100px;
+    overflow-y: scroll;
+    overflow-x: no-display;
+    border-style: solid;
+    border-width: 1px;
+    border-color: lightgray;
+    box-shadow: 3px 3px 10px lightgrey;
+    padding-top: 10px;
+}
+
+.selectable ul{
+    list-style: none;
+    padding: 0;
+}
+
+.selectable ul li{
+    text-align: center;
+}
+
+.selectable ul li:hover{
+    cursor: pointer;
+    background-color: blue;
+    color: white;
+}
+
+.icon {
+    background-size: 100% 100%;
+    background-position: center;
+    height: 20px;
+    width: 20px;
+    display: inline-block;
 }

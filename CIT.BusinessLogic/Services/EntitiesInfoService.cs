@@ -36,11 +36,18 @@ namespace CIT.BusinessLogic.Services
             return await _entitiesInfoRepository.FirstOrDefaultAsync(e => e.Id == entityInfoId);
         }
 
-        public async Task<Entitiesinfo> UpdateEntityInfo(Entitiesinfo entitiesInfo)
+        public async Task<Entitiesinfo> UpdateEntityInfo(int entityInfoId, short status)
         {
-            _entitiesInfoRepository.Update(entitiesInfo);
-            await _entitiesInfoRepository.SaveChangesAsync();
-            return entitiesInfo;
+            var entitiesInfoInDb = await _entitiesInfoRepository.FirstOrDefaultAsync(e => e.Id == entityInfoId);
+            if (entitiesInfoInDb != null)
+            {
+                entitiesInfoInDb.UpdatedAt = DateTime.Now;
+                entitiesInfoInDb.Status = status;
+                _entitiesInfoRepository.Update(entitiesInfoInDb);
+                await _entitiesInfoRepository.SaveChangesAsync();
+                return entitiesInfoInDb;
+            }
+            throw new Exception("La información de la entidad no existe");
         }
 
         public async Task DeleteEntityInfoAsync(int entityInfoId)

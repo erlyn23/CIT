@@ -28,13 +28,17 @@ namespace CIT.BusinessLogic.Services
             var entityInfo = await _entitiesInfoService.AddEntityInfoAsync();
             loanDto.EntityInfoId = entityInfo.Id;
             loanDto.LenderBusinessId = lenderBusinessId;
+            loanDto.InterestRate /= 100;
+
+            if (loanDto.EndDate <= loanDto.StartDate)
+                throw new Exception("La fecha final no puede ser menor o igual a la fecha inicial");
+
             var loanEntity = _mapper.Map<Loan>(loanDto);
 
             var savedLoan = await _loanRepository.AddAsync(loanEntity);
             await _loanRepository.SaveChangesAsync();
             loanDto.Id = savedLoan.Id;
             return loanDto;
-           
         }
         
         public Task DeleteLoanAsync(int loanId)
@@ -65,7 +69,7 @@ namespace CIT.BusinessLogic.Services
             if (loanEntity != null)
             {
                 
-                loanEntity.DuesQuantity = loan.DuesQauntity;
+                loanEntity.DuesQuantity = loan.DuesQuantity;
                 loanEntity.TotalLoan = loan.TotalLoan;
                 loanEntity.StartDate = loan.StartDate;
                 loanEntity.EndDate = loan.EndDate;

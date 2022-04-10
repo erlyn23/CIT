@@ -67,9 +67,7 @@ namespace CIT.BusinessLogic.Services
                     vehicleInDb.Color = vehicle.Color;
                     vehicleInDb.Year = vehicle.Year;
 
-                    var entityInfo = await _entitiesInfoService.GetEntityInfoAsync(vehicleInDb.EntityInfoId);
-                    entityInfo.UpdatedAt = DateTime.Now;
-                    await _entitiesInfoService.UpdateEntityInfo(entityInfo);
+                    await _entitiesInfoService.UpdateEntityInfo(vehicleInDb.EntityInfoId, 1);
 
                     _vehicleRepository.Update(vehicleInDb);
                     await _vehicleRepository.SaveChangesAsync();
@@ -103,12 +101,8 @@ namespace CIT.BusinessLogic.Services
         {
             var vehicle = await GetVehicleByIdAsync(vehicleId);
             if (vehicle!=null)
-            {
-                var entityInfo = await _entitiesInfoService.GetEntityInfoAsync(vehicle.EntityInfo.Id);
-                entityInfo.UpdatedAt = DateTime.Now;
-                entityInfo.Status = 0;
-                await _entitiesInfoService.UpdateEntityInfo(entityInfo);
-            }
+                await _entitiesInfoService.UpdateEntityInfo(vehicle.EntityInfoId, 0);
+            
         }
         public async Task<VehicleDto> GetVehicleByIdAsync(int vehicleId)
         {

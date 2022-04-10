@@ -68,9 +68,7 @@ namespace CIT.BusinessLogic.Services
             addressEntity.EntityInfoId = addressEntity.EntityInfoId;
           
 
-            var entityInfo = await _entitiesInfoService.GetEntityInfoAsync(addressEntity.EntityInfoId);
-            entityInfo.UpdatedAt = DateTime.Now;
-            await _entitiesInfoService.UpdateEntityInfo(entityInfo);
+            await _entitiesInfoService.UpdateEntityInfo(addressEntity.EntityInfoId, 1);
 
             _addressRepository.Update(addressEntity);
             await _addressRepository.SaveChangesAsync();

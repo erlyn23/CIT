@@ -65,8 +65,7 @@ namespace CIT.BusinessLogic.Services
                     throw new Exception("Las contraseñas no coinciden");
 
                 var savedEntityInfo = await _entitiesInfoService.AddEntityInfoAsync();
-                savedEntityInfo.Status = 0;
-                await _entitiesInfoService.UpdateEntityInfo(savedEntityInfo);
+                await _entitiesInfoService.UpdateEntityInfo(savedEntityInfo.Id, 0);
 
                 lenderBusinessEntity.EntityInfoId = savedEntityInfo.Id;
                 await _lenderBusinessRepository.AddAsync(lenderBusinessEntity);

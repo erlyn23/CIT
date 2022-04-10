@@ -1,0 +1,79 @@
+﻿<div class="modal fade" id="CreateLoanModal" tabindex="-1" aria-labelledby="CreateLoanModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createLoanTitle">Crear nuevo usuario</h5>
+                <button type="button" id="closeUserFormBtn" class="btn-close" data-dismiss="modal" aria-label="Close">
+                    <span></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <input type="hidden" id="loanId">
+                    <div class="row mb-2">
+                        <div class="col-md-6">
+                            <input type="number" class="form-control" id="duesQuantity" placeholder="Cantidad de cuotas">
+                            <div class="invalid-feedback" id="duesQuantityValidation">
+
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <input type="number" class="form-control" id="totalLoan" placeholder="Préstamo total">
+                            <div class="invalid-feedback" id="totalLoanValidation">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-6">
+                            <label for="startDate">Fecha de inicio:</label>
+                            <input type="date" class="form-control" id="startDate">
+                            <div class="invalid-feedback" id="startDateValidation">
+
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="endDate">Fecha final:</label>
+                            <input type="date" id="endDate" class="form-control">
+                            <div class="invalid-feedback" id="endDateValidation">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-4">
+                            <input type="number" id="payDay" class="form-control" placeholder="Día de pago">
+                            <div class="invalid-feedback" id="payDayValidation">
+
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="number" id="interestRate" class="form-control" placeholder="Tasa de interés">
+                            <div class="invalid-feedback" id="interestRateValidation">
+
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="number" id="mensualPay" class="form-control" placeholder="Pago mensual">
+                            <div class="invalid-feedback" id="mensualPayValidation">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-6 offset-md-3">
+                            <button type="button" id="saveLoanBtn" class="btn btn-success">
+                                <i class="fas fa-check"></i>
+                                <span>Guardar préstamo</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="text-center text-danger" id="finalValidation">
+
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>

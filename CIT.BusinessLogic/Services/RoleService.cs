@@ -56,9 +56,7 @@ namespace CIT.BusinessLogic.Services
                     throw new Exception("El rol administrador no puede ser eliminado");
 
                 var entityInfo = await _entitiesInfoService.GetEntityInfoAsync(role.EntityInfo.Id);
-                entityInfo.UpdatedAt = DateTime.Now;
-                entityInfo.Status = 0;
-                await _entitiesInfoService.UpdateEntityInfo(entityInfo);
+                await _entitiesInfoService.UpdateEntityInfo(entityInfo.Id, 0);
                 await _rolePermissionService.DeleteRolePermissionsByRoleIdAsync(role.Id);
             }
         }
@@ -112,10 +110,7 @@ namespace CIT.BusinessLogic.Services
             {
                 roleEntity.RoleName = role.Role;
                 _roleRepository.Update(roleEntity);
-                var entityInfo = await _entitiesInfoService.GetEntityInfoAsync(roleEntity.EntityInfoId);
-
-                entityInfo.UpdatedAt = DateTime.Now;
-                await _entitiesInfoService.UpdateEntityInfo(entityInfo);
+                await _entitiesInfoService.UpdateEntityInfo(roleEntity.EntityInfoId, 1);
 
                 if (role.ToDelete.Count() > 0)
                 {
