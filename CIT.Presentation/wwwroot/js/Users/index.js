@@ -405,6 +405,7 @@ const onSuccessSaveUser = function (data) {
     } else {
         $("form").eq(0).trigger('reset');
         $("#uploadedPhoto").removeAttr("src");
+        $("#userId").val("");
         for (let field in formFields) {
             formFields[field].removeClass('is-valid');
         }
@@ -464,6 +465,7 @@ const onErrorHandler = function (err) {
 
 $("#closeUserFormBtn").on('click', function () {
     $("form").eq(0).trigger('reset');
+    $("#userId").val("");
     for (let field in formFields) {
         formFields[field].removeClass('is-valid');
         formFields[field].removeClass('is-invalid');

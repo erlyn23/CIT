@@ -83,13 +83,8 @@ namespace CIT.BusinessLogic.Services
             var vehicleInDb = await _vehicleRepository.FirstOrDefaultAsync(v => v.Enrollment.Equals(enrollment) || v.LicensePlate.Equals(licensePlate));
 
             if (vehicleId != 0)
-            {
-                vehicleInDb = null;
-                vehicleInDb = await _vehicleRepository.FirstOrDefaultAsync(v => v.Enrollment.Equals(enrollment) || v.LicensePlate.Equals(licensePlate));
-
-                if (vehicleInDb.Id == vehicleId)
-                    vehicleInDb = null;
-            }
+                vehicleInDb = await _vehicleRepository.FirstOrDefaultAsync(v => (v.Enrollment.Equals(enrollment) || v.LicensePlate.Equals(licensePlate)) && v.Id != vehicleId);
+            
 
             if (vehicleInDb != null)
                 return true;

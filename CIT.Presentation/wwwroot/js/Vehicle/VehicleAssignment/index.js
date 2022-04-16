@@ -1,4 +1,4 @@
-﻿const getModalData = function () {
+﻿const getModalData = function (userId = 0, vehicleId = 0) {
     doRequest({
         url: '/Users/GetUsers',
         method: 'GET',
@@ -14,6 +14,9 @@
             });
 
             $("#usersSelect").html(htmlUser);
+
+            if (userId != 0)
+                $("#usersSelect").val(userId.toString());
         },
         errorCallback: function (error) {
 
@@ -35,6 +38,10 @@
             });
 
             $("#vehiclesSelect").html(htmlUser);
+
+            if (vehicleId != 0) 
+                $("#vehiclesSelect").val(vehicleId.toString());
+            
         },
         errorCallback: function (error) {
 
@@ -80,11 +87,13 @@ const templateAssignmentsList = (assingments) => {
     tBody.html("");
     let html = "";
     assingments.forEach(assignment => {
+        const assignmentDate = new Date(assignment.assignmentDate);
+        const assignmentDateView = `${assignmentDate.getDate()}/${assignmentDate.getMonth() + 1}/${assignmentDate.getFullYear()}`;
         html += `<tr>
                     <td>${assignment.id}</td>
                     <td>${assignment.user.name} ${assignment.user.lastName}</td>
                     <td>${assignment.vehicle.brand} ${assignment.vehicle.model}</td>
-                    <td>${assignment.assignmentDate}</td>
+                    <td>${assignmentDateView}</td>
                     <td>
                         <button type="button" id="setAssignmentDetailBtn-${assignment.id}" class="btn btn-sm btn-success"><i class="fas fa-eye"></i></button>
                         <button type="button" id="editAssignmentBtn-${assignment.id}" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></button>
@@ -97,13 +106,10 @@ const templateAssignmentsList = (assingments) => {
 
 const setAssignmentData = function (assignment) {
 
-    getModalData();
+    getModalData(assignment.user.id, assignment.vehicle.id);
     $("#createAssignmentTitle").text("Editar asignación");
 
     $("#assignmentId").val(assignment.id);
-
-    $("#user").val(assignment.user.id);
-    $("#vehicle").val(assignment.vehicle.id);
     $("#comment").val(assignment.comment);
 
     $("#CreateAssignmentModal").modal('show');
@@ -113,7 +119,11 @@ const setAssignmentDetailData = function (assignment) {
     $("#assignmentIdView").text(assignment.id);
     $("#userView").text(`${assignment.user.id} - ${assignment.user.name} ${assignment.user.lastName}`);
     $("#vehicleView").text(`${assignment.vehicle.id} - ${assignment.vehicle.brand} ${assignment.vehicle.model}`);
-    $("#dateView").text(assignment.assignmentDate);
+
+
+    const assignmentDate = new Date(assignment.assignmentDate);
+    const assignmentDateView = `${assignmentDate.getDate()}/${assignmentDate.getMonth() + 1}/${assignmentDate.getFullYear()}`;
+    $("#dateView").text(assignmentDateView);
     $("#commentView").text(assignment.comment);
 
     $("#AssignmentDetailModal").modal('show');

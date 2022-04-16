@@ -202,11 +202,7 @@ const onSuccessSaveVehicle = function (data) {
             }, 1000);
         }
     } else {
-        $("form").eq(0).trigger('reset');
-        for (let field in formFields) {
-            formFields[field].removeClass('is-valid');
-        }
-
+        resetVehicleFormFields();
         $("#CreateVehicleModal").modal('hide');
         $("#errorMessages").html("");
         let successMsg = `<p class="text-success"><i class="fas fa-check-circle"></i>&nbsp; Vehículo guardado correctamente</p>`;
@@ -258,12 +254,17 @@ const deleteVehicle = function (vehicleId) {
 const onErrorHandler = function (err) {
     $("#loadingVehicles").addClass("d-none");
     $("#errorMessage").removeClass("d-none");
-    $("#errorMessage").html("<p>Ha ocurrido un error al obtener vehículos: " + err.responseText + "</p>")
+    $("#errorMessage").html("<p>Ha ocurrido un error al obtener vehículos: " + err.responseText + "</p>");
 }
 
 
 $("#closeVehicleFormBtn").on('click', function () {
+    resetVehicleFormFields();
+});
+
+const resetVehicleFormFields = function(){
     $("form").eq(0).trigger('reset');
+    $("#vehicleId").val("");
     for (let field in formFields) {
         formFields[field].removeClass('is-valid');
         formFields[field].removeClass('is-invalid');
@@ -272,5 +273,6 @@ $("#closeVehicleFormBtn").on('click', function () {
     }
     $("#uploadedPhoto").removeAttr("src");
     $("#createVehicleTitle").text('Crear nuevo vehículo');
-});
+}
+
 getVehicles();
