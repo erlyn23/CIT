@@ -28,31 +28,35 @@ const FOCUSOUT_EVENT = 'focusout';
 //Validación nombre del préstamo
 const validateLoanName = function () {
     if (formFields.loanName.val().length === 0) {
-        setInvalid(formFields.loanName, "#loanName", "<p>Debes escribir el nombre del préstamo</p>");
+        setInvalid(formFields.loanName, "#loanNameValidation", "<p>Debes escribir el nombre del préstamo</p>");
         validationsStatus.loanName = true;
     } else if (formFields.loanName.val().length > 20) {
-        setInvalid(formFields.loanName, "#loanName", "<p>El nombre del préstamo debe tener menos de 20 carácteres</p>");
+        setInvalid(formFields.loanName, "#loanNameValidation", "<p>El nombre del préstamo debe tener menos de 20 carácteres</p>");
         validationsStatus.loanName = true;
     } else {
         setValid(formFields.loanName, "#loanNameValidation");
         validationsStatus.loanName = false;
     }
 }
+formFields.loanName.on(CHANGE_EVENT, validateLoanName);
+formFields.loanName.on(FOCUSOUT_EVENT, validateLoanName);
 //Validación nombre del préstamo
 
 //Validación de la descripción
-const validateLoanName = function () {
+const validateDescription = function () {
     if (formFields.description.val().length === 0) {
-        setInvalid(formFields.description, "#description", "<p>Debes escribir la descripción del préstamo</p>");
+        setInvalid(formFields.description, "#descriptionValidation", "<p>Debes escribir la descripción del préstamo</p>");
         validationsStatus.description = true;
     } else if (formFields.description.val().length > 250) {
-        setInvalid(formFields.description, "#description", "<p>La descripción del préstamo debe tener menos de 250 carácteres</p>");
+        setInvalid(formFields.description, "#descriptionValidation", "<p>La descripción del préstamo debe tener menos de 250 carácteres</p>");
         validationsStatus.description = true;
     } else {
         setValid(formFields.description, "#descriptionValidation");
         validationsStatus.description = false;
     }
 }
+formFields.description.on(CHANGE_EVENT, validateDescription);
+formFields.description.on(FOCUSOUT_EVENT, validateDescription);
 //Validación de la descripción
 
 //Validación Cantidad de Cuotas

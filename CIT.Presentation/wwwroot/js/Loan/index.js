@@ -64,15 +64,11 @@ const templateLoansList = (loans) => {
 }
 
 const setLoanData = function (loan) {
-
-    const startDate = new Date(loan.startDate);
-    const startDateView = `${startDate.getFullYear()}-${startDate.getMonth()}-${startDate.getDate()}`;
-
-    const endDate = new Date(loan.endDate);
-    const endDateView = `${endDate.getFullYear()}-${endDate.getMonth()}-${endDate.getDate()}`;
     $("#createLoanTitle").text("Editar préstamo");
 
     $("#loanId").val(loan.id);
+    $("#loanName").val(loan.loanName);
+    $("#description").val(loan.description);
     $("#duesQuantity").val(loan.duesQuantity);
     $("#totalLoan").val(loan.totalLoan);
     document.getElementById("startDate").valueAsDate = new Date(loan.startDate);
@@ -134,6 +130,8 @@ $("#saveLoanBtn").on('click', function () {
         $("#saveLoanBtn > span").text("Enviando datos, por favor espere...");
         $("#saveLoanBtn").prop('disabled', true);
         const newLoan = {
+            loanName: formFields.loanName.val(),
+            description: formFields.description.val(),
             duesQuantity: formFields.duesQuantity.val(),
             totalLoan: formFields.totalLoan.val(),
             startDate: formFields.startDate.val(),

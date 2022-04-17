@@ -270,7 +270,6 @@ const setUserData = function (user) {
     $("#createUserTitle").text("Editar usuario");
 
     $("#userId").val(user.id);
-
     if (user.photo != "NULL") {
         $("#uploadedPhoto").prop('src', `/ProfilePhotos/user_profile_photo_${user.id}.jpg`);
         $("#sendPhoto").val(user.Photo);

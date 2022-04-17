@@ -27,6 +27,8 @@ namespace CIT.BusinessLogic.Services
         public async Task<UserRoleDto> AddUserRoleAsync(UserRoleDto userRole)
         {
             var userRoleEntity = _mapper.Map<Userrole>(userRole);
+            var savedEntityInfo = await _entityInfoService.AddEntityInfoAsync();
+            userRoleEntity.EntityInfoId = savedEntityInfo.Id;
             await _userRoleRepository.AddAsync(userRoleEntity);
             await _userRoleRepository.SaveChangesAsync();
             userRole.Id = userRoleEntity.Id;
