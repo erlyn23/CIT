@@ -1,4 +1,6 @@
 ﻿const formFields = {
+    loanName: $("#loanName"),
+    description: $("#description"),
     duesQuantity: $("#duesQuantity"),
     totalLoan: $("#totalLoan"),
     startDate: $("#startDate"),
@@ -9,6 +11,8 @@
 };
 
 const validationsStatus = {
+    loanName: false,
+    description: false,
     duesQuantity: false,
     totalLoan: false,
     startDate: false,
@@ -20,6 +24,36 @@ const validationsStatus = {
 
 const CHANGE_EVENT = 'change';
 const FOCUSOUT_EVENT = 'focusout';
+
+//Validación nombre del préstamo
+const validateLoanName = function () {
+    if (formFields.loanName.val().length === 0) {
+        setInvalid(formFields.loanName, "#loanName", "<p>Debes escribir el nombre del préstamo</p>");
+        validationsStatus.loanName = true;
+    } else if (formFields.loanName.val().length > 20) {
+        setInvalid(formFields.loanName, "#loanName", "<p>El nombre del préstamo debe tener menos de 20 carácteres</p>");
+        validationsStatus.loanName = true;
+    } else {
+        setValid(formFields.loanName, "#loanNameValidation");
+        validationsStatus.loanName = false;
+    }
+}
+//Validación nombre del préstamo
+
+//Validación de la descripción
+const validateLoanName = function () {
+    if (formFields.description.val().length === 0) {
+        setInvalid(formFields.description, "#description", "<p>Debes escribir la descripción del préstamo</p>");
+        validationsStatus.description = true;
+    } else if (formFields.description.val().length > 250) {
+        setInvalid(formFields.description, "#description", "<p>La descripción del préstamo debe tener menos de 250 carácteres</p>");
+        validationsStatus.description = true;
+    } else {
+        setValid(formFields.description, "#descriptionValidation");
+        validationsStatus.description = false;
+    }
+}
+//Validación de la descripción
 
 //Validación Cantidad de Cuotas
 const validateDuesQuantity = function () {

@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace CIT.DataAccess.Migrations
 {
-    public partial class VehicleAssingmentsMigration : Migration
+    public partial class LoanNameMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -177,6 +177,10 @@ namespace CIT.DataAccess.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    LoanName = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Description = table.Column<string>(type: "varchar(250)", maxLength: 250, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     DuesQuantity = table.Column<int>(type: "int(11)", nullable: false),
                     TotalLoan = table.Column<decimal>(type: "decimal(13,2)", nullable: false),
                     StartDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
@@ -590,6 +594,12 @@ namespace CIT.DataAccess.Migrations
                 name: "Fk_Loans_LenderBusiness",
                 table: "loans",
                 column: "LenderBusinessId");
+
+            migrationBuilder.CreateIndex(
+                name: "LoanName",
+                table: "loans",
+                column: "LoanName",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "Ix_LenderBusiness_Email1",

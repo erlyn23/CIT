@@ -21,7 +21,8 @@ namespace CIT.Tools
             string appEmail = _configuration["EmailAccount:AppEmail"];
             string appEmailPassword = _configuration["EmailAccount:AppEmailPassword"];
 
-            SmtpClient smtpClient = new SmtpClient("smtp.hostinger.com", 587);
+            int.TryParse(_configuration["EmailAccount:port"], out int port);
+            SmtpClient smtpClient = new SmtpClient(_configuration["EmailAccount:smtp"], port);
             smtpClient.Credentials = new NetworkCredential(appEmail, appEmailPassword);
             smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
             smtpClient.EnableSsl = true;

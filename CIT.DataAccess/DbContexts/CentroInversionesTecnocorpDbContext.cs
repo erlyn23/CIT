@@ -177,6 +177,9 @@ namespace CIT.DataAccess.DbContexts
             {
                 entity.ToTable("loans");
 
+                entity.HasIndex(e => e.LoanName, "LoanName")
+                   .IsUnique();
+
                 entity.HasIndex(e => e.EntityInfoId, "Fk_Loans_EntitiesInfo");
                 
                 entity.HasIndex(e => e.LenderBusinessId, "Fk_Loans_LenderBusiness");
@@ -184,6 +187,14 @@ namespace CIT.DataAccess.DbContexts
                 entity.Property(e => e.Id).HasColumnType("int").UseMySqlIdentityColumn();
 
                 entity.Property(e => e.DuesQuantity).HasColumnType("int(11)");
+
+                entity.Property(e => e.LoanName)
+                .IsRequired()
+                .HasMaxLength(20);
+
+                entity.Property(e => e.Description)
+                .IsRequired()
+                .HasMaxLength(250);
 
                 entity.Property(e => e.EntityInfoId)
                     .IsRequired().HasColumnType("int(11)");

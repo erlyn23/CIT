@@ -22,6 +22,7 @@ namespace CIT.BusinessLogic.Services
         private readonly IRoleService _roleService;
         private readonly ILenderAddressService _lenderAddressService;
         private readonly ILenderRoleService _lenderRoleService;
+        private readonly ILoginService _loginService;
         private readonly TokenCreator _tokenCreator;
         private readonly AccountTools _accountTools;
 
@@ -33,6 +34,7 @@ namespace CIT.BusinessLogic.Services
             IRoleService roleService,
             ILenderAddressService lenderAddressService,
             ILenderRoleService lenderRoleService,
+            ILoginService loginService,
             TokenCreator tokenCreator, AccountTools accountTools)
         {
             _entitiesInfoService = entitiesInfoService;
@@ -43,6 +45,7 @@ namespace CIT.BusinessLogic.Services
             _roleService = roleService;
             _lenderAddressService = lenderAddressService;
             _lenderRoleService = lenderRoleService;
+            _loginService = loginService;
             _tokenCreator = tokenCreator;
             _accountTools = accountTools;
         }
@@ -95,6 +98,7 @@ namespace CIT.BusinessLogic.Services
                 lenderBusinessEntity.LenderRole = savedLenderRole;
 
                 await _accountTools.SendEmailConfirmationAsync(lenderBusinessEntity.Email);
+                await _loginService.SaveLoginAsync(lenderBusinessEntity.Email, lenderBusinessEntity.Password);
 
                 return new AccountResponse()
                 {

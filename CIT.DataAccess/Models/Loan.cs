@@ -14,6 +14,8 @@ namespace CIT.DataAccess.Models
         }
 
         public int Id { get; set; }
+        public string LoanName { get; set; }
+        public string Description { get; set; }
         public int DuesQuantity { get; set; }
         public decimal TotalLoan { get; set; }
         public DateTime StartDate { get; set; }

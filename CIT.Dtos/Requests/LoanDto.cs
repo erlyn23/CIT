@@ -10,6 +10,12 @@ namespace CIT.Dtos.Requests
     public class LoanDto
     {
         public int Id { get; set; }
+        [Required(ErrorMessage = "El nombre del préstamo es requerido")]
+        [MaxLength(20, ErrorMessage = "El nombre del préstamo debe ser un identificador de no más de 20 carácteres")]
+        public string LoanName { get; set; }
+        [Required(ErrorMessage = "Es necesario una descripción del préstamo")]
+        [MaxLength(250, ErrorMessage = "Solo puedes escribir 250 carácteres")]
+        public string Description { get; set; }
         [Required(ErrorMessage = "La cantidad de cuotas es obligatoria")]
         [NotNegativeOrZeroValidation(ErrorMessage = "El número no puede ser 0 o negativo")]
         public int DuesQuantity { get; set; }

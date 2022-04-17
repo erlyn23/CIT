@@ -200,6 +200,11 @@ namespace CIT.DataAccess.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("varchar(250)");
+
                     b.Property<int>("DuesQuantity")
                         .HasColumnType("int(11)");
 
@@ -214,6 +219,11 @@ namespace CIT.DataAccess.Migrations
 
                     b.Property<int>("LenderBusinessId")
                         .HasColumnType("int");
+
+                    b.Property<string>("LoanName")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
 
                     b.Property<decimal>("MensualPay")
                         .HasColumnType("decimal(13,2)");
@@ -232,6 +242,9 @@ namespace CIT.DataAccess.Migrations
                     b.HasIndex(new[] { "EntityInfoId" }, "Fk_Loans_EntitiesInfo");
 
                     b.HasIndex(new[] { "LenderBusinessId" }, "Fk_Loans_LenderBusiness");
+
+                    b.HasIndex(new[] { "LoanName" }, "LoanName")
+                        .IsUnique();
 
                     b.ToTable("loans");
                 });

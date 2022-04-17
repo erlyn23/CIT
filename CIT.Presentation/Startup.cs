@@ -102,6 +102,7 @@ namespace CIT.Presentation
             services.AddScoped<ILenderAddressService, LenderAddressService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ILoginRepository, LoginRepository>();
+            services.AddScoped<ILoginService, LoginService>();
             services.AddScoped<IVehicleService, VehicleService>();
             services.AddScoped<IVehicleRepository, VehicleRepository>();
             services.AddScoped<IVehicleAssignmentRepository, VehicleAssignmentRepository>();

@@ -21,22 +21,24 @@ namespace CIT.BusinessLogic.Services
         private readonly IAddressService _addressService;
         private readonly IUserAddressService _userAddressService;
         private readonly TokenCreator _tokenCreator;
-        private readonly ILoginRepository _loginRepository;
+        private readonly AccountTools _accountTools;
+        private readonly ILoginService _loginService;
         private readonly IMapper _mapper;
         private readonly IRoleService _roleService;
 
         private const string USER_EXISTS_ERROR_MESSAGE = "Ya existe un usuario con este correo, cédula o teléfono, por favor, valida los datos";
 
-        public UserService(IUserRepository userRepository, IRoleService roleService, IUserRoleService userRoleService, IEntitiesInfoService entitiesInfoService, IAddressService addressService, IUserAddressService userAddressService, TokenCreator tokenCreator, ILoginRepository loginRepository, IMapper mapper)
+        public UserService(IUserRepository userRepository, IRoleService roleService, IUserRoleService userRoleService, IEntitiesInfoService entitiesInfoService, IAddressService addressService, IUserAddressService userAddressService, TokenCreator tokenCreator, AccountTools accountTools, ILoginService loginService, IMapper mapper)
         {
             _userRepository = userRepository;
             _tokenCreator = tokenCreator;
-            _loginRepository = loginRepository;
+            _loginService = loginService;
             _mapper = mapper;
             _userRoleService = userRoleService;
             _entitiesInfoService = entitiesInfoService;
             _addressService = addressService;
             _userAddressService = userAddressService;
+            _accountTools = accountTools;
             _roleService = roleService;
         }
         public async Task<AccountResponse> RegisterUserAsync(UserDto userDto)
@@ -86,6 +88,9 @@ namespace CIT.BusinessLogic.Services
                     UserId = userEntity.Id
                 });
 
+                await _accountTools.SendEmailConfirmationAsync(userEntity.Email);
+                await _loginService.SaveLoginAsync(userEntity.Email, userEntity.Password);
+
                 return new AccountResponse()
                 {
                     Email = userDto.Email,
@@ -112,7 +117,6 @@ namespace CIT.BusinessLogic.Services
                         userInDb.Photo = await UploadPhoto.UploadProfilePhotoAsync($"user_profile_photo_{userInDb.Id}.jpg", user.Photo);
                     userInDb.Phone = user.Phone;
                     userInDb.Password = Encryption.Encrypt(user.Password);
-                    userInDb.Email = user.Email;
 
                     await _addressService.UpdateAddressAsync(user.Address);
 
@@ -159,12 +163,7 @@ namespace CIT.BusinessLogic.Services
         {
             var user = await GetUserAsync(userId);
             await _entitiesInfoService.UpdateEntityInfo(user.EntityInfo.Id, 0);
-            
-            
-            var login = await _loginRepository.FirstOrDefaultAsync(l => l.Email.Equals(user.Email));
-            login.Status = 0;
-            _loginRepository.Update(login);
-            await _loginRepository.SaveChangesAsync();
+            await _loginService.DeleteLoginAsync(user.Email);
         }
 
         public async Task<List<UserDto>> GetUsersAsync(int lenderBusinessId)

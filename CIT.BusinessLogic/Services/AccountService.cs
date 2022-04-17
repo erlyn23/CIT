@@ -40,7 +40,7 @@ namespace CIT.BusinessLogic.Services
             if (login == null)
                 throw new Exception("Usuario o contraseña incorrecta");
             if (login.Status == 0)
-                throw new Exception("Usuario inactivo o eliminado");
+                throw new Exception("Usuario inactivo, por favor, verifique su correo electrónico y active su cuenta");
 
 
 

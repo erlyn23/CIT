@@ -146,7 +146,7 @@ $("#registerBtn").on('click', function () {
                 } else {
                     $("form").eq(0).trigger('reset');
                     $("#errorMessages").html("");
-                    let successMsg = `<p class="text-success"><i class="fas fa-check-circle"></i>&nbsp; Negocio registrado correctamente, ya puedes iniciar sesión</p>`;
+                    let successMsg = `<p class="text-success"><i class="fas fa-check-circle"></i>&nbsp; Negocio registrado correctamente, por favor, verificar su correo electrónico para activar su cuenta</p>`;
                     $("#errorMessages").append(successMsg);
                     $("#LoadingModal").modal('hide');
 

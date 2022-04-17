@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CIT.DataAccess.Migrations
 {
     [DbContext(typeof(CentroInversionesTecnocorpDbContext))]
-    [Migration("20220129182516_VehicleAssingmentsMigration")]
-    partial class VehicleAssingmentsMigration
+    [Migration("20220416175458_LoanNameMigration")]
+    partial class LoanNameMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -202,6 +202,11 @@ namespace CIT.DataAccess.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("varchar(250)");
+
                     b.Property<int>("DuesQuantity")
                         .HasColumnType("int(11)");
 
@@ -216,6 +221,11 @@ namespace CIT.DataAccess.Migrations
 
                     b.Property<int>("LenderBusinessId")
                         .HasColumnType("int");
+
+                    b.Property<string>("LoanName")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
 
                     b.Property<decimal>("MensualPay")
                         .HasColumnType("decimal(13,2)");
@@ -234,6 +244,9 @@ namespace CIT.DataAccess.Migrations
                     b.HasIndex(new[] { "EntityInfoId" }, "Fk_Loans_EntitiesInfo");
 
                     b.HasIndex(new[] { "LenderBusinessId" }, "Fk_Loans_LenderBusiness");
+
+                    b.HasIndex(new[] { "LoanName" }, "LoanName")
+                        .IsUnique();
 
                     b.ToTable("loans");
                 });

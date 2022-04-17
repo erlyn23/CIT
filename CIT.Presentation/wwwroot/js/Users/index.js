@@ -279,6 +279,7 @@ const setUserData = function (user) {
     $("#firstName").val(user.name);
     $("#lastName").val(user.lastName);
     $("#identificationDocument").val(user.identificationDocument);
+    $("#email").attr('disabled', true);
     $("#email").val(user.email);
     $("#phoneNumber").val(user.phone);
     $("#addressId").val(user.address.id);

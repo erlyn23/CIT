@@ -12,6 +12,21 @@
                     <input type="hidden" id="loanId">
                     <div class="row mb-2">
                         <div class="col-md-6">
+                            <input type="text" id="loanName" class="form-control" placeholder="Nombre del préstamo" />
+                            <div id="loanNameValidation" class="invalid-feedback">
+
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <textarea id="description" cols="3" rows="10" class="form-control">
+</textarea>
+                            <div id="descriptionValidation" class="invalid-feedback">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-6">
                             <input type="number" class="form-control" id="duesQuantity" placeholder="Cantidad de cuotas">
                             <div class="invalid-feedback" id="duesQuantityValidation">
 
