@@ -44,7 +44,7 @@ namespace CIT.Presentation.Filters
             };
             await _logService.SaveLogAsync(logDto);
 
-            context.Result = new Microsoft.AspNetCore.Mvc.BadRequestObjectResult($"Ha ocurrido un error interno en el sistema: {context.Exception.Message}, revisa los logs del sistema para más detalles.");
+            context.Result = new Microsoft.AspNetCore.Mvc.BadRequestObjectResult($"Ha ocurrido un error interno en el sistema, revisa los logs del sistema para más detalles.");
             
         }
     }
