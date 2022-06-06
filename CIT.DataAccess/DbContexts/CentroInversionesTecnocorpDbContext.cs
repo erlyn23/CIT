@@ -184,6 +184,8 @@ namespace CIT.DataAccess.DbContexts
                 
                 entity.HasIndex(e => e.LenderBusinessId, "Fk_Loans_LenderBusiness");
 
+                entity.HasIndex(e => e.UserId, "Fk_Loans_Users");
+
                 entity.Property(e => e.Id).HasColumnType("int").UseMySqlIdentityColumn();
 
                 entity.Property(e => e.DuesQuantity).HasColumnType("int(11)");
@@ -218,6 +220,12 @@ namespace CIT.DataAccess.DbContexts
                     .HasForeignKey(d => d.LenderBusinessId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("Fk_Loans_LenderBusiness");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.Loans)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("Fk_Loans_Users");
             });
 
             modelBuilder.Entity<Log>(entity =>

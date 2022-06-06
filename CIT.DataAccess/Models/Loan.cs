@@ -23,10 +23,12 @@ namespace CIT.DataAccess.Models
         public int PayDay { get; set; }
         public decimal InterestRate { get; set; }
         public decimal MensualPay { get; set; }
+        public int UserId { get; set; }
         public int LenderBusinessId { get; set; }
         public int EntityInfoId { get; set; }
 
         public virtual Entitiesinfo EntityInfo { get; set; }
+        public virtual User User { get; set; }
         public virtual ICollection<Payment> Payments { get; set; }
         public virtual LenderBusiness LenderBusiness { get; set; }
     }

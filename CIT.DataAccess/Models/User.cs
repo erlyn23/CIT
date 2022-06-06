@@ -10,6 +10,7 @@ namespace CIT.DataAccess.Models
         public User()
         {
             Payments = new HashSet<Payment>();
+            Loans = new HashSet<Loan>();
         }
 
         public int Id { get; set; }
@@ -26,6 +27,7 @@ namespace CIT.DataAccess.Models
         public virtual Entitiesinfo EntityInfo { get; set; }
         public virtual Userrole Userrole { get; set; }
         public virtual ICollection<Payment> Payments { get; set; }
+        public virtual ICollection<Loan> Loans { get; set; }
         public virtual Useraddress Useraddress { get; set; }
         public virtual VehicleAssignment VehicleAssignment { get; set; }
         public virtual LenderBusiness LenderBusiness { get; set; }
