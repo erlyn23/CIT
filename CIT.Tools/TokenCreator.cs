@@ -74,6 +74,16 @@ namespace CIT.Tools
             return jwtSecurityTokenHandler.WriteToken(token);
         }
 
+        public int GetUserId(HttpRequest request)
+        {
+            var userType = GetUserTypeAndUserId(request);
+
+            if (userType.Equals("User"))
+                return _userId;
+
+            return 0;
+        }
+
         public async Task<int> GetLenderBusinessId(HttpRequest request)
         {
             var userType = GetUserTypeAndUserId(request);

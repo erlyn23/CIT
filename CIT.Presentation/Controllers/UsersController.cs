@@ -58,6 +58,14 @@ namespace CIT.Presentation.Controllers
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpGet()]
+        public async Task<IActionResult> GetUsersByNameAsync(string name)
+        {
+            var lenderBusinessId = await _tokenCreator.GetLenderBusinessId(Request);
+            return Json(await _userService.GetUsersByNameAsync(lenderBusinessId, name));
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [OperationFilter("Modificar")]
         [ServiceFilter(typeof(AuthFilter))]
         [HttpPost]

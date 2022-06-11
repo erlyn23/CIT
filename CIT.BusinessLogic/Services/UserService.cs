@@ -23,17 +23,23 @@ namespace CIT.BusinessLogic.Services
         private readonly TokenCreator _tokenCreator;
         private readonly AccountTools _accountTools;
         private readonly ILoginService _loginService;
-        private readonly IMapper _mapper;
         private readonly IRoleService _roleService;
 
         private const string USER_EXISTS_ERROR_MESSAGE = "Ya existe un usuario con este correo, cédula o teléfono, por favor, valida los datos";
 
-        public UserService(IUserRepository userRepository, IRoleService roleService, IUserRoleService userRoleService, IEntitiesInfoService entitiesInfoService, IAddressService addressService, IUserAddressService userAddressService, TokenCreator tokenCreator, AccountTools accountTools, ILoginService loginService, IMapper mapper)
+        public UserService(IUserRepository userRepository, 
+            IRoleService roleService, 
+            IUserRoleService userRoleService,
+            IEntitiesInfoService entitiesInfoService, 
+            IAddressService addressService, 
+            IUserAddressService userAddressService, 
+            TokenCreator tokenCreator, 
+            AccountTools accountTools, 
+            ILoginService loginService)
         {
             _userRepository = userRepository;
             _tokenCreator = tokenCreator;
             _loginService = loginService;
-            _mapper = mapper;
             _userRoleService = userRoleService;
             _entitiesInfoService = entitiesInfoService;
             _addressService = addressService;
@@ -88,7 +94,7 @@ namespace CIT.BusinessLogic.Services
                     UserId = userEntity.Id
                 });
 
-                await _accountTools.SendEmailConfirmationAsync(userEntity.Email);
+                await _accountTools.SendEmailConfirmationAsync(userEntity.IdentificationDocument, userEntity.Email);
                 await _loginService.SaveLoginAsync(userEntity.Email, userEntity.Password);
 
                 return new AccountResponse()
@@ -169,7 +175,17 @@ namespace CIT.BusinessLogic.Services
         public async Task<List<UserDto>> GetUsersAsync(int lenderBusinessId)
         {
             var users = await _userRepository.GetAllWithFilterAndWithRelationsAsync(u => u.LenderBusinessId == lenderBusinessId);
+            return GetUsersResponse(users);
+        }
 
+        public async Task<List<UserDto>> GetUsersByNameAsync(int lenderBusinessId, string fullName)
+        {
+            var users = await _userRepository.GetAllWithFilterAndWithRelationsAsync(u => u.LenderBusinessId == lenderBusinessId && string.Concat(u.Name, " ", u.LastName).ToLower().Contains(fullName.ToLower()));
+            return GetUsersResponse(users);
+        }
+
+        private List<UserDto> GetUsersResponse(List<User> users)
+        {
             var usersDto = users.Select(u => MapUserAsync(u).Result).ToList();
             return usersDto.Where(u => u.EntityInfo.Status != 0).ToList();
         }

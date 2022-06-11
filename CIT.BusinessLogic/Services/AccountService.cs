@@ -56,13 +56,14 @@ namespace CIT.BusinessLogic.Services
 
         }
 
-        public async Task<bool> ActivateAccountAsync(string email, string verificationNumber)
+        public async Task<bool> ActivateAccountAsync(string identificationDocument, string verificationNumber)
         {
-            var user = await _loginRepository.FirstOrDefaultAsync(u => u.Email.Equals(email));
+            var user = await _userRepository.FirstOrDefaultAsync(u => u.IdentificationDocument.Equals(identificationDocument));
+            var userLogin = await _loginRepository.FirstOrDefaultAsync(u => u.Email.Equals(user.Email));
 
             var confirmationDataSaved = _accountTools.GetConfirmationDataFromJsonFile();
 
-            var confirmationDataWanted = confirmationDataSaved.Where(e => e.UserEmail.Equals(user.Email)).FirstOrDefault();
+            var confirmationDataWanted = confirmationDataSaved.Where(e => e.UserIdentificationDocument.Equals(user.IdentificationDocument)).FirstOrDefault();
 
             DateTime now = DateTime.UtcNow;
             TimeSpan difference = confirmationDataWanted.ExpireDate - now;
@@ -72,8 +73,8 @@ namespace CIT.BusinessLogic.Services
             {
                 if (string.Equals(verificationNumber, confirmationDataWanted.RandomCode))
                 {
-                    user.Status = 1;
-                    _loginRepository.Update(user);
+                    userLogin.Status = 1;
+                    _loginRepository.Update(userLogin);
                     await _loginRepository.SaveChangesAsync();
                     int toDelete = confirmationDataSaved.IndexOf(confirmationDataWanted);
                     confirmationDataSaved.RemoveAt(toDelete);

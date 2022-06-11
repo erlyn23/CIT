@@ -97,11 +97,18 @@ namespace CIT.BusinessLogic.Services
             throw new Exception("Este prestamo no se encuentra o no existe.");
         }
 
-        public async Task<List<LoanDto>> GetLoanssAsync(int lenderBusinessId)
+        public async Task<List<LoanDto>> GetLoansByLenderBusinessAsync(int lenderBusinessId)
         {
-            var loan = _mapper.Map<List<LoanDto>>(await _loanRepository.GetAllWithFilterAndWithRelationsAsync(v => v.LenderBusiness.Id == lenderBusinessId));
+            var loans = _mapper.Map<List<LoanDto>>(await _loanRepository.GetAllWithFilterAndWithRelationsAsync(l => l.LenderBusinessId == lenderBusinessId));
 
-            return loan;
+            return loans;
+        }
+
+        public async Task<List<LoanDto>> GetLoansByUserAsync(int lenderBusinessId, int userId)
+        {
+            var loans = _mapper.Map<List<LoanDto>>(await _loanRepository.GetAllWithFilterAndWithRelationsAsync(l => l.LenderBusinessId == lenderBusinessId && l.UserId == userId));
+
+            return loans;
         }
     }
 }

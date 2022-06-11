@@ -64,11 +64,11 @@ namespace CIT.Presentation.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Activate(string email, string code)
+        public async Task<IActionResult> Activate(string docId, string code)
         {
             try
             {
-                var isActivated = await _accountService.ActivateAccountAsync(email, code);
+                var isActivated = await _accountService.ActivateAccountAsync(docId, code);
                 if (isActivated)
                     ViewBag.Success = "Tu cuenta ha sido activada correctamente, puedes iniciar sesión";
             }

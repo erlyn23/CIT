@@ -56,25 +56,29 @@
                         </div>
                     </div>
                     <div class="row mb-2">
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <input type="number" id="payDay" class="form-control" placeholder="Día de pago">
                             <div class="invalid-feedback" id="payDayValidation">
 
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <input type="number" id="interestRate" class="form-control" placeholder="Tasa de interés">
                             <div class="invalid-feedback" id="interestRateValidation">
 
                             </div>
                         </div>
-                        <div class="col-md-4">
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-6">
                             <input type="number" id="mensualPay" class="form-control" placeholder="Pago mensual">
                             <div class="invalid-feedback" id="mensualPayValidation">
 
                             </div>
                         </div>
+                        @await Html.PartialAsync("~/Views/Partials/Common/UserSourceContainer.cshtml")
                     </div>
+                    
                     <div class="row mb-2">
                         <div class="col-md-6 offset-md-3">
                             <button type="button" id="saveLoanBtn" class="btn btn-success">

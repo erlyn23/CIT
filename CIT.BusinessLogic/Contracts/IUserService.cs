@@ -13,6 +13,7 @@ namespace CIT.BusinessLogic.Contracts
         Task<AccountResponse> RegisterUserAsync(UserDto userDto);
         Task<UserDto> UpdateUserAsync(UserDto user);
         Task<List<UserDto>> GetUsersAsync(int lenderBusinessId);
+        Task<List<UserDto>> GetUsersByNameAsync(int lenderBusinessId, string userFullName);
         Task<UserDto> GetUserAsync(int userId);
         Task DeleteUserAsync(int userId);
     }

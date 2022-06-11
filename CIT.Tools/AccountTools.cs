@@ -22,15 +22,15 @@ namespace CIT.Tools
             _emailTools = emailTools;
         }
 
-        public async Task<EmailVerificationResponse> SendEmailConfirmationAsync(string userEmail)
+        public async Task<EmailVerificationResponse> SendEmailConfirmationAsync(string identificationDocument, string userEmail)
         {
             var emailVerification = new EmailVerificationResponse();
-            emailVerification.UserEmail = userEmail;
+            emailVerification.UserIdentificationDocument = identificationDocument;
             emailVerification.RandomCode = BuildConfirmations.BuildConfirmationCode();
             emailVerification.ExpireDate = DateTime.UtcNow.AddMinutes(30);
 
 
-            string confirmationUrl = $"https://localhost:44306/Account/Activate?email={userEmail}&code={emailVerification.RandomCode}";
+            string confirmationUrl = $"https://localhost:44306/Account/Activate?docId={identificationDocument}&code={emailVerification.RandomCode}";
             string subject = "Confirmación de cuenta Sistema Integral de Préstamos";
             string body = $"Hola, para verificar tu cuenta del Sistema Integral de Préstamos ingresa al siguiente enlace: " +
             $"<a href='{confirmationUrl}'>{confirmationUrl}</a>, y expira en los próximos <b>30 minutos.</b>";
@@ -55,7 +55,7 @@ namespace CIT.Tools
             if (emailVerifications != null)
             {
                 emailVerification = emailVerifications
-                .Where(e => e.UserEmail == emailVerificationResponse.UserEmail)
+                .Where(e => e.UserIdentificationDocument == emailVerificationResponse.UserIdentificationDocument)
                 .FirstOrDefault();
             }
             else
@@ -68,7 +68,7 @@ namespace CIT.Tools
                 int toDelete = emailVerifications.IndexOf(emailVerification);
                 emailVerifications.RemoveAt(toDelete);
 
-                emailVerification.UserEmail = emailVerificationResponse.UserEmail;
+                emailVerification.UserIdentificationDocument = emailVerificationResponse.UserIdentificationDocument;
                 emailVerification.RandomCode = emailVerificationResponse.RandomCode;
                 emailVerification.ExpireDate = emailVerificationResponse.ExpireDate;
                 emailVerifications.Add(emailVerification);

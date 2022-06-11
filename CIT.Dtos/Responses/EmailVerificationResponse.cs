@@ -8,7 +8,7 @@ namespace CIT.Dtos.Responses
 {
     public class EmailVerificationResponse
     {
-        public string UserEmail { get; set; }
+        public string UserIdentificationDocument { get; set; }
         public string RandomCode { get; set; }
         public DateTime ExpireDate { get; set; }
     }

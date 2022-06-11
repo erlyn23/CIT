@@ -38,6 +38,7 @@ namespace CIT.Dtos.Requests
         public decimal MensualPay { get; set; }
         public int LenderBusinessId { get; set; }
         public int EntityInfoId { get; set; }
+        public int UserId { get; set; }
 
         public LenderBusinessDto LenderBusiness { get; set; }
         public EntityInfoDto entityInfo { get; set; }

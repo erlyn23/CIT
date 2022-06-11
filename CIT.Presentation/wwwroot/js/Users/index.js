@@ -90,14 +90,18 @@ const getModalData = function (roleId = 0) {
     });
 
     doRequest({
-        url: 'https://restcountries.com/v2/all',
+        url: '/countries.json',
         method: 'GET',
         data: null,
         headers: {
             'content-type': 'application/json'
         },
         successCallback: function (data) {
-            countries = data;
+            for (let key in data)
+                countries.push({
+                    key: key,
+                    name: data[key].normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                });
         },
         errorCallback: function (error) {
             alert(error.responseText);
@@ -111,11 +115,11 @@ $("#country").on('keyup', function () {
         $("#countrySourceContainer").removeClass('d-none');
         if (countries.length > 0) {
             let filteredCountries =
-                countries.filter(country => country.translations.es.toLowerCase().includes($("#country").val().toLowerCase()))
+                countries.filter(country => country.name.toLowerCase().includes($("#country").val().toLowerCase()))
                     .map(country => {
                         return {
-                            name: country.translations.es,
-                            flag: country.flag
+                            name: country.name,
+                            flag: `https://flagcdn.com/16x12/${country.key}.png`
                         };
                     });
             $("#countrySource").html("");

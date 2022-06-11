@@ -97,7 +97,7 @@ namespace CIT.BusinessLogic.Services
                 var savedLenderRole = await _lenderRoleService.SaveLenderRoleAsync(lenderRole);
                 lenderBusinessEntity.LenderRole = savedLenderRole;
 
-                await _accountTools.SendEmailConfirmationAsync(lenderBusinessEntity.Email);
+                await _accountTools.SendEmailConfirmationAsync(lenderBusinessEntity.Rnc, lenderBusinessEntity.Email);
                 await _loginService.SaveLoginAsync(lenderBusinessEntity.Email, lenderBusinessEntity.Password);
 
                 return new AccountResponse()

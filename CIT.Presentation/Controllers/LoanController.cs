@@ -37,8 +37,17 @@ namespace CIT.Presentation.Controllers
         [HttpGet]
         public async Task<IActionResult> GetLoansAsync()
         {
+            var userId = _tokenCreator.GetUserId(Request);
             var lenderBusinessId = await _tokenCreator.GetLenderBusinessId(Request);
-            return Json(await _loanService.GetLoanssAsync(lenderBusinessId));
+            List<LoanDto> loans;
+
+            if(userId == 0)
+                loans = await _loanService.GetLoansByLenderBusinessAsync(lenderBusinessId);
+            else
+                loans = await _loanService.GetLoansByUserAsync(lenderBusinessId, userId);
+            
+
+            return Json(loans);
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]

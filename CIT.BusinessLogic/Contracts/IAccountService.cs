@@ -11,6 +11,6 @@ namespace CIT.BusinessLogic.Contracts
     public interface IAccountService
     {
         Task<AccountResponse> SignInAsync(string email, string password);
-        Task<bool> ActivateAccountAsync(string email, string verificationNumber);
+        Task<bool> ActivateAccountAsync(string docId, string verificationNumber);
     }
 }

@@ -138,7 +138,8 @@ $("#saveLoanBtn").on('click', function () {
             endDate: formFields.endDate.val(),
             payDay: formFields.payDay.val(),
             interestRate: formFields.interestRate.val(),
-            mensualPay: formFields.mensualPay.val()
+            mensualPay: formFields.mensualPay.val(),
+            userId: formUserFullNameFields.userId.val()
         };
 
         if ($("#loanId").val() !== "") 

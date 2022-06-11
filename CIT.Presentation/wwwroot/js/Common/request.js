@@ -3,7 +3,7 @@
 function doRequest({ url, method, data, headers, successCallback, errorCallback }) {
     const options = {
         method: method,
-        contentType: 'application/json',
+        contentType: 'application/json; charset=UTF-8',
         success: function (data) {
             successCallback(data);
         },
