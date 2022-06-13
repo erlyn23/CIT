@@ -44,6 +44,9 @@ $("#signInBtn").on('click', function (e) {
         lenderBusinessId: $("#lenderBusinessId").val()
     };
 
+    if (authModel.lenderBusinessId == null)
+        authModel.lenderBusinessId = 0;
+
     doRequest({
         url: '/Account/Index', method: 'POST', data: authModel, headers: null,
         successCallback: function(data) {
