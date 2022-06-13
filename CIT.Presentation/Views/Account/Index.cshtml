@@ -1,5 +1,6 @@
 ﻿@{
     ViewData["Title"] = "Iniciar Sesión";
+    ViewData["HasValidations"] = false;
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -16,6 +17,12 @@
                 </div>
                 <div class="form-group mb-2">
                     <input type="password" placeholder="Contraseña" id="password" class="form-control">
+                </div>
+                <div class="form-group mb-2 d-none" id="lenderBusinessIdContainer">
+                    <label></label>
+                    <select id="lenderBusinessId" class="form-control" name="lenderBusinessId">
+                        <option value="0" selected disabled>Selecciona un negocio...</option>
+                    </select>
                 </div>
                 <div class="text-center">
                     <button type="button" data-toggle="modal" data-target="#LoadingModal" id="signInBtn" class="btn btn-outline-success">Entrar</button>

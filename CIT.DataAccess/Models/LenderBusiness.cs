@@ -10,7 +10,7 @@ namespace CIT.DataAccess.Models
     {
         public LenderBusiness()
         {
-            Users = new HashSet<User>();
+            UsersLenderBusinesses = new HashSet<UsersLenderBusinesses>();
             Roles = new HashSet<Role>();
             Loans = new HashSet<Loan>();
             Logs = new HashSet<Log>();
@@ -25,7 +25,7 @@ namespace CIT.DataAccess.Models
         public string Photo { get; set; }
         public int EntityInfoId { get; set; }
 
-        public virtual ICollection<User> Users { get; set; }
+        public virtual ICollection<UsersLenderBusinesses> UsersLenderBusinesses { get; set; }
         public virtual ICollection<Role> Roles { get; set; }
         public virtual ICollection<Loan> Loans { get; set; }
         public virtual ICollection<Log> Logs { get; set; }

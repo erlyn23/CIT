@@ -39,8 +39,7 @@ namespace CIT.Presentation.Controllers
             {
 
                 int lenderBusinessId = await _tokenCreator.GetLenderBusinessId(Request);
-                user.LenderBusinessId = lenderBusinessId;
-                return Json(await _userService.RegisterUserAsync(user));
+                return Json(await _userService.RegisterUserAsync(user, lenderBusinessId));
             }
             else
                 return Json(ModelState.Values.Select(v => v.Errors.Select(e => e.ErrorMessage)).ToList());
@@ -58,7 +57,9 @@ namespace CIT.Presentation.Controllers
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpGet()]
+        [OperationFilter("Obtener")]
+        [ServiceFilter(typeof(AuthFilter))]
+        [HttpGet]
         public async Task<IActionResult> GetUsersByNameAsync(string name)
         {
             var lenderBusinessId = await _tokenCreator.GetLenderBusinessId(Request);
@@ -71,7 +72,8 @@ namespace CIT.Presentation.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateUserAsync([FromBody] UserDto user)
         {
-            return Json(await _userService.UpdateUserAsync(user));
+            var lenderBusinessId = await _tokenCreator.GetLenderBusinessId(Request);
+            return Json(await _userService.UpdateUserAsync(user, lenderBusinessId));
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]

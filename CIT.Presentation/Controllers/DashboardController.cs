@@ -19,7 +19,9 @@ namespace CIT.Presentation.Controllers
     {
         private readonly IRoleService _roleService;
 
-        public DashboardController(IRoleService roleService, TokenCreator tokenCreator, IRolePermissionService rolePermissionService) : base(rolePermissionService, tokenCreator)
+        public DashboardController(IRoleService roleService, 
+            TokenCreator tokenCreator, 
+            IRolePermissionService rolePermissionService) : base(rolePermissionService, tokenCreator)
         {
             _roleService = roleService;
         }

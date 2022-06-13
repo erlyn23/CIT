@@ -10,7 +10,7 @@ namespace CIT.BusinessLogic.Contracts
     public interface IPaymentService
     {
         Task<List<PaymentDto>> GetPaymentsAsync(int lenderBusinessId);
-        Task<List<PaymentDto>> GetPaymentsByUserIdAsync(int userId);
+        Task<List<PaymentDto>> GetPaymentsByUserIdAsync(int lenderBusinessId, int userId);
         Task<PaymentDto> GetPaymentAsync(int paymentId);
         Task<PaymentDto> AddPaymentAsync(PaymentDto payment, int lenderBusinessId);
         Task<PaymentDto> UpdatePaymentAsync(PaymentDto payment);

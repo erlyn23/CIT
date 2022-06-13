@@ -37,6 +37,7 @@ namespace CIT.DataAccess.DbContexts
         public virtual DbSet<LenderBusiness> LenderBusinesses { get; set; }
         public virtual DbSet<LenderAddress> LenderAddresses { get; set; }
         public virtual DbSet<LenderRole> LenderRoles { get; set; }
+        public virtual DbSet<UsersLenderBusinesses> UsersLenderBusinesses { get; set; }
         public virtual DbSet<Login> Logins { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -419,8 +420,6 @@ namespace CIT.DataAccess.DbContexts
 
                 entity.HasIndex(e => e.EntityInfoId, "Fk_Users_EntitiesInfo");
 
-                entity.HasIndex(e => e.LenderBusinessId, "Fk_Users_LenderBusiness");
-
                 entity.HasIndex(e => e.IdentificationDocument, "IdentificationDocument")
                     .IsUnique();
 
@@ -465,12 +464,6 @@ namespace CIT.DataAccess.DbContexts
                     .HasForeignKey(d => d.EntityInfoId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("Fk_Users_EntitiesInfo");
-
-                entity.HasOne(d => d.LenderBusiness)
-                      .WithMany(p => p.Users)
-                      .HasForeignKey(d => d.LenderBusinessId)
-                      .OnDelete(DeleteBehavior.ClientSetNull)
-                      .HasConstraintName("Fk_Users_LenderBusiness");
             });
 
             modelBuilder.Entity<Useraddress>(entity =>
@@ -654,6 +647,27 @@ namespace CIT.DataAccess.DbContexts
                 .WithOne(d => d.VehicleAssignment)
                 .HasForeignKey<VehicleAssignment>(d => d.VehicleId)
                 .HasConstraintName("Fk_VehicleAssignments_Vehicles");
+            });
+
+            modelBuilder.Entity<UsersLenderBusinesses>(entity =>
+            {
+                entity.ToTable("userslenderbusinesses");
+
+                entity.Property(e => e.Id).HasColumnType("int").UseMySqlIdentityColumn();
+
+                entity.HasIndex(e => e.UserId, "Fk_UsersLenderBusinesses_Users");
+
+                entity.HasIndex(e => e.LenderBusinessId, "Fk_UsersLenderBusinesses_LenderBusiness");
+
+                entity.HasOne(d => d.User)
+                .WithMany(d => d.UsersLenderBusinesses)
+                .HasForeignKey(d => d.UserId)
+                .HasConstraintName("Fk_UsersLenderBusinesses_Users");
+
+                entity.HasOne(d => d.LenderBusiness)
+                .WithMany(d => d.UsersLenderBusinesses)
+                .HasForeignKey(d => d.LenderBusinessId)
+                .HasConstraintName("Fk_UsersLenderBusinesses_LenderBusinesses");
             });
 
             OnModelCreatingPartial(modelBuilder);

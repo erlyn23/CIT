@@ -15,10 +15,33 @@ function getStartedSession() {
 getStartedSession();
 
 
+$("#password").on('keyup', function () {
+    doRequest({
+        url: '/Account/GetLenderBusinessByUser',
+        method: 'POST',
+        data: { email: $("#email").val(), password: $("#password").val(), lenderBusinessId: 0 },
+        headers: null,
+        successCallback: function (data) {
+            $("#lenderBusinessIdContainer").removeClass('d-none');
+            data.forEach(lenderBusiness => {
+                const option = document.createElement('option');
+                option.value = lenderBusiness.id;
+                option.text = lenderBusiness.businessName;
+                document.getElementById("lenderBusinessId").appendChild(option);
+            });
+        },
+        errorCallback: function (error) {
+            $("#lenderBusinessIdContainer").addClass('d-none');
+            $("#lenderBusinessId").html(`<option value="0" selected disabled>Selecciona un negocio...</option>`);
+        }
+    })
+});
+
 $("#signInBtn").on('click', function (e) {
     const authModel = {
         email: $("#email").val(),
-        password: $("#password").val()
+        password: $("#password").val(),
+        lenderBusinessId: $("#lenderBusinessId").val()
     };
 
     doRequest({

@@ -36,11 +36,10 @@ namespace CIT.Dtos.Requests
         [RegularExpression("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{6,20}$", ErrorMessage = "La confirmación de contraseña no es segura")]
         public string ConfirmPassword { get; set; }
         public string Photo { get; set; }
-        [Required(ErrorMessage = "Debes especificar el negocio al que pertence este usuario")]
-        public int LenderBusinessId { get; set; }
 
         public EntityInfoDto EntityInfo { get; set; }
         public UserRoleDto UserRole { get; set; }
+        public UsersLenderBusinessDto UserLenderBusiness { get; set; }
         public AddressDto Address { get; set; }
 
 

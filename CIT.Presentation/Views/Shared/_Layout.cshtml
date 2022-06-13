@@ -33,7 +33,11 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="~/js/Common/request.js"></script>
-    <script src="~/js/validations.js"></script>
+    @if(bool.Parse(ViewData["HasValidations"].ToString())) 
+    {
+        <script src="~/js/validations.js"></script>
+    }
+    
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>

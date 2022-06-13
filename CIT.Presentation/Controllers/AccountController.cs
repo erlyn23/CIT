@@ -15,7 +15,8 @@ namespace CIT.Presentation.Controllers
         private readonly ILenderBusinessService _lenderBusinessService;
         private readonly IAccountService _accountService;
 
-        public AccountController(ILenderBusinessService lenderBusinessService, IAccountService accountService)
+        public AccountController(ILenderBusinessService lenderBusinessService, 
+            IAccountService accountService)
         {
             _lenderBusinessService = lenderBusinessService;
             _accountService = accountService;
@@ -26,11 +27,25 @@ namespace CIT.Presentation.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> GetLenderBusinessByUserAsync([FromBody] Auth authModel)
+        {
+            try
+            {
+                var lenderBusinesses = await _accountService.GetLenderBusinessByUserAsync(authModel.Email, authModel.Password);
+                return Json(lenderBusinesses);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost]
         public async Task<IActionResult> Index([FromBody] Auth authModel)
         {
             try
             {
-                var userResponse = await _accountService.SignInAsync(authModel.Email, authModel.Password);
+                var userResponse = await _accountService.SignInAsync(authModel.Email, authModel.Password, authModel.LenderBusinessId);
                 return Json(userResponse);
             }
             catch(Exception ex)

@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace CIT.Dtos.Requests
 {
-    public class Auth
+    public class UsersLenderBusinessDto
     {
-        public string Email { get; set; }
-        public string Password { get; set; }
+        public int Id { get; set; }
+        public int UserId { get; set; }
         public int LenderBusinessId { get; set; }
     }
 }

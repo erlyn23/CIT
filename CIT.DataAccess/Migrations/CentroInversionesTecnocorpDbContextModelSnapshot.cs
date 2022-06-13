@@ -237,11 +237,16 @@ namespace CIT.DataAccess.Migrations
                     b.Property<decimal>("TotalLoan")
                         .HasColumnType("decimal(13,2)");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex(new[] { "EntityInfoId" }, "Fk_Loans_EntitiesInfo");
 
                     b.HasIndex(new[] { "LenderBusinessId" }, "Fk_Loans_LenderBusiness");
+
+                    b.HasIndex(new[] { "UserId" }, "Fk_Loans_Users");
 
                     b.HasIndex(new[] { "LoanName" }, "LoanName")
                         .IsUnique();
@@ -476,9 +481,6 @@ namespace CIT.DataAccess.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("varchar(30)");
 
-                    b.Property<int>("LenderBusinessId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(30)
@@ -506,8 +508,6 @@ namespace CIT.DataAccess.Migrations
                         .IsUnique();
 
                     b.HasIndex(new[] { "EntityInfoId" }, "Fk_Users_EntitiesInfo");
-
-                    b.HasIndex(new[] { "LenderBusinessId" }, "Fk_Users_LenderBusiness");
 
                     b.HasIndex(new[] { "IdentificationDocument" }, "IdentificationDocument")
                         .IsUnique();
@@ -572,6 +572,28 @@ namespace CIT.DataAccess.Migrations
                         .IsUnique();
 
                     b.ToTable("userroles");
+                });
+
+            modelBuilder.Entity("CIT.DataAccess.Models.UsersLenderBusinesses", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("LenderBusinessId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex(new[] { "LenderBusinessId" }, "Fk_UsersLenderBusinesses_LenderBusiness");
+
+                    b.HasIndex(new[] { "UserId" }, "Fk_UsersLenderBusinesses_Users");
+
+                    b.ToTable("userslenderbusinesses");
                 });
 
             modelBuilder.Entity("CIT.DataAccess.Models.Vehicle", b =>
@@ -740,9 +762,17 @@ namespace CIT.DataAccess.Migrations
                         .HasConstraintName("Fk_Loans_LenderBusiness")
                         .IsRequired();
 
+                    b.HasOne("CIT.DataAccess.Models.User", "User")
+                        .WithMany("Loans")
+                        .HasForeignKey("UserId")
+                        .HasConstraintName("Fk_Loans_Users")
+                        .IsRequired();
+
                     b.Navigation("EntityInfo");
 
                     b.Navigation("LenderBusiness");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("CIT.DataAccess.Models.Log", b =>
@@ -848,15 +878,7 @@ namespace CIT.DataAccess.Migrations
                         .HasConstraintName("Fk_Users_EntitiesInfo")
                         .IsRequired();
 
-                    b.HasOne("CIT.DataAccess.Models.LenderBusiness", "LenderBusiness")
-                        .WithMany("Users")
-                        .HasForeignKey("LenderBusinessId")
-                        .HasConstraintName("Fk_Users_LenderBusiness")
-                        .IsRequired();
-
                     b.Navigation("EntityInfo");
-
-                    b.Navigation("LenderBusiness");
                 });
 
             modelBuilder.Entity("CIT.DataAccess.Models.Useraddress", b =>
@@ -901,6 +923,27 @@ namespace CIT.DataAccess.Migrations
                     b.Navigation("EntityInfo");
 
                     b.Navigation("Role");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("CIT.DataAccess.Models.UsersLenderBusinesses", b =>
+                {
+                    b.HasOne("CIT.DataAccess.Models.LenderBusiness", "LenderBusiness")
+                        .WithMany("UsersLenderBusinesses")
+                        .HasForeignKey("LenderBusinessId")
+                        .HasConstraintName("Fk_UsersLenderBusinesses_LenderBusinesses")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CIT.DataAccess.Models.User", "User")
+                        .WithMany("UsersLenderBusinesses")
+                        .HasForeignKey("UserId")
+                        .HasConstraintName("Fk_UsersLenderBusinesses_Users")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("LenderBusiness");
 
                     b.Navigation("User");
                 });
@@ -985,7 +1028,7 @@ namespace CIT.DataAccess.Migrations
 
                     b.Navigation("Roles");
 
-                    b.Navigation("Users");
+                    b.Navigation("UsersLenderBusinesses");
 
                     b.Navigation("Vehicles");
                 });
@@ -1016,11 +1059,15 @@ namespace CIT.DataAccess.Migrations
 
             modelBuilder.Entity("CIT.DataAccess.Models.User", b =>
                 {
+                    b.Navigation("Loans");
+
                     b.Navigation("Payments");
 
                     b.Navigation("Useraddress");
 
                     b.Navigation("Userrole");
+
+                    b.Navigation("UsersLenderBusinesses");
 
                     b.Navigation("VehicleAssignment");
                 });

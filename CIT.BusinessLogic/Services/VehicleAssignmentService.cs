@@ -108,7 +108,7 @@ namespace CIT.BusinessLogic.Services
 
         public async Task<List<VehicleAssignmentDto>> GetVehiclesAssignmentsAsync(int lenderBusinessId)
         {
-            var vehicleAssignments = _mapper.Map<List<VehicleAssignmentDto>>(await _vehicleAssignmentRepository.GetVehicleAssignmentsByFilterWithRelationsAsync(v => v.Vehicle.LenderBusinessId == lenderBusinessId && v.User.LenderBusinessId == lenderBusinessId));
+            var vehicleAssignments = _mapper.Map<List<VehicleAssignmentDto>>(await _vehicleAssignmentRepository.GetVehicleAssignmentsByFilterWithRelationsAsync(v => v.Vehicle.LenderBusinessId == lenderBusinessId));
 
             return vehicleAssignments;
         }

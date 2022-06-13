@@ -4,9 +4,7 @@ using CIT.Presentation.Filters;
 using CIT.Tools;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,18 +12,19 @@ using System.Threading.Tasks;
 namespace CIT.Presentation.Controllers
 {
     [ServiceFilter(typeof(ExceptionFilter))]
-    [PageFilter("Prestamos")]
-    public class LoanController : BaseCITController
+    [PageFilter("Pagos")]
+    public class PayController : BaseCITController
     {
+        private readonly IPaymentService _paymentService;
         private readonly TokenCreator _tokenCreator;
-        private readonly ILoanService _loanService;
 
-        public LoanController(TokenCreator tokenCreator, IRolePermissionService rolePermissionService, ILoanService loanService) : base(rolePermissionService, tokenCreator)
+        public PayController(IPaymentService paymentService, 
+            TokenCreator tokenCreator, 
+            IRolePermissionService rolePermissionService) : base(rolePermissionService, tokenCreator)
         {
+            _paymentService = paymentService;
             _tokenCreator = tokenCreator;
-            _loanService = loanService;
         }
-
         public IActionResult Index()
         {
             return View();
@@ -35,65 +34,42 @@ namespace CIT.Presentation.Controllers
         [OperationFilter("Obtener")]
         [ServiceFilter(typeof(AuthFilter))]
         [HttpGet]
-        public async Task<IActionResult> GetLoansAsync()
-        {
-            var loans = await GetUserLoansAsync();
-            return Json(loans);
-        }
-
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [OperationFilter("Obtener")]
-        [ServiceFilter(typeof(AuthFilter))]
-        [HttpGet]
-        public async Task<IActionResult> GetLoansByNameAsync(string loanName)
-        {
-            var loans = await GetUserLoansAsync();
-
-            if (!string.IsNullOrEmpty(loanName))
-            {
-                var filteredLoans = loans.Where(l => l.LoanName.ToLower().Contains(loanName.ToLower()));
-                return Json(filteredLoans);
-            }
-
-            return BadRequest("Debes escribir el nombre del préstamo");
-        }
-
-        private async Task<List<LoanDto>> GetUserLoansAsync()
+        public async Task<IActionResult> GetPaymentsAsync()
         {
             var userId = _tokenCreator.GetUserId(Request);
             var lenderBusinessId = await _tokenCreator.GetLenderBusinessId(Request);
-            List<LoanDto> loans;
+            List<PaymentDto> payments;
 
             if (userId == 0)
-                loans = await _loanService.GetLoansByLenderBusinessAsync(lenderBusinessId);
+                payments = await _paymentService.GetPaymentsAsync(lenderBusinessId);
             else
-                loans = await _loanService.GetLoansByUserAsync(lenderBusinessId, userId);
+                payments = await _paymentService.GetPaymentsByUserIdAsync(lenderBusinessId, userId);
 
-            return loans;
+
+            return Json(payments);
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [OperationFilter("Agregar")]
         [ServiceFilter(typeof(AuthFilter))]
         [HttpPost]
-        public async Task<IActionResult> AddLoanAsync([FromBody] LoanDto loan)
+        public async Task<IActionResult> AddPaymentAsync([FromBody] PaymentDto payment)
         {
             var lenderBusinessId = await _tokenCreator.GetLenderBusinessId(Request);
             if (ModelState.IsValid)
-                return Json(await _loanService.AddLoanAsync(loan,lenderBusinessId));
-
+                return Json(await _paymentService.AddPaymentAsync(payment, lenderBusinessId));
+            
             return Json(ModelState.Values.Select(v => v.Errors.Select(e => e.ErrorMessage)).ToList());
         }
-
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [OperationFilter("Modificar")]
         [ServiceFilter(typeof(AuthFilter))]
         [HttpPost]
-        public async Task<IActionResult> UpdateLoanAsync([FromBody] LoanDto loan)
+        public async Task<IActionResult> UpdatePaymentAsync([FromBody] PaymentDto payment)
         {
             if (ModelState.IsValid)
-                return Json(await _loanService.UpdateLoanAsync(loan));
+                return Json(await _paymentService.UpdatePaymentAsync(payment));
 
             return Json(ModelState.Values.Select(v => v.Errors.Select(e => e.ErrorMessage)).ToList());
         }
@@ -102,10 +78,10 @@ namespace CIT.Presentation.Controllers
         [OperationFilter("Eliminar")]
         [ServiceFilter(typeof(AuthFilter))]
         [HttpGet]
-        public async Task<IActionResult> DeleteLoanAsync(int id)
+        public async Task<IActionResult> DeletePaymentAsync(int id)
         {
-            await _loanService.DeleteLoanAsync(id);
-            return Json("Préstamo eliminado correctamente");
+            await _paymentService.DeletePaymentAsync(id);
+            return Json("Pago eliminado correctamente");
         }
     }
 }

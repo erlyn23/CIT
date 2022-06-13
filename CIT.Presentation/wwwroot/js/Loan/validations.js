@@ -177,14 +177,14 @@ const setInvalid = function (element, validationId, validationHtml) {
     element.removeClass('is-valid');
     element.addClass('is-invalid');
     $(validationId).html(validationHtml);
-    $("#saveUserBtn").prop('disabled', true);
+    $("#saveLoanBtn").prop('disabled', true);
 }
 
 const setValid = function (element, validationId) {
     element.removeClass('is-invalid');
     element.addClass('is-valid');
     $(validationId).html("");
-    $("#saveUserBtn").prop('disabled', false);
+    $("#saveLoanBtn").prop('disabled', false);
 }
 
 const validateOnClick = function () {

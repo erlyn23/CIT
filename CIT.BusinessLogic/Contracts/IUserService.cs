@@ -10,8 +10,8 @@ namespace CIT.BusinessLogic.Contracts
 {
     public interface IUserService
     {
-        Task<AccountResponse> RegisterUserAsync(UserDto userDto);
-        Task<UserDto> UpdateUserAsync(UserDto user);
+        Task<AccountResponse> RegisterUserAsync(UserDto userDto, int lenderBusinessId);
+        Task<UserDto> UpdateUserAsync(UserDto user, int lenderBusinessId);
         Task<List<UserDto>> GetUsersAsync(int lenderBusinessId);
         Task<List<UserDto>> GetUsersByNameAsync(int lenderBusinessId, string userFullName);
         Task<UserDto> GetUserAsync(int userId);
