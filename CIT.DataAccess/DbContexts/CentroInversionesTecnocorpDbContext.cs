@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using CIT.DataAccess.Models;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 
 #nullable disable
 
@@ -36,7 +38,6 @@ namespace CIT.DataAccess.DbContexts
         public virtual DbSet<LenderAddress> LenderAddresses { get; set; }
         public virtual DbSet<LenderRole> LenderRoles { get; set; }
         public virtual DbSet<Login> Logins { get; set; }
-
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -26,6 +26,7 @@ namespace CIT.Dtos.Profiles
             CreateMap<VehicleAssignmentDto, VehicleAssignment>().ReverseMap();
             CreateMap<VehicleDto, Vehicle>().ReverseMap();
             CreateMap<LoanDto, Loan>().ReverseMap();
+            CreateMap<Payment, PaymentDto>().ReverseMap();
         }
     }
 }

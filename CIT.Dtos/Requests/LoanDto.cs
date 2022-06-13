@@ -38,6 +38,8 @@ namespace CIT.Dtos.Requests
         public decimal MensualPay { get; set; }
         public int LenderBusinessId { get; set; }
         public int EntityInfoId { get; set; }
+        [Required(ErrorMessage = "El usuario debe ser obligatorio")]
+        [NotNegativeOrZeroValidation(ErrorMessage = "El usuario no puede ser 0 o negativo")]
         public int UserId { get; set; }
 
         public LenderBusinessDto LenderBusiness { get; set; }

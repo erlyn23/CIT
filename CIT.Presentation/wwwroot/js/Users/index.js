@@ -1,4 +1,5 @@
-﻿getUserPages('usuariosLink');
+﻿/// <reference path="../validations.js" />
+getUserPages('usuariosLink');
 getUserPermissions(2);
 let map;
 let marker = new mapboxgl.Marker();
@@ -100,7 +101,7 @@ const getModalData = function (roleId = 0) {
             for (let key in data)
                 countries.push({
                     key: key,
-                    name: data[key].normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                    name: data[key]
                 });
         },
         errorCallback: function (error) {
@@ -416,7 +417,12 @@ const onSuccessSaveUser = function (data) {
 
         $("#CreteUserModal").modal('hide');
         $("#errorMessages").html("");
-        let successMsg = `<p class="text-success"><i class="fas fa-check-circle"></i>&nbsp; Usuario guardado correctamente</p>`;
+        let successMsg = `<p class="text-success"><i class="fas fa-check-circle"></i>&nbsp; Usuario guardado correctamente. Siga las instrucciones a continuación:</p>
+                          <ol type="1">
+                               <li>Entrar al correo que se registró en el formulario.</li>
+                               <li>Pulsar en el enlace de verificación que ha enviado el sistema (revisar también la carpeta de SPAM o correo no deseado).</li>
+                               <li>Una vez activada la cuenta, iniciar sesión en el sistema.</li>
+                          </ol>`;
         $("#errorMessages").append(successMsg);
 
         setTimeout(function () {

@@ -16,11 +16,17 @@ namespace CIT.BusinessLogic.Services
         private readonly ILoanRepository _loanRepository;
         private readonly IMapper _mapper;
         private readonly IEntitiesInfoService _entitiesInfoService;
-        public LoanService(ILoanRepository loanRepository, IMapper mapper, IEntitiesInfoService entitiesInfoService)
+        private readonly IPaymentService _paymentService;
+
+        public LoanService(ILoanRepository loanRepository, 
+            IMapper mapper, 
+            IEntitiesInfoService entitiesInfoService, 
+            IPaymentService paymentService)
         {
             _loanRepository = loanRepository;
             _mapper = mapper;
             _entitiesInfoService = entitiesInfoService;
+            _paymentService = paymentService;
         }
 
         public async Task<LoanDto> AddLoanAsync(LoanDto loanDto, int lenderBusinessId)
@@ -82,9 +88,16 @@ namespace CIT.BusinessLogic.Services
             return loanInDb != null;
         }
 
-        public Task DeleteLoanAsync(int loanId)
+        public async Task DeleteLoanAsync(int loanId)
         {
-            throw new NotImplementedException();
+            var loan = await GetloanByIdAsync(loanId);
+
+            if(loan != null)
+            {
+                var loanEntity = _mapper.Map<Loan>(loan);
+                await _entitiesInfoService.UpdateEntityInfo(loanEntity.EntityInfoId, 0);
+                await _paymentService.DeletePaymentsByLoanAsync(loanId);
+            }
         }
 
         public async Task<LoanDto> GetloanByIdAsync(int loanId)

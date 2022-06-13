@@ -75,5 +75,15 @@ namespace CIT.Presentation.Controllers
 
             return Json(ModelState.Values.Select(v => v.Errors.Select(e => e.ErrorMessage)).ToList());
         }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [OperationFilter("Eliminar")]
+        [ServiceFilter(typeof(AuthFilter))]
+        [HttpGet]
+        public async Task<IActionResult> DeleteLoanAsync(int id)
+        {
+            await _loanService.DeleteLoanAsync(id);
+            return Json("Préstamo eliminado correctamente");
+        }
     }
 }
