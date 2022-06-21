@@ -1,1 +1,48 @@
-﻿
+﻿<div class="modal fade" id="CreatePayModal" tabindex="-1" aria-labelledby="CreatePayModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createPayTitle">Realizar Nuevo Pago</h5>
+                <button type="button" id="closePayFormBtn" class="btn-close" data-dismiss="modal" aria-label="Close">
+                    <span></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <input type="hidden" id="payId" />
+                    <div class="row mb-2">
+                        @await Html.PartialAsync("~/Views/Partials/Common/LoanSourceContainer.cshtml")
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-6">
+                            <label>Fecha de pago:</label>
+                            <input type="date" id="date" class="form-control" />
+                            <div id="dateValidation" class="invalid-feedback">
+
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label>Monto:</label>
+                            <input type="number" id="pay" name="pay" placeholder="Monto a Pagar" class="form-control" />
+                            <div id="payValidation" class="invalid-feedback">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-6 offset-md-3">
+                            <button type="button" id="savePayBtn" class="btn btn-success">
+                                <i class="fas fa-check"></i>
+                                <span>Registrar pago</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="text-center text-danger" id="finalValidation">
+
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>

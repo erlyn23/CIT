@@ -37,29 +37,6 @@ namespace CIT.Presentation.Controllers
         [HttpGet]
         public async Task<IActionResult> GetLoansAsync()
         {
-            var loans = await GetUserLoansAsync();
-            return Json(loans);
-        }
-
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [OperationFilter("Obtener")]
-        [ServiceFilter(typeof(AuthFilter))]
-        [HttpGet]
-        public async Task<IActionResult> GetLoansByNameAsync(string loanName)
-        {
-            var loans = await GetUserLoansAsync();
-
-            if (!string.IsNullOrEmpty(loanName))
-            {
-                var filteredLoans = loans.Where(l => l.LoanName.ToLower().Contains(loanName.ToLower()));
-                return Json(filteredLoans);
-            }
-
-            return BadRequest("Debes escribir el nombre del préstamo");
-        }
-
-        private async Task<List<LoanDto>> GetUserLoansAsync()
-        {
             var userId = _tokenCreator.GetUserId(Request);
             var lenderBusinessId = await _tokenCreator.GetLenderBusinessId(Request);
             List<LoanDto> loans;
@@ -69,7 +46,23 @@ namespace CIT.Presentation.Controllers
             else
                 loans = await _loanService.GetLoansByUserAsync(lenderBusinessId, userId);
 
-            return loans;
+            return Json(loans);
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpGet]
+        public async Task<IActionResult> GetLoansByNameAsync(string loanName)
+        {
+            var userId = _tokenCreator.GetUserId(Request);
+            var lenderBusinessId = await _tokenCreator.GetLenderBusinessId(Request);
+
+            if (!string.IsNullOrEmpty(loanName))
+            {
+                var loans = await _loanService.GetLoansByNameAsync(lenderBusinessId, loanName, userId);
+                return Json(loans);
+            }
+
+            return BadRequest("Debes escribir el nombre del préstamo");
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]

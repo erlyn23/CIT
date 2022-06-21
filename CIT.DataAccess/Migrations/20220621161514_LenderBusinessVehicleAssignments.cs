@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace CIT.DataAccess.Migrations
 {
-    public partial class UsersLenderBusinessMigration : Migration
+    public partial class LenderBusinessVehicleAssignments : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -498,11 +498,18 @@ namespace CIT.DataAccess.Migrations
                     VehicleId = table.Column<int>(type: "int", nullable: false),
                     AssignmentDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     Comment = table.Column<string>(type: "varchar(150)", maxLength: 150, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    LenderBusinessId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_vehicleassignments", x => x.Id);
+                    table.ForeignKey(
+                        name: "Fk_VehicleAssignments_LenderBusiness",
+                        column: x => x.LenderBusinessId,
+                        principalTable: "lenderbusinesses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "Fk_VehicleAssignments_Users",
                         column: x => x.UserId,
@@ -757,6 +764,11 @@ namespace CIT.DataAccess.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "Fk_VehicleAssignments_LenderBusiness",
+                table: "vehicleassignments",
+                column: "LenderBusinessId");
+
+            migrationBuilder.CreateIndex(
                 name: "Fk_VehicleAssignments_Users",
                 table: "vehicleassignments",
                 column: "UserId");
@@ -765,12 +777,6 @@ namespace CIT.DataAccess.Migrations
                 name: "Fk_VehicleAssignments_Vehicles",
                 table: "vehicleassignments",
                 column: "VehicleId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_vehicleassignments_UserId",
-                table: "vehicleassignments",
-                column: "UserId",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_vehicleassignments_VehicleId",

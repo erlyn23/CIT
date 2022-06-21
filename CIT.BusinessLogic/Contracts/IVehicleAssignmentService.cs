@@ -11,6 +11,7 @@ namespace CIT.BusinessLogic.Contracts
     {
         Task<List<VehicleAssignmentDto>> GetVehiclesAssignmentsAsync(int lenderBusinessId);
         Task<VehicleAssignmentDto> GetVehicleAssignmentAsync(int vehicleAssignmentId);
+        Task<VehicleAssignmentDto> GetVehicleAssignmentByUserAsync(int lenderBusinessId, int userId);
         Task<VehicleAssignmentDto> AssignVehicleAsync(VehicleAssignmentDto vehicleAssignment);
         Task<VehicleAssignmentDto> UpdateAssignmentAsync(VehicleAssignmentDto vehicleAssignment);
         Task DeleteAssignmentAsync(int assignmentId);

@@ -1,1 +1,48 @@
-﻿
+﻿<div class="modal fade" id="PayModalDetail" tabindex="-1" aria-labelledby="PayModalDetail" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title" id="payDetailTitle">Detalles del pago</h6>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">
+                    <span></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-2">
+                    <div class="col-md-6">
+                        <h6>Código del pago: </h6>
+                        <p id="payIdView"></p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Código del préstamo:</h6>
+                        <p id="loanIdView"></p>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-6">
+                        <h6>Nombre del préstamo:</h6>
+                        <p id="loanNameView"></p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Fecha de pago:</h6>
+                        <p id="dateView"></p>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-6">
+                        <h6>Pago realizado:</h6>
+                        <p id="payView"></p>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-6 offset-md-3">
+                        <button type="button" data-dismiss="modal" class="btn btn-danger">
+                            <i class="fas fa-times"></i>
+                            <span>Cerrar</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -32,7 +32,12 @@ namespace CIT.Presentation.Controllers
         public async Task<IActionResult> GetVehicleAssignmentsAsync()
         {
             var lenderBusinessId = await _tokenCreator.GetLenderBusinessId(Request);
-            return Json(await _vehicleAssignmentService.GetVehiclesAssignmentsAsync(lenderBusinessId));
+            var userId = _tokenCreator.GetUserId(Request);
+
+            if (userId == 0)
+                return Json(await _vehicleAssignmentService.GetVehiclesAssignmentsAsync(lenderBusinessId));
+            else
+                return Json(await _vehicleAssignmentService.GetVehicleAssignmentByUserAsync(lenderBusinessId, userId));
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -41,6 +46,7 @@ namespace CIT.Presentation.Controllers
         [HttpPost]
         public async Task<IActionResult> AssignVehicleAsync([FromBody] VehicleAssignmentDto vehicleAssignment)
         {
+            vehicleAssignment.LenderBusinessId = await _tokenCreator.GetLenderBusinessId(Request);
             if (ModelState.IsValid)
                 return Json(await _vehicleAssignmentService.AssignVehicleAsync(vehicleAssignment));
 
@@ -53,6 +59,7 @@ namespace CIT.Presentation.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateAssignmentAsync([FromBody] VehicleAssignmentDto vehicleAssignment)
         {
+            vehicleAssignment.LenderBusinessId = await _tokenCreator.GetLenderBusinessId(Request);
             if (ModelState.IsValid)
                 return Json(await _vehicleAssignmentService.UpdateAssignmentAsync(vehicleAssignment));
 

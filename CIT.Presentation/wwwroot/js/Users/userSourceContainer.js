@@ -29,7 +29,7 @@ formUserFullNameFields.userFullName.on('keyup', function (e) {
             url: `/Users/GetUsersByName/?name=${formUserFullNameFields.userFullName.val()}`,
             method: 'GET',
             data: null,
-            headers: appHeaders,
+            headers: { ...appHeaders, 'Page': 'Usuarios', 'Operation': 'Obtener' },
             successCallback: function (data) {
                 $("#userSource").html("");
                 if (data) {

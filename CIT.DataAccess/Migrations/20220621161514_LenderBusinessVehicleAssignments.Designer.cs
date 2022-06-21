@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CIT.DataAccess.Migrations
 {
     [DbContext(typeof(CentroInversionesTecnocorpDbContext))]
-    [Migration("20220613212211_UsersLenderBusinessMigration")]
-    partial class UsersLenderBusinessMigration
+    [Migration("20220621161514_LenderBusinessVehicleAssignments")]
+    partial class LenderBusinessVehicleAssignments
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -669,6 +669,9 @@ namespace CIT.DataAccess.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("varchar(150)");
 
+                    b.Property<int>("LenderBusinessId")
+                        .HasColumnType("int");
+
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
@@ -677,11 +680,10 @@ namespace CIT.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId")
-                        .IsUnique();
-
                     b.HasIndex("VehicleId")
                         .IsUnique();
+
+                    b.HasIndex(new[] { "LenderBusinessId" }, "Fk_VehicleAssignments_LenderBusiness");
 
                     b.HasIndex(new[] { "UserId" }, "Fk_VehicleAssignments_Users");
 
@@ -971,9 +973,16 @@ namespace CIT.DataAccess.Migrations
 
             modelBuilder.Entity("CIT.DataAccess.Models.VehicleAssignment", b =>
                 {
+                    b.HasOne("CIT.DataAccess.Models.LenderBusiness", "LenderBusiness")
+                        .WithMany("VehicleAssignments")
+                        .HasForeignKey("LenderBusinessId")
+                        .HasConstraintName("Fk_VehicleAssignments_LenderBusiness")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("CIT.DataAccess.Models.User", "User")
-                        .WithOne("VehicleAssignment")
-                        .HasForeignKey("CIT.DataAccess.Models.VehicleAssignment", "UserId")
+                        .WithMany("VehicleAssignments")
+                        .HasForeignKey("UserId")
                         .HasConstraintName("Fk_VehicleAssignments_Users")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -984,6 +993,8 @@ namespace CIT.DataAccess.Migrations
                         .HasConstraintName("Fk_VehicleAssignments_Vehicles")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("LenderBusiness");
 
                     b.Navigation("User");
 
@@ -1032,6 +1043,8 @@ namespace CIT.DataAccess.Migrations
 
                     b.Navigation("UsersLenderBusinesses");
 
+                    b.Navigation("VehicleAssignments");
+
                     b.Navigation("Vehicles");
                 });
 
@@ -1071,7 +1084,7 @@ namespace CIT.DataAccess.Migrations
 
                     b.Navigation("UsersLenderBusinesses");
 
-                    b.Navigation("VehicleAssignment");
+                    b.Navigation("VehicleAssignments");
                 });
 
             modelBuilder.Entity("CIT.DataAccess.Models.Vehicle", b =>

@@ -1,23 +1,24 @@
 ﻿getUserPages('pagosLink');
 getUserPermissions(5);
 
-const loanHeaders = {
+const payHeaders = {
     ...appHeaders,
     'Page': 'Pagos'
 };
 
-const getLoans = function () {
+const getPays = function () {
+    document.getElementById('date').valueAsDate = new Date();
     doRequest({
         url: '/Pay/GetPayments',
         method: 'GET',
         data: null,
-        headers: { ...loanHeaders, 'Operation': 'Obtener' },
-        successCallback: function (data) { onGetLoans(data); },
+        headers: { ...payHeaders, 'Operation': 'Obtener' },
+        successCallback: function (data) { onGetPays(data); },
         errorCallback: function (err) { onErrorHandler(err) }
     });
 }
 
-const onGetLoans = function (data) {
+const onGetPays = function (data) {
     if (!hasAdd) {
         $("#openCreatePay").remove();
         $("#CreatePayModal").remove();
@@ -29,9 +30,9 @@ const onGetLoans = function (data) {
             callback: function (data, pagination) {
                 const html = templatePaysList(data);
                 $("#paysList").html(html);
-                setEditLoanEvent(data);
+                setEditPayEvent(data);
                 $("#loadingPays").css({ 'display': 'none' });
-                $("#loansTable").removeClass('d-none');
+                $("#paysTable").removeClass('d-none');
             }
         });
     }
@@ -42,7 +43,7 @@ const templatePaysList = (pays) => {
     const tBody = $("#paysList");
     tBody.html("");
     let html = "";
-    loans.forEach(pay => {
+    pays.forEach(pay => {
         const payDate = new Date(pay.date);
         const payDateView = `${payDate.getDate()}/${payDate.getMonth() + 1}/${payDate.getFullYear()}`;
 
@@ -64,12 +65,10 @@ const setPayData = function (pay) {
     $("#createPayTitle").text("Editar pago");
 
     $("#payId").val(pay.id);
-
     $("#loanId").val(pay.loanId);
-    $("#loanId").attr('disabled', true);
 
-    $("#loanName").val(pay.loan.loanName);
-    $("#loanName").attr('disabled', true);
+    $("#loanNameFilter").val(pay.loan.loanName);
+    $("#loanNameFilter").attr('disabled', true);
 
     $("#userId").val(pay.userId);
     $("#userId").attr('disabled', true);
@@ -77,28 +76,21 @@ const setPayData = function (pay) {
     document.getElementById("date").valueAsDate = new Date(pay.date);
     $("#pay").val(pay.pay);
 
-    $("#CreateLoanModal").modal('show');
+    $("#CreatePayModal").modal('show');
 }
 
-const setPayDetailData = function (loan) {
-    //const startDate = new Date(loan.startDate);
-    //const startDateView = `${startDate.getDate()}/${startDate.getMonth() + 1}/${startDate.getFullYear()}`;
+const setPayDetailData = function (pay) {
+    const payDate = new Date(pay.date);
+    const payDateView = `${payDate.getDate()}/${payDate.getMonth() + 1}/${payDate.getFullYear()}`;
 
-    //const endDate = new Date(loan.endDate);
-    //const endDateView = `${endDate.getDate()}/${endDate.getMonth() + 1}/${endDate.getFullYear()}`;
-
-
-    //$("#loanIdView").text(loan.id);
-    //$("#duesQuantityView").text(loan.duesQuantity);
-    //$("#totalLoanView").text(loan.totalLoan);
-    //$("#startDateView").text(startDateView);
-    //$("#endDateView").text(endDateView);
-    //$("#payDayView").text(loan.payDay);
-    //$(`#interestRateView`).text(`${loan.interestRate * 100}%`);
-    //$("#mensualPayView").text(loan.mensualPay);
+    $("#payIdView").text(pay.id);
+    $("#loanIdView").text(pay.loan.id);
+    $("#loanNameView").text(pay.loan.loanName);
+    $("#dateView").text(payDateView);
+    $("#payView").text(pay.pay);
 
 
-    $("#LoanModalDetail").modal('show');
+    $("#PayModalDetail").modal('show');
 }
 
 const setEditPayEvent = function (payments) {
@@ -125,7 +117,7 @@ const setEditPayEvent = function (payments) {
     });
 }
 
-$("#savePaymentBtn").on('click', function () {
+$("#savePayBtn").on('click', function () {
     if (!validateOnClick()) {
         $("#savePaymentBtn > span").text("Enviando datos, por favor espere...");
         $("#savePaymentBtn").prop('disabled', true);
@@ -140,14 +132,14 @@ $("#savePaymentBtn").on('click', function () {
             newPay.id = $("#payId").val();
 
         let url = ($("#payId").val() !== "") ? '/Pay/UpdatePayment' : '/Pay/AddPayment';
-        let operation = ($("#loanId").val() !== "") ? 'Modificar' : 'Agregar';
+        let operation = ($("#payId").val() !== "") ? 'Modificar' : 'Agregar';
         doRequest({
             url: url,
             method: 'POST',
-            data: newLoan,
-            headers: { ...loanHeaders, 'Operation': operation },
+            data: newPay,
+            headers: { ...payHeaders, 'Operation': operation },
             successCallback: function (data) {
-                onSuccessSaveLoan(data);
+                onSuccessSavePayment(data);
             },
             errorCallback: function (err) {
                 onError(err);
@@ -157,15 +149,15 @@ $("#savePaymentBtn").on('click', function () {
 });
 
 
-const onSuccessSaveLoan = function (data) {
-    $("#saveLoanBtn > span").text("Guardar préstamo");
-    $("#saveLoanBtn").prop('disabled', false);
+const onSuccessSavePayment = function (data) {
+    $("#savePayBtn > span").text("Guardar pago");
+    $("#savePayBtn").prop('disabled', false);
     if (Array.isArray(data)) {
         $("#errorMessages").html("");
         for (let error of data) {
             let errorMsg = `<p class="text-danger"><i class="fas fa-exclamation-circle"></i>&nbsp; ${error}</p>`;
             $("#errorMessages").append(errorMsg);
-            $("#CreateLoanModal").modal('hide');
+            $("#CreatePayModal").modal('hide');
 
             setTimeout(function () {
                 $("#ErrorMessagesModal").modal('show');
@@ -177,24 +169,24 @@ const onSuccessSaveLoan = function (data) {
             formFields[field].removeClass('is-valid');
         }
         $("#errorMessages").html("");
-        let successMsg = `<p class="text-success"><i class="fas fa-check-circle"></i>&nbsp; Préstamo guardado correctamente</p>`;
+        let successMsg = `<p class="text-success"><i class="fas fa-check-circle"></i>&nbsp; Pago guardado correctamente</p>`;
         $("#errorMessages").append(successMsg);
-        $("#CreateLoanModal").modal('hide');
+        $("#CreatePayModal").modal('hide');
 
         setTimeout(function () {
             $("#ErrorMessagesModal").modal('show');
         }, 1000);
-        getLoans();
+        getPays();
     }
 }
 
 const onError = function (err) {
-    $("#saveLoanBtn > span").text("Guardar préstamo");
-    $("#saveLoanBtn").prop('disabled', false);
+    $("#savePayBtn > span").text("Guardar pago");
+    $("#savePayBtn").prop('disabled', false);
     $("#errorMessages").html("");
     let errorMsg = `<p class="text-danger"><i class="fas fa-exclamation-circle"></i>${err.responseText}</p>`;
     $("#errorMessages").append(errorMsg);
-    $("#CreateLoanModal").modal('hide');
+    $("#CreatePayModal").modal('hide');
 
     setTimeout(function () {
         $("#ErrorMessagesModal").modal('show');
@@ -202,13 +194,13 @@ const onError = function (err) {
 }
 
 const onErrorHandler = function (err) {
-    $("#loadingLoans").addClass("d-none");
+    $("#loadingPays").addClass("d-none");
     $("#errorMessage").removeClass("d-none");
-    $("#errorMessage").html("<p>Ha ocurrido un error al obtener préstamos: " + err.responseText + "</p>")
+    $("#errorMessage").html("<p>Ha ocurrido un error al obtener los pagos: " + err.responseText + "</p>")
 }
 
-$("#closeLoanFormBtn").on('click', function () {
+$("#closePayFormBtn").on('click', function () {
     $("form").eq(0).trigger('reset');
 });
 
-getLoans();
+getPays();

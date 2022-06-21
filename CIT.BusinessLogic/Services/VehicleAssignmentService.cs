@@ -3,6 +3,7 @@ using CIT.BusinessLogic.Contracts;
 using CIT.DataAccess.Contracts;
 using CIT.DataAccess.Models;
 using CIT.Dtos.Requests;
+using CIT.Dtos.Validations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,7 +27,12 @@ namespace CIT.BusinessLogic.Services
 
         public async Task<VehicleAssignmentDto> AssignVehicleAsync(VehicleAssignmentDto vehicleAssignment)
         {
-            var isVehicleAssignedTo = await ValidateIfVehicleIsAssignedTo(vehicleAssignment.UserId, vehicleAssignment.VehicleId);
+            var isVehicleAssignedTo = await ValidateIfVehicleIsAssignedTo(new VehicleAssignmentValidateDto() 
+            {
+                UserId = vehicleAssignment.UserId,
+                VehicleId = vehicleAssignment.VehicleId,
+                LenderBusinessId = vehicleAssignment.LenderBusinessId
+            });
 
             if (!isVehicleAssignedTo)
             {
@@ -44,7 +50,13 @@ namespace CIT.BusinessLogic.Services
 
         public async Task<VehicleAssignmentDto> UpdateAssignmentAsync(VehicleAssignmentDto vehicleAssignment)
         {
-            var isVehicleAssigned = await ValidateIfVehicleIsAssignedTo(vehicleAssignment.UserId, vehicleAssignment.VehicleId, vehicleAssignment.Id);
+            var isVehicleAssigned = await ValidateIfVehicleIsAssignedTo(new VehicleAssignmentValidateDto()
+            {
+                UserId = vehicleAssignment.UserId,
+                VehicleId = vehicleAssignment.VehicleId,
+                LenderBusinessId = vehicleAssignment.LenderBusinessId,
+                VehicleAssignmentId = vehicleAssignment.Id
+            });
 
             if (!isVehicleAssigned)
             {
@@ -64,25 +76,19 @@ namespace CIT.BusinessLogic.Services
             throw new Exception(VEHICLE_ASSIGNED_ERROR);
         }
 
-        private async Task<bool> ValidateIfVehicleIsAssignedTo(int userId, int vehicleId, int assignmentId = 0)
+        private async Task<bool> ValidateIfVehicleIsAssignedTo(VehicleAssignmentValidateDto validate)
         {
-            var assignmentInDbByVehicle = await _vehicleAssignmentRepository.FirstOrDefaultAsync(v => v.VehicleId == vehicleId);
-            var assignmentInDbByUser = await _vehicleAssignmentRepository.FirstOrDefaultAsync(v => v.UserId == userId);
-
-            if(assignmentId != 0)
+            var assignmentInDbByVehicle = await _vehicleAssignmentRepository.FirstOrDefaultAsync(v => v.VehicleId == validate.VehicleId);
+            var assignmentInDbByUser = await _vehicleAssignmentRepository.FirstOrDefaultAsync(v => v.UserId == validate.UserId && v.LenderBusinessId == validate.LenderBusinessId);
+            
+            if(validate.VehicleAssignmentId != 0)
             {
-                if (assignmentInDbByVehicle != null && assignmentInDbByVehicle.Id != assignmentId)
-                    return true;
-                else if (assignmentInDbByUser != null && assignmentInDbByUser.Id != assignmentId)
-                    return true;
-            }
-            else
-            {
-                var isVehicleOrUserAssigned = assignmentInDbByUser != null || assignmentInDbByVehicle != null;
+                assignmentInDbByVehicle = await _vehicleAssignmentRepository.FirstOrDefaultAsync(v => v.VehicleId == validate.VehicleId && v.Id != validate.VehicleAssignmentId);
 
-                return isVehicleOrUserAssigned;
+                assignmentInDbByUser = await _vehicleAssignmentRepository.FirstOrDefaultAsync(v => v.UserId == validate.UserId && v.LenderBusinessId == validate.LenderBusinessId && v.Id != validate.VehicleAssignmentId);
             }
-            return false;
+
+            return assignmentInDbByVehicle != null || assignmentInDbByUser != null;
         }
 
         public async Task DeleteAssignmentAsync(int assignmentId)
@@ -108,9 +114,16 @@ namespace CIT.BusinessLogic.Services
 
         public async Task<List<VehicleAssignmentDto>> GetVehiclesAssignmentsAsync(int lenderBusinessId)
         {
-            var vehicleAssignments = _mapper.Map<List<VehicleAssignmentDto>>(await _vehicleAssignmentRepository.GetVehicleAssignmentsByFilterWithRelationsAsync(v => v.Vehicle.LenderBusinessId == lenderBusinessId));
+            var vehicleAssignments = _mapper.Map<List<VehicleAssignmentDto>>(await _vehicleAssignmentRepository.GetVehicleAssignmentsByFilterWithRelationsAsync(v => v.LenderBusinessId == lenderBusinessId));
 
             return vehicleAssignments;
+        }
+
+        public async Task<VehicleAssignmentDto> GetVehicleAssignmentByUserAsync(int lenderBusinessId, int userId)
+        {
+            var vehicleAssignment = _mapper.Map<VehicleAssignmentDto>(await _vehicleAssignmentRepository.FirstOrDefaultWithRelationsAsync(v => v.LenderBusinessId == lenderBusinessId && v.UserId == userId));
+
+            return vehicleAssignment;
         }
     }
 }

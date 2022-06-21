@@ -12,6 +12,7 @@ namespace CIT.DataAccess.Models
             UsersLenderBusinesses = new HashSet<UsersLenderBusinesses>();
             Payments = new HashSet<Payment>();
             Loans = new HashSet<Loan>();
+            VehicleAssignments = new HashSet<VehicleAssignment>();
         }
 
         public int Id { get; set; }
@@ -29,7 +30,7 @@ namespace CIT.DataAccess.Models
         public virtual ICollection<Payment> Payments { get; set; }
         public virtual ICollection<Loan> Loans { get; set; }
         public virtual Useraddress Useraddress { get; set; }
-        public virtual VehicleAssignment VehicleAssignment { get; set; }
+        public virtual ICollection<VehicleAssignment> VehicleAssignments { get; set; }
         public virtual ICollection<UsersLenderBusinesses> UsersLenderBusinesses { get; set; }
     }
 }

@@ -636,17 +636,24 @@ namespace CIT.DataAccess.DbContexts
 
                 entity.HasIndex(e => e.VehicleId, "Fk_VehicleAssignments_Vehicles");
 
+                entity.HasIndex(e => e.LenderBusinessId, "Fk_VehicleAssignments_LenderBusiness");
+
                 entity.Property(e => e.Comment).IsRequired().HasMaxLength(150);
 
                 entity.HasOne(d => d.User)
-                .WithOne(d => d.VehicleAssignment)
-                .HasForeignKey<VehicleAssignment>(d => d.UserId)
+                .WithMany(d => d.VehicleAssignments)
+                .HasForeignKey(d => d.UserId)
                 .HasConstraintName("Fk_VehicleAssignments_Users");
 
                 entity.HasOne(d => d.Vehicle)
                 .WithOne(d => d.VehicleAssignment)
                 .HasForeignKey<VehicleAssignment>(d => d.VehicleId)
                 .HasConstraintName("Fk_VehicleAssignments_Vehicles");
+
+                entity.HasOne(d => d.LenderBusiness)
+                .WithMany(d => d.VehicleAssignments)
+                .HasForeignKey(d => d.LenderBusinessId)
+                .HasConstraintName("Fk_VehicleAssignments_LenderBusiness");
             });
 
             modelBuilder.Entity<UsersLenderBusinesses>(entity =>

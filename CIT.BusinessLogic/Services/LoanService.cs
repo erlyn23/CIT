@@ -123,5 +123,17 @@ namespace CIT.BusinessLogic.Services
 
             return loans;
         }
+
+        public async Task<List<LoanDto>> GetLoansByNameAsync(int lenderBusinessId, string loanName, int userId = 0)
+        {
+            var loans = new List<LoanDto>();
+
+            if (userId == 0)
+                loans = _mapper.Map<List<LoanDto>>(await _loanRepository.GetAllWithFilterAndWithRelationsAsync(l => l.LenderBusinessId == lenderBusinessId && l.LoanName.ToLower().Contains(loanName.ToLower())));
+            else
+                loans = _mapper.Map<List<LoanDto>>(await _loanRepository.GetAllWithFilterAndWithRelationsAsync(l => l.LenderBusinessId == lenderBusinessId && l.UserId == userId && l.LoanName.ToLower().Contains(loanName.ToLower())));
+
+            return loans;
+        }
     }
 }

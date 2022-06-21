@@ -1,32 +1,32 @@
-﻿const formLanName = {
+﻿const formLoanName = {
     loanNameFilter: $("#loanNameFilter"),
     loanId: $("#loanId")
 };
 
-const validationFullNameStatus = {
+const validationLoanNameStatus = {
     loanNameFilter: false,
     loanId: false
 };
 
-//Validación nombre del usuario
-const validateFullName = function () {
-    if (formLanName.loanNameFilter.val().length === 0) {
-        setInvalid(formLanName.loanNameFilter, "#loanValidation", "<p>Debes escoger el préstamo</p>");
+//Validación nombre del préstamo
+const validateLoanName = function () {
+    if (formLoanName.loanNameFilter.val().length === 0) {
+        setInvalid(formLoanName.loanNameFilter, "#loanValidation", "<p>Debes escoger el préstamo</p>");
         validationLoanNameStatus.loanNameFilter = true;
     } else {
-        setValid(formLanName.loanNameFilter, "#loanValidation");
+        setValid(formLoanName.loanNameFilter, "#loanValidation");
         validationLoanNameStatus.loanName = false;
     }
 }
-formLanName.loanNameFilter.on(CHANGE_EVENT, validateFullName);
-formLanName.loanNameFilter.on(FOCUSOUT_EVENT, validateFullName);
-//Validación nombre del usuario
+formLoanName.loanNameFilter.on(CHANGE_EVENT, validateLoanName);
+formLoanName.loanNameFilter.on(FOCUSOUT_EVENT, validateLoanName);
+//Validación nombre del préstamo
 
-formLanName.loanNameFilter.on('keyup', function (e) {
+formLoanName.loanNameFilter.on('keyup', function (e) {
     if (e.target.value.length > 0) {
         $("#loanSourceContainer").removeClass('d-none');
         doRequest({
-            url: `/Loan/GetLoansByName/?loanName=${formLoanName.loanNameFilter.val()}`,
+            url: `/Loan/GetLoansByName?loanName=${formLoanName.loanNameFilter.val()}`,
             method: 'GET',
             data: null,
             headers: appHeaders,
@@ -51,5 +51,5 @@ formLanName.loanNameFilter.on('keyup', function (e) {
             }
         });
     } else
-        $("#userSourceContainer").addClass('d-none');
+        $("#loanSourceContainer").addClass('d-none');
 });

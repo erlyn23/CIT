@@ -36,8 +36,8 @@ namespace CIT.BusinessLogic.Services
             if(loan != null)
             {
                 var entityInfo = await _entitiesInfoService.AddEntityInfoAsync();
-                payment.EntityInfoId = entityInfo.Id;
-                payment.LenderBusinessId = lenderBusinessId;
+                paymentEntity.EntityInfoId = entityInfo.Id;
+                paymentEntity.LenderBusinessId = lenderBusinessId;
 
                 await _paymentRepository.AddAsync(paymentEntity);
                 await _paymentRepository.SaveChangesAsync();

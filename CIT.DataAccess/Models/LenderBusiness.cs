@@ -15,6 +15,7 @@ namespace CIT.DataAccess.Models
             Loans = new HashSet<Loan>();
             Logs = new HashSet<Log>();
             Vehicles = new HashSet<Vehicle>();
+            VehicleAssignments = new HashSet<VehicleAssignment>();
         }
         public int Id { get; set; }
         public string BusinessName { get; set; }
@@ -31,6 +32,8 @@ namespace CIT.DataAccess.Models
         public virtual ICollection<Log> Logs { get; set; }
         public virtual ICollection<Payment> Payments { get; set; }
         public virtual ICollection<Vehicle> Vehicles { get; set; }
+
+        public virtual ICollection<VehicleAssignment> VehicleAssignments { get; set; }
         public virtual LenderAddress LenderAddress { get; set; }
         public virtual Entitiesinfo EntityInfo { get; set; }
         public virtual LenderRole LenderRole { get; set; }

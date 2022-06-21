@@ -14,6 +14,7 @@ namespace CIT.BusinessLogic.Contracts
         Task<LoanDto> UpdateLoanAsync(LoanDto loan);
         Task<List<LoanDto>> GetLoansByLenderBusinessAsync(int lenderBusinessId);
         Task<List<LoanDto>> GetLoansByUserAsync(int lenderBusinessId, int userId);
+        Task<List<LoanDto>> GetLoansByNameAsync(int lenderBusinessId, string loanName, int userId = 0);
         Task<LoanDto> GetloanByIdAsync(int loanId);
         Task DeleteLoanAsync(int loanId);
     }

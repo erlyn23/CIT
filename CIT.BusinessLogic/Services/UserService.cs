@@ -22,6 +22,8 @@ namespace CIT.BusinessLogic.Services
         private readonly IAddressService _addressService;
         private readonly IUserAddressService _userAddressService;
         private readonly IUsersLenderBusinessesRepository _usersLenderBusinessesRepository;
+        private readonly ILoanService _loanService;
+        private readonly IPaymentService _paymentService;
         private readonly TokenCreator _tokenCreator;
         private readonly AccountTools _accountTools;
         private readonly ILoginService _loginService;
@@ -29,16 +31,19 @@ namespace CIT.BusinessLogic.Services
 
         private const string USER_EXISTS_ERROR_MESSAGE = "Ya existe un usuario con este correo, teléfono o documento en este negocio prestamista, por favor, valida los datos.";
 
-        public UserService(IUserRepository userRepository, 
-            IRoleService roleService, 
-            IUserRoleService userRoleService,
-            IEntitiesInfoService entitiesInfoService, 
-            IAddressService addressService, 
-            IUserAddressService userAddressService, 
+        public UserService(IUserRepository userRepository,
             IUsersLenderBusinessesRepository usersLenderBusinessesRepository,
+            ILoanService loanService,
+            IPaymentService paymentService,
+            IVehicleAssignmentService vehicleAssignmentService,
+            IRoleService roleService,
+            IUserRoleService userRoleService,
+            IEntitiesInfoService entitiesInfoService,
+            IAddressService addressService,
+            IUserAddressService userAddressService,
+            ILoginService loginService,
             TokenCreator tokenCreator, 
-            AccountTools accountTools, 
-            ILoginService loginService)
+            AccountTools accountTools)
         {
             _userRepository = userRepository;
             _tokenCreator = tokenCreator;
@@ -48,6 +53,8 @@ namespace CIT.BusinessLogic.Services
             _addressService = addressService;
             _userAddressService = userAddressService;
             _usersLenderBusinessesRepository = usersLenderBusinessesRepository;
+            _loanService = loanService;
+            _paymentService = paymentService;
             _accountTools = accountTools;
             _roleService = roleService;
         }
