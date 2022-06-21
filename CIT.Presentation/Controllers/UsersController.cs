@@ -82,7 +82,8 @@ namespace CIT.Presentation.Controllers
         [HttpGet]
         public async Task<IActionResult> DeleteUserAsync(int id)
         {
-            await _userService.DeleteUserAsync(id);
+            var lenderBusinessId = await _tokenCreator.GetLenderBusinessId(Request);
+            await _userService.DeleteUserAsync(lenderBusinessId, id);
             return Json("Usuario eliminado correctamente");
         }
     }

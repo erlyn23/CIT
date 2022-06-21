@@ -67,7 +67,7 @@ namespace CIT.BusinessLogic.Services
 
         public async Task<PaymentDto> GetPaymentAsync(int paymentId)
         {
-            var payment = await _paymentRepository.FirstOrDefaultWithRelationsAsync(p => p.Id == paymentId);
+            var payment = await _paymentRepository.FirstOrDefaultWithRelationsAsync(p => p.Id == paymentId && p.EntityInfo.Status == 1);
 
             if(payment != null)
             {
@@ -80,7 +80,7 @@ namespace CIT.BusinessLogic.Services
 
         public async Task<List<PaymentDto>> GetPaymentsAsync(int lenderBusinessId)
         {
-            var payments = await _paymentRepository.GetAllByFilterWithRelationsAsync(p => p.LenderBusinessId == lenderBusinessId);
+            var payments = await _paymentRepository.GetAllByFilterWithRelationsAsync(p => p.LenderBusinessId == lenderBusinessId && p.EntityInfo.Status == 1);
 
             var paymentsDto = _mapper.Map<List<PaymentDto>>(payments);
             return paymentsDto;
@@ -88,7 +88,7 @@ namespace CIT.BusinessLogic.Services
 
         public async Task<List<PaymentDto>> GetPaymentsByUserIdAsync(int lenderBusinessId, int userId)
         {
-            var payments = await _paymentRepository.GetAllByFilterWithRelationsAsync(p => p.LenderBusinessId == lenderBusinessId && p.UserId == userId);
+            var payments = await _paymentRepository.GetAllByFilterWithRelationsAsync(p => p.LenderBusinessId == lenderBusinessId && p.UserId == userId && p.EntityInfo.Status == 1);
 
             var paymentsDto = _mapper.Map<List<PaymentDto>>(payments);
             return paymentsDto;

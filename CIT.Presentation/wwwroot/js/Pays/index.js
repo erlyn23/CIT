@@ -193,6 +193,27 @@ const onError = function (err) {
     }, 1000);
 }
 
+const deletePay = function (payId) {
+    $("#DeleteConfirmPayModal").modal('show');
+
+    $("#deletePayBtn").on('click', function () {
+        doRequest(
+            {
+                url: '/Pay/DeletePay/' + payId,
+                method: 'GET',
+                data: null,
+                headers: { ...payHeaders, 'Operation': 'Eliminar' },
+                successCallback: function (data) {
+                    $("#DeleteConfirmPayModal").modal('hide');
+                    alert(data);
+                    getPays();
+                },
+                errorCallback: function (error) { onErrorHandler(error) }
+            }
+        );
+    });
+}
+
 const onErrorHandler = function (err) {
     $("#loadingPays").addClass("d-none");
     $("#errorMessage").removeClass("d-none");
@@ -201,6 +222,14 @@ const onErrorHandler = function (err) {
 
 $("#closePayFormBtn").on('click', function () {
     $("form").eq(0).trigger('reset');
+    $("#payId").val("");
+    for (let field in formFields) {
+        formFields[field].removeClass('is-valid');
+        formFields[field].removeClass('is-invalid');
+
+        validationsStatus[field] = false;
+    }
+    $("#createPayTitle").text('Crear Nuevo Pago');
 });
 
 getPays();

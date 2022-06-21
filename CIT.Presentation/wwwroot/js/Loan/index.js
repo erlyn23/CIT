@@ -207,6 +207,27 @@ const onError = function (err) {
     }, 1000);
 }
 
+const deleteLoan = function (loanId) {
+    $("#DeleteConfirmLoanModal").modal('show');
+
+    $("#deleteLoanBtn").on('click', function () {
+        doRequest(
+            {
+                url: '/Loan/DeleteLoan/' + loanId,
+                method: 'GET',
+                data: null,
+                headers: { ...loanHeaders, 'Operation': 'Eliminar' },
+                successCallback: function (data) {
+                    $("#DeleteConfirmLoanModal").modal('hide');
+                    alert(data);
+                    getLoans();
+                },
+                errorCallback: function (error) { onErrorHandler(error) }
+            }
+        );
+    });
+}
+
 const onErrorHandler = function (err) {
     $("#loadingLoans").addClass("d-none");
     $("#errorMessage").removeClass("d-none");
@@ -215,6 +236,15 @@ const onErrorHandler = function (err) {
 
 $("#closeLoanFormBtn").on('click', function () {
     $("form").eq(0).trigger('reset');
+
+    $("#loanId").val("");
+    for (let field in formFields) {
+        formFields[field].removeClass('is-valid');
+        formFields[field].removeClass('is-invalid');
+
+        validationsStatus[field] = false;
+    }
+    $("#createLoanTitle").text('Crear Nuevo Préstamo');
 });
 
 getLoans();

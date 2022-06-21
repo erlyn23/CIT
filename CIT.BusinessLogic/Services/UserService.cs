@@ -24,10 +24,11 @@ namespace CIT.BusinessLogic.Services
         private readonly IUsersLenderBusinessesRepository _usersLenderBusinessesRepository;
         private readonly ILoanService _loanService;
         private readonly IPaymentService _paymentService;
-        private readonly TokenCreator _tokenCreator;
-        private readonly AccountTools _accountTools;
+        private readonly IVehicleAssignmentService _vehicleAssignmentService;
         private readonly ILoginService _loginService;
         private readonly IRoleService _roleService;
+        private readonly TokenCreator _tokenCreator;
+        private readonly AccountTools _accountTools;
 
         private const string USER_EXISTS_ERROR_MESSAGE = "Ya existe un usuario con este correo, teléfono o documento en este negocio prestamista, por favor, valida los datos.";
 
@@ -55,6 +56,7 @@ namespace CIT.BusinessLogic.Services
             _usersLenderBusinessesRepository = usersLenderBusinessesRepository;
             _loanService = loanService;
             _paymentService = paymentService;
+            _vehicleAssignmentService = vehicleAssignmentService;
             _accountTools = accountTools;
             _roleService = roleService;
         }
@@ -222,11 +224,34 @@ namespace CIT.BusinessLogic.Services
             await _usersLenderBusinessesRepository.SaveChangesAsync();
         }
 
-        public async Task DeleteUserAsync(int userId)
+        public async Task DeleteUserAsync(int lenderBusinessId, int userId)
         {
             var user = await GetUserAsync(userId);
-            await _entitiesInfoService.UpdateEntityInfo(user.EntityInfo.Id, 0);
-            await _loginService.DeleteLoginAsync(user.Email);
+            
+            if(user != null)
+            {
+                var loans = await _loanService.GetLoansByUserAsync(lenderBusinessId, userId);
+
+                if (loans.Count > 0)
+                    foreach (var loan in loans)
+                        await _loanService.DeleteLoanAsync(loan.Id);
+
+                var vehicleAssignment = await _vehicleAssignmentService.GetVehicleAssignmentByUserAsync(lenderBusinessId, userId);
+
+                if (vehicleAssignment != null)
+                    await _vehicleAssignmentService.DeleteAssignmentAsync(vehicleAssignment.Id);
+
+                var userLenderBusiness = await _usersLenderBusinessesRepository.FirstOrDefaultAsync(ul => ul.LenderBusinessId == lenderBusinessId && ul.UserId == userId);
+                if (userLenderBusiness != null)
+                {
+                    _usersLenderBusinessesRepository.Delete(userLenderBusiness);
+                    await _usersLenderBusinessesRepository.SaveChangesAsync();
+                }
+
+                await _entitiesInfoService.UpdateEntityInfo(user.EntityInfo.Id, 0);
+                await _loginService.DeleteLoginAsync(user.Email);
+            }
+            
         }
 
         public async Task<List<UserDto>> GetUsersAsync(int lenderBusinessId)

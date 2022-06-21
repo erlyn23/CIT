@@ -102,7 +102,7 @@ namespace CIT.BusinessLogic.Services
 
         public async Task<LoanDto> GetloanByIdAsync(int loanId)
         {
-            var loan = _mapper.Map<LoanDto>(await _loanRepository.GetAllWithFilterAndWithRelationsAsync(l => l.Id == loanId));
+            var loan = _mapper.Map<LoanDto>(await _loanRepository.GetAllWithFilterAndWithRelationsAsync(l => l.Id == loanId && l.EntityInfo.Status == 1));
 
             if (loan != null)
                 return loan;
@@ -112,14 +112,14 @@ namespace CIT.BusinessLogic.Services
 
         public async Task<List<LoanDto>> GetLoansByLenderBusinessAsync(int lenderBusinessId)
         {
-            var loans = _mapper.Map<List<LoanDto>>(await _loanRepository.GetAllWithFilterAndWithRelationsAsync(l => l.LenderBusinessId == lenderBusinessId));
+            var loans = _mapper.Map<List<LoanDto>>(await _loanRepository.GetAllWithFilterAndWithRelationsAsync(l => l.LenderBusinessId == lenderBusinessId && l.EntityInfo.Status == 1));
 
             return loans;
         }
 
         public async Task<List<LoanDto>> GetLoansByUserAsync(int lenderBusinessId, int userId)
         {
-            var loans = _mapper.Map<List<LoanDto>>(await _loanRepository.GetAllWithFilterAndWithRelationsAsync(l => l.LenderBusinessId == lenderBusinessId && l.UserId == userId));
+            var loans = _mapper.Map<List<LoanDto>>(await _loanRepository.GetAllWithFilterAndWithRelationsAsync(l => l.LenderBusinessId == lenderBusinessId && l.UserId == userId && l.EntityInfo.Status == 1));
 
             return loans;
         }
@@ -129,9 +129,9 @@ namespace CIT.BusinessLogic.Services
             var loans = new List<LoanDto>();
 
             if (userId == 0)
-                loans = _mapper.Map<List<LoanDto>>(await _loanRepository.GetAllWithFilterAndWithRelationsAsync(l => l.LenderBusinessId == lenderBusinessId && l.LoanName.ToLower().Contains(loanName.ToLower())));
+                loans = _mapper.Map<List<LoanDto>>(await _loanRepository.GetAllWithFilterAndWithRelationsAsync(l => l.LenderBusinessId == lenderBusinessId && l.LoanName.ToLower().Contains(loanName.ToLower()) && l.EntityInfo.Status == 1));
             else
-                loans = _mapper.Map<List<LoanDto>>(await _loanRepository.GetAllWithFilterAndWithRelationsAsync(l => l.LenderBusinessId == lenderBusinessId && l.UserId == userId && l.LoanName.ToLower().Contains(loanName.ToLower())));
+                loans = _mapper.Map<List<LoanDto>>(await _loanRepository.GetAllWithFilterAndWithRelationsAsync(l => l.LenderBusinessId == lenderBusinessId && l.UserId == userId && l.LoanName.ToLower().Contains(loanName.ToLower()) && l.EntityInfo.Status == 1));
 
             return loans;
         }
