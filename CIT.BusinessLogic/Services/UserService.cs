@@ -241,8 +241,9 @@ namespace CIT.BusinessLogic.Services
         {
             var usersLenderBusiness = await _usersLenderBusinessesRepository.GetAllWithFilterAsync(ul => ul.LenderBusinessId == lenderBusinessId);
 
+            var usersLenderBusinessArray = usersLenderBusiness.Select(ul => ul.UserId).ToArray();
             var users = await _userRepository.GetAllWithFilterAndWithRelationsAsync(u => 
-            usersLenderBusiness.Select(ul => ul.LenderBusinessId).ToArray().Contains(u.Id) && string.Concat(u.Name, " ", u.LastName).ToLower().Contains(fullName.ToLower()));
+            usersLenderBusinessArray.Contains(u.Id) && string.Concat(u.Name, " ", u.LastName).ToLower().Contains(fullName.ToLower()));
             return GetUsersResponse(users);
         }
 
