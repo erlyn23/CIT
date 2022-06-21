@@ -207,7 +207,7 @@ const onError = function (err) {
     }, 1000);
 }
 
-const deleteLoan = function (loanId) {
+function deleteLoan(loanId) {
     $("#DeleteConfirmLoanModal").modal('show');
 
     $("#deleteLoanBtn").on('click', function () {

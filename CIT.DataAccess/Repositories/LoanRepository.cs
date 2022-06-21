@@ -19,7 +19,10 @@ namespace CIT.DataAccess.Repositories
             _dbContext = dbContext;
         }
         public async Task<List<Loan>> GetAllWithFilterAndWithRelationsAsync(Expression<Func<Loan, bool>> expression)=>        
-            await _dbContext.Loans.Include(u => u.LenderBusiness).Where(expression).ToListAsync();
+            await _dbContext.Loans.Include(u => u.LenderBusiness).Include(u => u.EntityInfo).Where(expression).ToListAsync();
+
+        public async Task<Loan> FirstOrDefaultWithRelationsAsync(Expression<Func<Loan, bool>> expression) =>
+            await _dbContext.Loans.Include(u => u.LenderBusiness).Include(u => u.EntityInfo).Where(expression).FirstOrDefaultAsync();
         
     }
 }

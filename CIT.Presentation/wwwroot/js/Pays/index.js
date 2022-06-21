@@ -193,7 +193,7 @@ const onError = function (err) {
     }, 1000);
 }
 
-const deletePay = function (payId) {
+function deletePay(payId) {
     $("#DeleteConfirmPayModal").modal('show');
 
     $("#deletePayBtn").on('click', function () {

@@ -11,6 +11,7 @@ namespace CIT.DataAccess.Contracts
     public interface ILoanRepository: IGenericRepository<Loan>
     {
         Task<List<Loan>> GetAllWithFilterAndWithRelationsAsync(Expression<Func<Loan, bool>> expression);
+        Task<Loan> FirstOrDefaultWithRelationsAsync(Expression<Func<Loan, bool>> expression);
 
     }
 }

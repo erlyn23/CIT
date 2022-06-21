@@ -102,7 +102,7 @@ namespace CIT.BusinessLogic.Services
 
         public async Task<LoanDto> GetloanByIdAsync(int loanId)
         {
-            var loan = _mapper.Map<LoanDto>(await _loanRepository.GetAllWithFilterAndWithRelationsAsync(l => l.Id == loanId && l.EntityInfo.Status == 1));
+            var loan = _mapper.Map<LoanDto>(await _loanRepository.FirstOrDefaultWithRelationsAsync(l => l.Id == loanId && l.EntityInfo.Status == 1));
 
             if (loan != null)
                 return loan;
