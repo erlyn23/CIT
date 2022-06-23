@@ -1,0 +1,74 @@
+﻿
+@{
+    ViewData["Title"] = "SIP - Amortizaciones";
+    ViewData["Page"] = "Amortizations";
+    Layout = "~/Views/Shared/_SystemLayout.cshtml";
+}
+
+<div class="row mt-5 text-center">
+    <div class="col-md-12">
+        <h3>Tabla de Amortización</h3>
+    </div>
+</div>
+
+<div class="row mb-2">
+    <div class="col-md-6 offset-md-3">
+        <div class="card box-shadow shadow-sm p-4">
+            <div class="row mb-2">
+                @await Html.PartialAsync("~/Views/Partials/Common/LoanSourceContainer.cshtml")
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-4 offset-md-2">
+                    <button type="button" class="btn btn-success" id="createAmortizationBtn"><i class="fas fa-plus"></i> Crear Tabla</button>
+                </div>
+                <div class="col-md-4">
+                    <button type="button" class="btn btn-danger" id="cancelAmortizationBtn"><i class="fas fa-times"></i> Limpiar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+ <div class="row mb-2">
+    <div class="col-md-5 d-none" id="loadingAmortization">
+        <div class="spinner-grow text-dark" role="status">
+            <span class="sr-only"></span>
+        </div>
+        &nbsp;<span>Obteniendo datos, por favor espere</span>
+    </div>
+    <div class="col-md-5">
+        <div class="alert alert-danger d-none" role="alert" id="errorMessage">
+
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card box-shadow shadow-sm">
+            <div class="card-body">
+                <div class="row mb-2 d-none" id="excelBtnContainer">
+                    <div class="col-md-4">
+                        <button type="button" id="exportToExcelBtn" class="btn btn-success"><i class="fas fa-file-excel"></i> Exportar a Excel</button>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-12">
+                        <table class="table table-striped table-responsive" id="amortizationTable">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Período</th>
+                                    <th>Cuotas</th>
+                                    <th>Intereses</th>
+                                    <th>Abono Capital</th>
+                                    <th>Saldo Restante</th>
+                                </tr>
+                            </thead>
+                            <tbody id="amortizationList"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@await Html.PartialAsync("~/Views/Partials/_ResultMessagesModalPartial.cshtml")

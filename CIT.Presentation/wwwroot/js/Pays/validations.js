@@ -66,10 +66,10 @@ const validateOnClick = function () {
     for (let field in validationsStatus) {
         if (validationsStatus[field]) {
             $("#finalValidation").html(`<p><i class="fas fa-exclamation"></i> Tienes errores de validación, por favor, completa bien los campos</p>`);
-            $("#saveLoanBtn").prop('disabled', true);
+            $("#savePayBtn").prop('disabled', true);
         } else {
             $("#finalValidation").html("");
-            $("#saveLoanBtn").prop('disabled', false);
+            $("#savePayBtn").prop('disabled', false);
         }
     }
 
