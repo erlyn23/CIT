@@ -142,7 +142,7 @@ namespace CIT.BusinessLogic.Services
                 PageName = p.Where(rp => rp.PageId == p.Key).FirstOrDefault().PageName,
                 IconClass = p.Where(rp => rp.PageId == p.Key).FirstOrDefault().IconClass,
                 Route = p.Where(rp => rp.PageId == p.Key).FirstOrDefault().Route
-            }).ToList();
+            }).OrderBy(x => x.Id).ToList();
 
             return pages;
         }

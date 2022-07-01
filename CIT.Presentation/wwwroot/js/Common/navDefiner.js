@@ -55,7 +55,6 @@ const hasPermission = function (data, operationName) {
 
 const onGetNavPages = function (data, activeLink) {
     let htmlNav = "";
-    data.sort((a, b) => a.pageId - b.pageId);
     for (let page of data) {
         htmlNav += `<a class="nav_link" href="${page.route}" id="${page.pageName.toLowerCase()}Link">
                         <i class='bx ${page.iconClass} nav_icon'></i>
