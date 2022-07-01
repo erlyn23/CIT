@@ -247,9 +247,6 @@ namespace CIT.BusinessLogic.Services
                     _usersLenderBusinessesRepository.Delete(userLenderBusiness);
                     await _usersLenderBusinessesRepository.SaveChangesAsync();
                 }
-
-                await _entitiesInfoService.UpdateEntityInfo(user.EntityInfo.Id, 0);
-                await _loginService.DeleteLoginAsync(user.Email);
             }
             
         }

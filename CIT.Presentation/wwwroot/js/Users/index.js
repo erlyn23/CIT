@@ -401,7 +401,7 @@ const onSuccessSaveUser = function (data) {
         for (let error of data) {
             let errorMsg = `<p class="text-danger"><i class="fas fa-exclamation-circle"></i>&nbsp; ${error}</p>`;
             $("#errorMessages").append(errorMsg);
-            $("#CreateUserModal").modal('hide');
+            $("#CreteUserModal").modal('hide');
 
             setTimeout(function () {
                 $("#ErrorMessagesModal").modal('show');

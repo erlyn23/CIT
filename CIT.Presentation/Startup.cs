@@ -113,6 +113,7 @@ namespace CIT.Presentation
             services.AddScoped<IPaymentService, PaymentService>();
             services.AddScoped<IAmortizationService, AmortizationService>();
             services.AddScoped<IUsersLenderBusinessesRepository, UsersLenderBusinessesRepository>();
+            services.AddScoped<IDashboardService, DashboardService>();
             services.AddTransient<TokenCreator>();
             services.AddTransient<EmailTools>();
             services.AddTransient<AccountTools>();

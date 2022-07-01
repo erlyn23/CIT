@@ -1,0 +1,57 @@
+﻿:root{
+    --gold-color: #FAC827;
+    --full-width: 100%;
+    --text-center-align: center;
+}
+
+.total-count-container {
+    width: var(--full-width);
+    min-height: 1px;
+    background-color: black;
+    border-style: solid;
+    border-color: #FAC827;
+    border-width: 1px;
+    padding: 10px;
+}
+
+.total-count-container h1{
+    color: var(--gold-color) !important;
+    text-align: var(--text-center-align);
+}
+
+.total-count-container h2{
+    color: var(--gold-color) !important;
+    text-align: var(--text-center-align);
+}
+
+.total-count-container h3{
+    color: var(--gold-color) !important;
+    text-align: var(--text-center-align);
+}
+
+.total-count-container h4{
+    color: var(--gold-color) !important;
+    text-align: var(--text-center-align);
+}
+
+.total-count-container h5{
+    color: var(--gold-color) !important;
+    text-align: var(--text-center-align);
+}
+
+.total-count-container span{
+    color: var(--gold-color) !important;
+}
+
+.total-count-container div{
+    color: var(--gold-color) !important;
+}
+
+.total-count-container span{
+    font-size: 35pt;
+}
+
+.count-number{
+    width: var(--full-width);
+    text-align: var(--text-center-align);
+}

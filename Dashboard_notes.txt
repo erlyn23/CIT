@@ -1,0 +1,14 @@
+
+Para el negocio prestamista:
+
+
+1. Cantidad total de préstamos en los últimos 30 días. Listo.
+2. Cantidad total de pagos por préstamos en los últimos 30 días. Listo.
+3. Cantidad total de usuarios registrados en el sistema en los últimos 30 días. Listo.
+5. Cantidad total de asignaciones hechas registrados en el sistema en los últimos 30 días. Listo.
+
+Para cualquier otro tipo de usuario:
+
+1. Cantidad total de préstamos hechos en los últimos 30 días en el negocio prestamista en el que se encuentra ingresado.
+2. Cantidad total de pagos hechos en los últimos 30 días en el negocio prestamista en el que se encuentra ingresado.
+3. Cantidad total de cuotas próximas a pagar en los próximos 15 días.

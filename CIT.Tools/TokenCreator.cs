@@ -76,9 +76,9 @@ namespace CIT.Tools
 
         public int GetUserId(HttpRequest request)
         {
-            var userType = GetUserTypeAndUserId(request);
+            var userType = GetUserTypeAndUserId(request).Split(' ');
 
-            if (userType.Equals("User"))
+            if (userType[0].Equals("User"))
                 return _userId;
 
             return 0;

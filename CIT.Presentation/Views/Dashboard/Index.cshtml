@@ -1,9 +1,81 @@
-﻿
-@{
+﻿@{
     ViewData["Title"] = "Dashboard";
     ViewData["Page"] = "Dashboard";
     Layout = "~/Views/Shared/_SystemLayout.cshtml";
 }
+<div class="row mb-3">
+    <div class="col-md-12 text-center">
+        <h3>Resumen de los últimos 30 días</h3>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card box-shadow shadow-sm">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-5" id="loadingDashboard">
+                        <div class="spinner-grow text-dark" role="status">
+                            <span class="sr-only"></span>
+                        </div>
+                        &nbsp;<span>Obteniendo datos, por favor espere</span>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="alert alert-danger d-none" role="alert" id="errorMessage">
 
-<h1>Index</h1>
-
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-md-3">
+                        <div class="total-count-container" id="loanTotalCountContainer">
+                            <h5>Préstamos hechos:</h5>
+                            <div class="count-number">
+                                <span id="totalLoans">0</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="total-count-container" id="paymentTotalCountContainer">
+                            <h5>Pagos realizados:</h5>
+                            <div class="count-number">
+                                <span id="totalPayments">0</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="total-count-container d-none" id="userTotalCountContainer">
+                            <h5>Usuarios creados:</h5>
+                            <div class="count-number">
+                                <span id="totalUsers">0</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="total-count-container d-none" id="assignmentTotalCountContainer">
+                            <h5>Vehículos asignados:</h5>
+                            <div class="count-number">
+                                <span id="totalAssignments">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <canvas id="paymentsChart"></canvas>
+                    </div>
+                    <div class="col-md-6">
+                        <canvas id="loansChart"></canvas>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <canvas id="usersChart"></canvas>
+                    </div>
+                    <div class="col-md-6">
+                        <canvas id="assignmentsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -43,7 +43,7 @@ namespace CIT.Dtos.Requests
         public int UserId { get; set; }
 
         public LenderBusinessDto LenderBusiness { get; set; }
-        public EntityInfoDto entityInfo { get; set; }
+        public EntityInfoDto EntityInfo { get; set; }
 
 
         private class NotNegativeOrZeroValidation : ValidationAttribute
