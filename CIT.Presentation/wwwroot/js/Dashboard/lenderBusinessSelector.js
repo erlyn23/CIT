@@ -21,7 +21,7 @@ const onGetLenderBusinesses = function (data) {
 
     data.forEach(lenderBusiness => {
         htmlTemplate += `
-            <div class="col-md-4 mx-4 my-4">
+            <div class="col-md-3 mx-4 my-4">
                 <div class="card box-shadow shadow-sm">
                     <div class="card-body">
                         <div class="text-center">
@@ -31,7 +31,7 @@ const onGetLenderBusinesses = function (data) {
                             <p><span style="font-weight: bold;">RNC: </span> ${lenderBusiness.rnc}</p>
                         </div>
                         <div class="d-grid gap-2">
-                            <button class="btn btn-outline-primary" onclick="enterInLenderBusiness(${lenderBusiness.id})"><i class="fas fa-sign-in"></i> Entrar</button>
+                            <button class="btn btn-outline-success" onclick="enterInLenderBusiness(${lenderBusiness.id})"><i class="fas fa-sign-in-alt"></i> Entrar</button>
                         </div>
                     </div>
                 </div>
