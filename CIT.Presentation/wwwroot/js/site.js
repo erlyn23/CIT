@@ -1,51 +1,26 @@
-﻿// Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
-
-
-// Write your JavaScript code.
-
-
-function getStartedSession() {
+﻿function getStartedSession() {
     const user = JSON.parse(localStorage.getItem('user'));
 
-    if (user)
-        window.location.href = '/Dashboard/Index';
+    if (user) {
+        const decoded = jwtDecode(user?.token);
+
+        if (decoded.userType === "User") {
+
+            localStorage.setItem('temp', JSON.stringify({ email: user.email, token: "" }));
+            window.location.href = '/Dashboard/LenderBusinessSelector';
+        }
+        else
+            window.location.href = '/Dashboard/Index';
+    }
 }
 
 getStartedSession();
 
-
-$("#password").on('keyup', function () {
-    doRequest({
-        url: '/Account/GetLenderBusinessByUser',
-        method: 'POST',
-        data: { email: $("#email").val(), password: $("#password").val(), lenderBusinessId: 0 },
-        headers: null,
-        successCallback: function (data) {
-            $("#lenderBusinessIdContainer").removeClass('d-none');
-            data.forEach(lenderBusiness => {
-                const option = document.createElement('option');
-                option.value = lenderBusiness.id;
-                option.text = lenderBusiness.businessName;
-                document.getElementById("lenderBusinessId").appendChild(option);
-            });
-        },
-        errorCallback: function (error) {
-            $("#lenderBusinessIdContainer").addClass('d-none');
-            $("#lenderBusinessId").html(`<option value="0" selected disabled>Selecciona un negocio...</option>`);
-        }
-    })
-});
-
 $("#signInBtn").on('click', function (e) {
     const authModel = {
         email: $("#email").val(),
-        password: $("#password").val(),
-        lenderBusinessId: $("#lenderBusinessId").val()
+        password: $("#password").val()
     };
-
-    if (authModel.lenderBusinessId == null)
-        authModel.lenderBusinessId = 0;
 
     doRequest({
         url: '/Account/Index', method: 'POST', data: authModel, headers: null,
@@ -56,11 +31,20 @@ $("#signInBtn").on('click', function (e) {
             $("#errorMessages").append(successMsg);
             $("#LoadingModal").modal('hide');
 
-            setTimeout(function () {
-                $("#ErrorMessagesModal").modal('show');
-                localStorage.setItem('user', JSON.stringify(data));
-                window.location.href = '/Dashboard/Index';
-            }, 1000);
+            if (data.token.length > 0) {
+
+                setTimeout(function () {
+                    $("#ErrorMessagesModal").modal('show');
+                    localStorage.setItem('user', JSON.stringify(data));
+                    window.location.href = '/Dashboard/Index';
+                }, 1000);
+            } else {
+                setTimeout(function () {
+                    $("#ErrorMessagesModal").modal('show');
+                    localStorage.setItem('temp', JSON.stringify(data));
+                    window.location.href = '/Dashboard/LenderBusinessSelector';
+                }, 1000);
+            }
 
         },
         errorCallback: function(err) {

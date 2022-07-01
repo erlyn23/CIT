@@ -1,6 +1,9 @@
 ﻿using CIT.BusinessLogic.Contracts;
 using CIT.Dtos.Requests;
 using CIT.Presentation.Filters;
+using CIT.Presentation.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -27,11 +30,26 @@ namespace CIT.Presentation.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetLenderBusinessByUserAsync([FromBody] Auth authModel)
+        public async Task<IActionResult> SignInInLenderBusinessAsync([FromBody] UserSignInModel signInModel)
         {
             try
             {
-                var lenderBusinesses = await _accountService.GetLenderBusinessByUserAsync(authModel.Email, authModel.Password);
+                var accountResponse = await _accountService.SignInInLenderBusinessAsync(signInModel.Email, signInModel.LenderBusinessId);
+
+                return Json(accountResponse);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetLenderBusinessesByUserAsync(string email)
+        {
+            try
+            {
+                var lenderBusinesses = await _accountService.GetLenderBusinessByUserAsync(email);
                 return Json(lenderBusinesses);
             }
             catch(Exception ex)

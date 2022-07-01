@@ -59,6 +59,25 @@
         "chart.min.js",
         "chart.js"
       ]
+    },
+    {
+      "provider": "jsdelivr",
+      "library": "@jrg/jwt-decode@0.0.7",
+      "destination": "wwwroot/lib/jrg/jwt-decode/",
+      "files": [
+        "jwt-decode.html",
+        "LICENSE",
+        "package.json",
+        "README.md",
+        "webpack.config.js",
+        "webpack.config.min.js",
+        "dist/dist/jwt-decode.js",
+        "dist/dist/jwt-decode.min.js",
+        "lib/JWTErrors.mjs",
+        "lib/index.mjs",
+        "lib/base64_url_decode.mjs",
+        "lib/atob.mjs"
+      ]
     }
   ]
 }

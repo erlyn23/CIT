@@ -36,6 +36,11 @@ namespace CIT.Presentation.Controllers
             return View();
         }
 
+        public IActionResult LenderBusinessSelector()
+        {
+            return View();
+        }
+
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [OperationFilter("Obtener")]
         [ServiceFilter(typeof(AuthFilter))]

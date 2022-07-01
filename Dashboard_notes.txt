@@ -11,4 +11,4 @@ Para cualquier otro tipo de usuario:
 
 1. Cantidad total de préstamos hechos en los últimos 30 días en el negocio prestamista en el que se encuentra ingresado.
 2. Cantidad total de pagos hechos en los últimos 30 días en el negocio prestamista en el que se encuentra ingresado.
-3. Cantidad total de cuotas próximas a pagar en los próximos 15 días.
+

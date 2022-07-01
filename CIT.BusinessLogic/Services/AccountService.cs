@@ -57,14 +57,10 @@ namespace CIT.BusinessLogic.Services
 
             var lenderBusiness = await _lenderBusinessRepository.FirstOrDefaultWithRelationsAsync(l => l.Email.Equals(email) && l.Password.Equals(encryptedPassword));
 
-            if(lenderBusiness != null)
+            if (lenderBusiness != null)
                 return new AccountResponse() { Email = email, Token = _tokenCreator.BuildToken(lenderBusiness) };
             else
-            {
-               var user = await _userRepository.FirstOrDefaultWithRelationsAsync(u => u.Email.Equals(email) && u.Password.Equals(encryptedPassword));
-                return new AccountResponse() { Email = email, Token = _tokenCreator.BuildToken(user, lenderBusinessId) };
-            }
-
+                return new AccountResponse() { Email = email, Token = "" };
         }
 
         public async Task<bool> ActivateAccountAsync(string identificationDocument, string verificationNumber)
@@ -115,11 +111,9 @@ namespace CIT.BusinessLogic.Services
             }
         }
 
-        public async Task<List<LenderBusinessDto>> GetLenderBusinessByUserAsync(string email, string password)
+        public async Task<List<LenderBusinessDto>> GetLenderBusinessByUserAsync(string email)
         {
-            var encryptedPassword = Encryption.Encrypt(password);
-
-            var userInDb = await _userRepository.FirstOrDefaultAsync(u => u.Email.Equals(email) && u.Password.Equals(encryptedPassword));
+            var userInDb = await _userRepository.FirstOrDefaultAsync(u => u.Email.Equals(email));
 
             if(userInDb != null)
             {
@@ -131,6 +125,12 @@ namespace CIT.BusinessLogic.Services
             }
 
             throw new Exception("Este usuario no pertenece a ningún negocio prestamista");
+        }
+
+        public async Task<AccountResponse> SignInInLenderBusinessAsync(string email, int lenderBusinessId)
+        {
+            var user = await _userRepository.FirstOrDefaultWithRelationsAsync(u => u.Email.Equals(email));
+            return new AccountResponse() { Email = email, Token = _tokenCreator.BuildToken(user, lenderBusinessId) };
         }
     }
 }
