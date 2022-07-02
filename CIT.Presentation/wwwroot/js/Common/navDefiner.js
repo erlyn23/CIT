@@ -77,3 +77,9 @@ const onErrorGetPages = function (error) {
     } else
         alert(error.statusText);
 }
+
+$("#close-session-link").on('click', function () {
+    localStorage.clear();
+
+    window.location.href = '/Account/Index';
+});

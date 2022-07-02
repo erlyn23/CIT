@@ -121,3 +121,21 @@ const doChartObject = function (labels, data, title) {
 }
 
 getDashboardData();
+
+const getProfilePhoto = function () {
+    doRequest({
+        url: `/Dashboard/GetProfilePhoto`,
+        method: 'GET',
+        headers: appHeaders,
+        data: null,
+        successCallback: function (data) {
+            $("#profileNavPhoto").attr('src', data.path);
+        },
+        errorCallback: function (error) {
+            if (error.statusCode === 404)
+                $("#profileNavPhoto").attr('src', 'https://flyclipart.com/thumb2/circle-user-png-icon-free-download-133446.png');
+        }
+    });
+}
+
+getProfilePhoto();

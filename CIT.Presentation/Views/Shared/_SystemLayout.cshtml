@@ -25,7 +25,9 @@
 
     <header class="header body-pd" id="header">
         <div class="header_toggle"> <i class='bx bx-x' id="header-toggle"></i> </div>
-        <div class="header_img"> <img src="https://i.imgur.com/hczKIze.jpg" alt=""> </div>
+        <div class="header_img">
+            <img src="https://flyclipart.com/thumb2/circle-user-png-icon-free-download-133446.png" alt="" id="profileNavPhoto">
+        </div>
     </header>
     <div class="l-navbar show" id="nav-bar">
         <nav class="nav">
@@ -37,7 +39,7 @@
 
                 </div>
             </div>
-            <a href="#" class="nav_link">
+            <a href="#" class="nav_link" id="close-session-link">
                 <i class='bx bx-log-out nav_icon'></i>
                 <span class="nav_name">Cerrar sesión</span>
             </a>
@@ -60,7 +62,6 @@
     <script src="~/js/Common/request.js"></script>
     <script src="~/js/sidenav.js"></script>
     <script src="~/js/Common/navDefiner.js"></script>
-    <script src="~/lib/jrg/jwt-decode/dist/dist/jwt-decode.min.js"></script>
     @if (!string.IsNullOrEmpty(ViewData["Page"].ToString()))
     {
         @switch (ViewData["Page"].ToString())

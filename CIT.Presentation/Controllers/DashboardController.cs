@@ -64,6 +64,29 @@ namespace CIT.Presentation.Controllers
         {
             return Json(await _roleService.GetPagesByRoleAsync(GetRoleId()));
         }
-        
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpGet]
+        public async Task<IActionResult> GetProfilePhotoAsync()
+        {
+            var userId = _tokenCreator.GetUserId(Request);
+            var lenderBusinessId = await _tokenCreator.GetLenderBusinessId(Request);
+
+            if (userId == 0)
+            {
+                var filePath = $"wwwroot/ProfilePhotos/business_profile_photo_{lenderBusinessId}.jpg";
+                if (System.IO.File.Exists(filePath))
+                    return Json(new { Path = $"/ProfilePhotos/business_profile_photo_{lenderBusinessId}.jpg" });
+            }
+            else
+            {
+                var filePath = $"wwwroot/ProfilePhotos/profile_photo_{userId}.jpg";
+
+                if(System.IO.File.Exists(filePath))
+                    return Json(new { Path =  filePath });
+            }
+
+            return NotFound();
+        }
     }
 }

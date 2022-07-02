@@ -51,6 +51,7 @@ const enterInLenderBusiness = function (lenderBusinessId) {
         headers: null,
         data: { email: tempUser.email, lenderBusinessId: lenderBusinessId },
         successCallback: function (data) {
+            localStorage.removeItem('temp');
             localStorage.setItem('user', JSON.stringify(data));
             window.location.href = '/Dashboard/Index';
         }
